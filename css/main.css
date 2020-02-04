@@ -125,8 +125,10 @@ textarea {
 #tab_buttons {
   margin-top: 1em;
 }
-#tab_panels {
+#editor {
   width: 25vw;
+}
+#tab_panels {
   height: 95vh;
   overflow-y: auto;
   padding: 1em;
