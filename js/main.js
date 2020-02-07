@@ -101,7 +101,7 @@ var dt = (function () {
         console.log(activeElm);
         this.updateAttrs(activeElm);
         this.updateStyles();
-        editor.canvas.node.querySelector('[data-status="active"]') && canvas.querySelector('[data-status="active"]').removeAttribute("data-status");
+        editor.canvas.node.querySelector('[data-status="active"]') && editor.canvas.node.querySelector('[data-status="active"]').removeAttribute("data-status");
         activeElm.setAttribute("data-status", "active");
         return activeElm;
       },
