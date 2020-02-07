@@ -8,6 +8,7 @@ var dt = (function () {
 
   let config = {
     node: document.getElementById("design_tool"),
+    units: ["px", "%", "em", "vmax", "vmin", "vh", "vw", "none"],
     template: modal,
     blocks: [{
       id: "heading",
@@ -27,15 +28,17 @@ var dt = (function () {
     currentElm: undefined,
   };
   let editor = {
+    tabs: {},
+    elements: {},
     canvas: {
       create: function() {
-        editor.canvas.node = document.createElement("div");
-        editor.canvas.node.id = "canvas";
-        editor.canvas.node.innerHTML = config.template;
-        config.node.appendChild(editor.canvas.node);
-        editor.canvas.node.addEventListener("click", this.getActiveClick);
-        editor.canvas.node.addEventListener("keyup", this.getActiveKey);
-        editor.canvas.node.querySelectorAll("*").forEach((elm, index) => {
+        editor.elements.canvas = document.createElement("div");
+        editor.elements.canvas.id = "canvas";
+        editor.elements.canvas.innerHTML = config.template;
+        config.node.appendChild(editor.elements.canvas);
+        editor.elements.canvas.addEventListener("click", this.getActiveClick);
+        editor.elements.canvas.addEventListener("keyup", this.getActiveKey);
+        editor.elements.canvas.querySelectorAll("*").forEach((elm, index) => {
           elm.setAttribute("data-id", String(index));
         });
       },
@@ -100,7 +103,7 @@ var dt = (function () {
         console.log(activeElm);
         this.updateAttrs(activeElm);
         this.updateStyles();
-        editor.canvas.node.querySelector('[data-status="active"]') && editor.canvas.node.querySelector('[data-status="active"]').removeAttribute("data-status");
+        editor.elements.canvas.querySelector('[data-status="active"]') && editor.elements.canvas.querySelector('[data-status="active"]').removeAttribute("data-status");
         activeElm.setAttribute("data-status", "active");
         return activeElm;
       },
@@ -108,7 +111,6 @@ var dt = (function () {
 
       },
       updateAttrs: (activeElm) => {
-        config.elms.attrs.textContent = "";
         let tag = config.currentElm.tagName;
         let html = "";
         for (let i in elements) {
@@ -123,14 +125,12 @@ var dt = (function () {
             }
           }
         }
-        config.elms.attrs.innerHTML = html;
+        editor.tabs.attributes_tab.panel.innerHTML = html;
       }
     },
     panels: {
       createInput: (p, i) => {
-        let html = "";
-        let value = p[i];
-        let attributes = "";
+        let html = "", value = p[i], attributes = "";
         if (Array.isArray(value)) {
           html += `<select name="${i}">${value.map(o => `<option value="${o}">${o.replace("-", " ")}</option>`).join("")}</select>`;
         } else if (!isNaN(value)) {
@@ -139,15 +139,12 @@ var dt = (function () {
           }
           html += `<input value="${value}" type="number" ${attributes}/>`;
         } else if (typeof value === "string") {
-          const units = ["px", "%", "em", "vmax", "vmin", "vh", "vw", "none"];
-          const unit_regex = new RegExp(units.join("|"), "g");
+          const unit_regex = new RegExp(config.units.join("|"), "g");
           let unit = "";
-          let type = "text";
+          let type = value.indexOf("#") === 0 ? "color" : "text";
           let num = value.replace(unit_regex, "");
-          if (value.indexOf("#") === 0) type = "color";
-          else if (!isNaN(num)) {
-            if (value.match(unit_regex)) unit = value.match(unit_regex)[0];
-            else unit = "none";
+          if (!isNaN(num)) {
+            unit = value.match(unit_regex) ? value.match(unit_regex)[0] : "none";
             attributes += `class="has-units" `;
             if (num.indexOf(".") !== -1) {
               attributes += `step=".${"0".repeat(num.split(".")[1].length - 1)}1"`;
@@ -157,16 +154,13 @@ var dt = (function () {
           }
           html += `<input value="${value}" type="${type}" ${attributes}/>`;
           if (type === "number") {
-            html += `<select class="units">${units.map(u => `<option value="${u}" ${(u === unit) ? "selected" : ""}>${u}</option>`)}</select>`;
+            html += `<select class="units">${config.units.map(u => `<option value="${u}" ${(u === unit) ? "selected" : ""}>${u}</option>`)}</select>`;
           }
         }
         return html;
-      }
-    },
-    create: function () {
-      editor.canvas.create();
-      let tabs = {};
-      let addTab = (id, name, panel) => {
+      },
+      addTab: function (id, name, html) {
+        let panel = document.createElement("div");
         let tab = document.createElement("button");
         tab.id = id;
         tab.textContent = name;
@@ -174,61 +168,42 @@ var dt = (function () {
           document.querySelector(".editor_active") && document.querySelector(".editor_active").classList.remove("editor_active");
           panel.classList.add("editor_active");
         };
-        tab_buttons.appendChild(tab);
+        editor.elements.tab_buttons.appendChild(tab);
         panel.classList.add("editor_panel");
-        tab_panels.appendChild(panel);
-        return tabs[id] = {
-          id: id,
+        panel.innerHTML = html;
+        editor.elements.tab_panels.appendChild(panel);
+        return editor.tabs[id] = {
           tab: tab,
           panel: panel
         };
-      };
-      let editor_elm = document.createElement("div");
-      editor_elm.id = "editor";
-      config.node.appendChild(editor_elm);
-      let tab_buttons = document.createElement("div");
-      tab_buttons.id = "tab_buttons";
-      editor_elm.appendChild(tab_buttons);
-      let tab_panels = document.createElement("div");
-      tab_panels.id = "tab_panels";
-      editor_elm.appendChild(tab_panels);
-      const panels_wrap = document.createElement("div");
-      panels_wrap.id = "panels";
-      styles.forEach(p => {
-        let panel = document.createElement("div");
-        panel.className = "panel";
-        let html = `<h2>${p.id}</h2>`;
-        for (let i in p) {
-          if (i !== "id" && p.hasOwnProperty(i)) {
-            html += `<div class="input-group">
+      }
+    },
+    create: function () {
+      editor.canvas.create();
+      this.elements.editor = document.createElement("div");
+      this.elements.editor.id = "editor";
+      config.node.appendChild(this.elements.editor);
+      this.elements.tab_buttons = document.createElement("div");
+      this.elements.tab_buttons.id = "tab_buttons";
+      this.elements.editor.appendChild(this.elements.tab_buttons);
+      this.elements.tab_panels = document.createElement("div");
+      this.elements.tab_panels.id = "tab_panels";
+      this.elements.editor.appendChild(this.elements.tab_panels);
+      this.panels.addTab("styles_tab", "Styles", styles.map(p => `
+        <div class="panel">
+        <h2>${p.id}</h2>
+        ${Object.keys(p).map(i => `<div class="input-group">
           <label>${i.replace("-", " ")}</label>
           ${this.panels.createInput(p, i)}
-          </div>`;
-          }
-        }
-        panel.innerHTML = html;
-        panels_wrap.appendChild(panel);
-      });
-      addTab("styles_tab", "Styles", panels_wrap);
-      config.elms.attrs = document.createElement("div");
-      addTab("attributes_tab", "Attributes", config.elms.attrs);
-      tabs.attributes_tab.tab.click();
+          </div>`).join("")}
+        </div>`).join(""));
+      this.panels.addTab("attributes_tab", "Attributes", "").tab.click();
+      this.panels.addTab("blocks_tab", "Blocks", config.blocks.map(b => `
+        <div class="block">
+          <h5>${b.id}</h5>
+          <code>${b.html.replace(/</g, "&lt;")}</code>
+        </div>`).join(""));
       this.canvas.setAsActive(document.querySelector("[data-id='0']"));
-      let blocks_elm = document.createElement("div");
-      let html = "";
-      config.blocks.forEach(b => {
-        html += `<div class="block">
-        <h5>${b.id}</h5>
-        <code>${b.html.replace(/</g, "&lt;")}</code>
-      </div>`;
-      });
-      blocks_elm.innerHTML = html;
-      addTab("blocks_tab", "Blocks", blocks_elm);
-
-      return {
-        editor: editor_elm,
-        tabs: tabs
-      }
     }
   };
 
