@@ -15,6 +15,13 @@ import {template} from './email.js';
       id: "text",
       html: `<div class="text"><p>Text</p></div>`
     }],
+    images: [
+      "https://via.placeholder.com/600x50?text=LOGO",
+      "https://via.placeholder.com/50x50?text=1",
+      "https://via.placeholder.com/250x250?text2",
+      "https://via.placeholder.com/50x300?text=3",
+      "https://via.placeholder.com/50x50?text=4",
+    ],
     elms: {},
     currentElm: undefined,
   };
@@ -57,7 +64,7 @@ import {template} from './email.js';
 
     return html;
   }
-  let updateAttrs = () => {
+  let updateAttrs = (activeElm) => {
     dt.elms.attrs.textContent = "";
     let tag = dt.currentElm.tagName;
     let html = "";
@@ -66,7 +73,7 @@ import {template} from './email.js';
         for (let j in elements[i]) {
           html += `<div class="input-group">`;
           html += `<label>${j.replace("-", " ")}</label>`;
-          html += `<input name="${j}" value="${elements[i][j]}" type="text" />`
+          html += `<input name="${j}" value="${activeElm.getAttribute(j) || ""}" type="text" />`
           html += `</div>`;
         }
       }
@@ -76,9 +83,16 @@ import {template} from './email.js';
   let updateStyles = () => {
 
   }
-
-  // TODO: Doesn't work for inputs
-  let getActive = e => {
+  let setAsActive = activeElm => {
+    dt.currentElm = activeElm;
+    console.log(activeElm);
+    updateAttrs(activeElm);
+    updateStyles();
+    Array.prototype.forEach.call(canvas.querySelectorAll('*'), elm => elm.removeAttribute("data-status"));
+    activeElm.setAttribute("data-status", "active");
+    return activeElm;
+  }
+  let getActiveKey = e => {
     let sel = window.getSelection();
     let range = sel.getRangeAt(0);
     let node = document.createElement('span');
@@ -90,67 +104,58 @@ import {template} from './email.js';
     sel.addRange(range);
     let activeElm = node.parentNode
     node.parentNode.removeChild(node);
-    let tag = activeElm.tagName;
-    for (let i in elements) {
-      if (i.match(tag)) {
-        dt.elms.attrs.textContent = +JSON.stringify(elements[i])
-      }
-    }
     if (dt.currentElm != activeElm) {
-      dt.currentElm = activeElm;
-      console.log(activeElm);
-      updateAttrs();
-      updateStyles();
-      Array.prototype.forEach.call(canvas.querySelectorAll('*'), elm => elm.removeAttribute("data-status"));
-      activeElm.setAttribute("data-status", "active");
+      setAsActive(activeElm)
     }
     return activeElm;
+  }
+  let getActiveClick = e => e.target != dt.currentElm ? setAsActive(e.target) : dt.currentElm;
+  let setDrag = (elm) => {
+    var hasTextNode = Array.from(elm.childNodes).filter(node => {
+      return Array.from(node.childNodes).filter(node => {
+        return node.nodeName == "#text" 
+        && node.textContent.replace(/\s/g, "") != ""
+        && !node.parentNode.isContentEditable;
+      }).length > 0;
+    }).length > 0;
+    elm.draggable = true;
+    if (hasTextNode) elm.contentEditable = "true";
+      elm.addEventListener('dragstart', function (ev) {
+        ev.preventDefault();
+        console.log("start");
+        ev.dataTransfer.setData("text/plain", ev.target.getAttribute("data-id"));
+        ev.dataTransfer.dropEffect = "move";
+      });
+      elm.addEventListener('dragenter', function (ev) {
+        console.log("enter");
+        ev.preventDefault();
+        console.log(ev);
+        ev.dataTransfer.dropEffect = "move";
+      });
+      elm.addEventListener('dragover', function (ev) {
+        ev.preventDefault();
+        console.log("over");
+        console.log(ev);
+        ev.dataTransfer.dropEffect = "move";
+      });
+      elm.addEventListener('drop', function (ev) {
+        ev.preventDefault();
+        console.log("drop");
+        console.log(ev);
+        const data = ev.dataTransfer.getData("text/plain");
+        ev.target.appendChild(document.querySelector("[data-id="+data+"]"));
+      });
   }
   let createCanvas = () => {
     const canvas = document.createElement("div");
     canvas.id = "canvas";
     canvas.innerHTML = dt.template;
-    
     dt.node.appendChild(canvas);
-    canvas.addEventListener("click", getActive);
-    canvas.addEventListener("keyup", getActive);
+    canvas.addEventListener("click", getActiveClick);
+    canvas.addEventListener("keyup", getActiveKey);
     canvas.querySelectorAll("*").forEach((elm, index) => {
-      var hasTextNode = Array.from(elm.childNodes).filter(node => {
-        return Array.from(node.childNodes).filter(node => {
-          return node.nodeName == "#text" 
-          && node.textContent.replace(/\s/g, "") != ""
-          && !node.parentNode.isContentEditable;
-        }).length > 0;
-      }).length > 0;
-      //$0.childNodes[0].nodeName == "#text" && $0.childNodes[0].textContent.replace(/s/, "") != ""
       elm.setAttribute("data-id", index);
-      elm.draggable = true;
-      if (hasTextNode) elm.contentEditable = "true";
-      //   elm.addEventListener('dragstart', function (ev) {
-      //     ev.preventDefault();
-      //     console.log("start");
-      //     ev.dataTransfer.setData("text/plain", ev.target.getAttribute("data-id"));
-      //     ev.dataTransfer.dropEffect = "move";
-      //   });
-      //   elm.addEventListener('dragenter', function (ev) {
-      //     console.log("enter");
-      //     ev.preventDefault();
-      //     console.log(ev);
-      //     ev.dataTransfer.dropEffect = "move";
-      //   });
-      //   elm.addEventListener('dragover', function (ev) {
-      //     ev.preventDefault();
-      //     console.log("over");
-      //     console.log(ev);
-      //     ev.dataTransfer.dropEffect = "move";
-      //   });
-      //   elm.addEventListener('drop', function (ev) {
-      //     ev.preventDefault();
-      //     console.log("drop");
-      //     console.log(ev);
-      //     const data = ev.dataTransfer.getData("text/plain");
-      //     ev.target.appendChild(document.querySelector("[data-id="+data+"]"));
-      //   });
+      //setDrag(elm);
     });
   };
   let createPanels = () => {
