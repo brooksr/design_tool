@@ -38,7 +38,6 @@ var dt = (function () {
         editor.canvas.node.querySelectorAll("*").forEach((elm, index) => {
           elm.setAttribute("data-id", String(index));
         });
-        return canvas;
       },
       drag: (elm) => {
         const hasTextNode = Array.from(elm.childNodes).filter(node => {
@@ -214,7 +213,7 @@ var dt = (function () {
       config.elms.attrs = document.createElement("div");
       addTab("attributes_tab", "Attributes", config.elms.attrs);
       tabs.attributes_tab.tab.click();
-      this.canvas.setAsActive(document.querySelector("[data-id='0']"))
+      this.canvas.setAsActive(document.querySelector("[data-id='0']"));
       let blocks_elm = document.createElement("div");
       let html = "";
       config.blocks.forEach(b => {
