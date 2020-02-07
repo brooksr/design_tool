@@ -1,0 +1,64 @@
+<mjml>
+	<mj-head>
+		<!--Optional title element-->
+		<mj-title></mj-title>
+		<!--Fix for iphone 10-->
+		<mj-raw><meta name="x-apple-disable-message-reformatting"></mj-raw>
+		<!--Set a custom breakpoint for the mobile size-->
+		<mj-breakpoint width="480px" />
+		<!--Optional hidden preview text-->
+		<mj-preview></mj-preview>
+		<mj-font name="Roboto" href="https://fonts.googleapis.com/css?family=Roboto" />
+		<mj-attributes>
+			<!--Any default attribute can be overwritten here-->
+			<mj-text align="center" color="#333333" font-size="18px" line-height="140%" />
+			<mj-body background-color="#eeeeee" />
+			<mj-section background-color="#ffffff" />
+			<mj-all font-family="Roboto, Helvetica, Arial, sans-serif" />
+		</mj-attributes>
+		<!--Fix so that alt text shows for images-->
+		<mj-style inline="inline">
+			img {
+				color: #000000;
+				font-size: 14px;
+				line-height: 1;
+				text-align: center;
+			}
+		</mj-style>
+	</mj-head>
+	<mj-body>
+		<mj-section padding="0">
+			<mj-column>
+				<mj-image alt="" src="https://via.placeholder.com/600x50?text=LOGO" href="{{LINK1}}" padding="0" />
+			</mj-column>
+		</mj-section>
+
+		<mj-section padding="0">
+		  <mj-column>
+		    <mj-image alt="" src="https://via.placeholder.com/600x300?text=HERO" href="{{LINK1}}" padding="0" />
+		  </mj-column>
+		</mj-section>
+
+		<mj-section>
+			<mj-column>
+				<mj-text align="left">
+					<p>EXAMPLE_TEXT</p>
+					<p>Sincerely<br/>
+					<b>COMPANY</b></p>
+				</mj-text>
+				<mj-button background-color="#333" href="{{LINK1}}">Redeem Now</mj-button>
+			</mj-column>
+		</mj-section>
+		
+		<mj-section background-color="#eeeeee" padding="0">
+		  <mj-column>
+		    <mj-divider border-width="1px" border-color="#ccc"></mj-divider>
+		    <mj-text font-size="12px">
+		      <p>&copy; {{date_now:yyyy}} COMPANY | ADDRESS<br />
+		      <a href="https://www.upsellit.com/hound/nomore.jsp?{{SESSIONID}}" style="color:#333">Unsubscribe</a></p>
+		    </mj-text>
+		  </mj-column>
+		</mj-section>
+
+	</mj-body>
+</mjml>
