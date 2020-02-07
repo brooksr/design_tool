@@ -29,13 +29,13 @@ var dt = (function () {
   let editor = {
     canvas: {
       create: function() {
-        const canvas = document.createElement("div");
-        canvas.id = "canvas";
-        canvas.innerHTML = config.template;
-        config.node.appendChild(canvas);
-        canvas.addEventListener("click", this.getActiveClick);
-        canvas.addEventListener("keyup", this.getActiveKey);
-        canvas.querySelectorAll("*").forEach((elm, index) => {
+        editor.canvas.node = document.createElement("div");
+        editor.canvas.node.id = "canvas";
+        editor.canvas.node.innerHTML = config.template;
+        config.node.appendChild(editor.canvas.node);
+        editor.canvas.node.addEventListener("click", this.getActiveClick);
+        editor.canvas.node.addEventListener("keyup", this.getActiveKey);
+        editor.canvas.node.querySelectorAll("*").forEach((elm, index) => {
           elm.setAttribute("data-id", String(index));
         });
         return canvas;
@@ -77,7 +77,7 @@ var dt = (function () {
         });
       },
       getActiveClick: function (e) {
-        e.target !== config.currentElm ? this.setAsActive(e.target) : config.currentElm
+        e.target !== config.currentElm ? editor.canvas.setAsActive(e.target) : config.currentElm
       },
       getActiveKey: function () {
         let sel = window.getSelection();
@@ -97,12 +97,11 @@ var dt = (function () {
         return activeElm;
       },
       setAsActive:  function(activeElm) {
-        const canvas = document.createElement("div");
         config.currentElm = activeElm;
         console.log(activeElm);
         this.updateAttrs(activeElm);
         this.updateStyles();
-        Array.prototype.forEach.call(canvas.querySelectorAll('*'), elm => elm.removeAttribute("data-status"));
+        editor.canvas.node.querySelector('[data-status="active"]') && canvas.querySelector('[data-status="active"]').removeAttribute("data-status");
         activeElm.setAttribute("data-status", "active");
         return activeElm;
       },
