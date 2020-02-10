@@ -27,6 +27,7 @@ let dt = (function () {
   };
   let editor = {
     active_element: undefined,
+    styles: [],
     tabs: {},
     elements: {},
     canvas: {
@@ -38,6 +39,7 @@ let dt = (function () {
         editor.elements.canvas.contentDocument.body.innerHTML = config.template;
         editor.elements.canvas_style = document.createElement("style");
         editor.elements.canvas.contentDocument.head.appendChild(editor.elements.canvas_style);
+        editor.elements.canvas_style.title = "editor";
         editor.elements.canvas_style.innerHTML = `
         body {
           transform: scale(1);
@@ -47,7 +49,7 @@ let dt = (function () {
           box-sizing: border-box;
         }
         .no-outline * {
-          outline: none;
+          outline: none !important;
         }
         * {
           box-sizing: inherit;
@@ -188,6 +190,22 @@ let dt = (function () {
         editor.active_element.style[e.target.name] = value;
       },
       updateStyles: () => {
+        let sheets = editor.elements.canvas.contentDocument.styleSheets;
+        sheets = Array.from(sheets).filter(s => s.title !== "editor");
+        sheets.forEach(sheet => {
+          editor.styles = editor.styles.concat(Array.from(sheet.rules).map(rule => {
+            return {
+              set: rule.parentStyleSheet.insertRule,
+              del: rule.parentStyleSheet.deleteRule,
+              selectorText: rule.selectorText,
+              cssText: rule.cssText,
+              style: rule.style,
+              elements: editor.elements.canvas.contentDocument.querySelectorAll(rule.selectorText)
+            }
+          }));
+        });
+
+        console.log(editor.styles);
         var currentStyles = getComputedStyle(editor.active_element);
         var styleInputs = document.querySelectorAll(".styles_tab input");
         styleInputs.forEach(input => {
@@ -281,26 +299,26 @@ let dt = (function () {
           </div>
           <div class="radio-buttons" id="device-view">
             <input id="device-view-desktop" name="device-view" type="radio" value="100%" checked="checked"/>
-            <label for="device-view-desktop" >Desktop</label>
+            <label for="device-view-desktop" ><i class="fas fa-desktop"></i> <!--Desktop--></label>
             <input id="device-view-tablet" name="device-view" type="radio" value="720px" />
-            <label for="device-view-tablet" >Tablet</label>
+            <label for="device-view-tablet" ><i class="fas fa-tablet-alt"></i> <!--Tablet--></label>
             <input id="device-view-mobile" name="device-view" type="radio" value="360px" />
-            <label for="device-view-mobile" >Mobile</label>
+            <label for="device-view-mobile" ><i class="fas fa-mobile-alt"></i><!--Mobile--></label>
           </div>
           <!--<div class="button-group">
             <button type="button">Undo</button>
             <button type="button">Redo</button>
           </div>-->
           <div class="button-group">
-            <button type="button" id="zoomIn">Zoom In</button>
+            <button type="button" id="zoomIn"><i class="fas fa-search-plus"></i><!--Zoom In--></button>
             <button type="button" id="zoomO">100%</button>
-            <button type="button" id="zoomOut">Zoom Out</button>
+            <button type="button" id="zoomOut"><i class="fas fa-search-minus"></i><!--Zoom Out--></button>
           </div>
           <div class="button-group">
-            <button type="button" id="toggleOutlines">Toggle Outlines</button>
-            <button type="button" id="fullScreen">Full Screen</button>
-            <button type="button" id="manageImages">Manage Images</button>
-            <button type="button" id="save">Save</button>
+            <button type="button" id="toggleOutlines"><i class="fas fa-border-none"></i><!--Toggle Outlines--></button>
+            <button type="button" id="fullScreen"><i class="fas fa-expand-arrows-alt"></i><!--Full Screen--></button>
+            <button type="button" id="manageImages"><i class="far fa-images"></i><!--Manage Images--></button>
+            <button type="button" id="save"><i class="far fa-save"></i><!--Save--></button>
           </div>
           <div class="radio-buttons" id="styles-tabs">
             <input id="device-view-Styles" name="styles-tabs" type="radio" value="styles" checked="checked"/>
@@ -407,13 +425,24 @@ let dt = (function () {
         </div>`).join(""));
 
       let printTags = (e, s) => {
-        var html = !!e.droppable ? `<${s}><${e.droppable}></${e.droppable}></${s}>` : `<${s}></${s}>`;
-        if (!!e.selfClosing) html = `<${s} />`;
+        let html = !!e.selfClosing ? `<${s} />` : `<${s}></${s}>`;
+        if (!!e.droppable) {
+          html = `<${s}><${e.droppable}></${e.droppable}></${s}>`;
+        }
         return html.replace(/</g, "&lt;");
-      }
+      };
+      /*let printTags = (e, s) => {
+        let html = !!e.selfClosing ? `<${s} />` : `<${s}></${s}>`;
+        if (!!e.droppable) {
+          let sn = e.droppable.split(",");
+          sn.forEach(tn => printTags(elements[tn], tn))
+          html = `<${s}><${e.droppable}></${e.droppable}></${s}>`;
+        }
+        return html.replace(/</g, "&lt;");
+      };*/
       this.panels.addTab("elements_tab", "Elements", Object.keys(elements).map(b => `
         <div class="block">
-          <h5>${b}</h5>
+          <!--<h5>${b}</h5>-->
           <code draggable="true">${printTags(elements[b], b)}</code>
         </div>`).join(""));
 

@@ -1,27 +1,27 @@
 let global = {
-  draggable: true,
+  "draggable": true,
   "attributes": {
     "class": "",
     "id": "",
-    "tabindex": {values: [0, -1]},
+    "tabindex": {"values": [0, -1]},
     "title": "",
     "role": {
-      values: [
+      "values": [
         "dialog",
         "alertdialog"
       ]
     },
     "aria-label": "",
-    "aria-modal": {values: [true, false]}
+    "aria-modal": {"values": [true, false]}
   }
 };
 export const elements = {
   "body": {
-    draggable: false,
+    "draggable": false,
     ...global
   },
   "blockquote": {
-    droppable: false,
+    "droppable": false,
     "attributes": {"cite": ""},
     ...global
   },
@@ -32,12 +32,12 @@ export const elements = {
     ...global
   },
   "hr": {
-    selfClosing: true,
-    droppable: false,
+    "selfClosing": true,
+    "droppable": false,
     ...global
   },
   "ol": {
-    droppable: "li",
+    "droppable": "li",
     "attributes": {
       "reversed": false,
       "start": 1,
@@ -46,7 +46,7 @@ export const elements = {
     ...global
   },
   "ul": {
-    droppable: "li",
+    "droppable": "li",
     ...global
   },
   "li": {
@@ -68,31 +68,31 @@ export const elements = {
     ...global
   },
   "br": {
-    selfClosing: true,
-    droppable: false,
-    draggable: false,
+    "selfClosing": true,
+    "droppable": false,
+    "draggable": false,
     ...global
   },
   "em": {
-    droppable: false,
-    draggable: false,
+    "droppable": false,
+    "draggable": false,
     ...global
   },
   "small": {
-    droppable: false,
-    draggable: false,
+    "droppable": false,
+    "draggable": false,
     ...global
   },
   "span": {
     ...global
   },
   "strong": {
-    droppable: false,
-    draggable: false,
+    "droppable": false,
+    "draggable": false,
     ...global
   },
   "video": {
-    droppable: false,
+    "droppable": false,
     "attributes": {
       "autoplay": "",
       "buffered": "",
@@ -112,8 +112,8 @@ export const elements = {
     ...global
   },
   "img": {
-    selfClosing: true,
-    droppable: false,
+    "selfClosing": true,
+    "droppable": false,
     "attributes": {
       "alt": "",
       "crossorigin": "",
@@ -127,8 +127,8 @@ export const elements = {
     ...global
   },
   "iframe": {
-    selfClosing: true,
-    droppable: false,
+    "selfClosing": true,
+    "droppable": false,
     "attributes": {
       "allow": "",
       "height": "",
@@ -142,27 +142,29 @@ export const elements = {
     ...global
   },
   "table": {
-    droppable: "tbody, thead, tfoot",
+    "droppable": "tbody, thead, tfoot",
     ...global
   },
   "tbody": {
-    droppable: "tr",
-    draggable: false,
+    "droppable": "tr",
+    "draggable": false,
     ...global
   },
   "thead": {
-    droppable: "tr",
-    draggable: false,
+    "droppable": "tr",
+    "draggable": false,
     ...global
   },
   "tfoot": {
-    droppable: "tr",
-    draggable: false,
+    "droppable": "tr",
+    "draggable": false,
     ...global
   },
-  "tr": {},
+  "tr": {
+    "droppable": "td, th",
+    ...global
+  },
   "th": {
-    droppable: "tr",
     "attributes": {
       "colspan": "",
       "headers": "",
@@ -172,7 +174,6 @@ export const elements = {
     ...global
   },
   "td": {
-    droppable: "tr",
     "attributes": {
       "colspan": "",
       "headers": "",
@@ -202,8 +203,8 @@ export const elements = {
     ...global
   },
   "input": {
-    selfClosing: true,
-    droppable: false,
+    "selfClosing": true,
+    "droppable": false,
     "attributes": {
       "accept": "",
       "alt": "",
@@ -247,7 +248,7 @@ export const elements = {
     ...global
   },
   "select": {
-    droppable: "option",
+    "droppable": "option",
     "attributes": {
       "autocomplete": "",
       "autofocus": "",
@@ -260,8 +261,8 @@ export const elements = {
     ...global
   },
   "option": {
-    droppable: false,
-    draggable: false,
+    "droppable": false,
+    "draggable": false,
     "attributes": {
       "disabled": "",
       "label": "",
@@ -271,7 +272,7 @@ export const elements = {
     ...global
   },
   "textarea": {
-    droppable: false,
+    "droppable": false,
     "attributes": {
       "autocomplete": "",
       "autofocus": "",
