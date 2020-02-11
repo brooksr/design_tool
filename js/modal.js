@@ -41,7 +41,7 @@ export const modal = `
   <div class="usi_display">
     <div class="usi_content">
       <button id="usi_close" class="usi_button" type="button" onclick="alert('Close')">&times;</button>
-      <h1 class="usi_h">Sit. Stay. Shop.</h1>
+      <h1 class="usi_h">Sit. Stay. Shop!</h1>
       <p class="usi_p">Enter your email and receive 15% off your next order.</p>
       <form>
         <label class="usi_label" for="usi_email">Email address</label>

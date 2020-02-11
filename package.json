@@ -4,11 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "dev": "lite-server",
+    "run": "http-server",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.12.1"
+  },
+  "devDependencies": {
+    "lite-server": "^2.5.4"
   }
 }

@@ -43,7 +43,7 @@ let dt = (function () {
         editor.elements.canvas_style.innerHTML = `
         body {
           transform: scale(1);
-          overflow: scroll;
+          overflow: auto;
           transform-origin: top left;
           transition: transform 0.5s ease;
           box-sizing: border-box;
@@ -299,26 +299,26 @@ let dt = (function () {
           </div>
           <div class="radio-buttons" id="device-view">
             <input id="device-view-desktop" name="device-view" type="radio" value="100%" checked="checked"/>
-            <label for="device-view-desktop" ><i class="fas fa-desktop"></i> <!--Desktop--></label>
+            <label for="device-view-desktop" ><i class="fas fa-desktop"></i> <span class="tablet-tooltip">Desktop</span></label>
             <input id="device-view-tablet" name="device-view" type="radio" value="720px" />
-            <label for="device-view-tablet" ><i class="fas fa-tablet-alt"></i> <!--Tablet--></label>
+            <label for="device-view-tablet" ><i class="fas fa-tablet-alt"></i> <span class="tablet-tooltip">Tablet</span></label>
             <input id="device-view-mobile" name="device-view" type="radio" value="360px" />
-            <label for="device-view-mobile" ><i class="fas fa-mobile-alt"></i><!--Mobile--></label>
+            <label for="device-view-mobile" ><i class="fas fa-mobile-alt"></i> <span class="tablet-tooltip">Mobile</span></label>
           </div>
           <!--<div class="button-group">
             <button type="button">Undo</button>
             <button type="button">Redo</button>
           </div>-->
           <div class="button-group">
-            <button type="button" id="zoomIn"><i class="fas fa-search-plus"></i><!--Zoom In--></button>
+            <button type="button" id="zoomIn"><i class="fas fa-search-plus"></i> <span class="tablet-tooltip">Zoom In</span></button>
             <button type="button" id="zoomO">100%</button>
-            <button type="button" id="zoomOut"><i class="fas fa-search-minus"></i><!--Zoom Out--></button>
+            <button type="button" id="zoomOut"><i class="fas fa-search-minus"></i> <span class="tablet-tooltip">Zoom Out</span></button>
           </div>
           <div class="button-group">
-            <button type="button" id="toggleOutlines"><i class="fas fa-border-none"></i><!--Toggle Outlines--></button>
-            <button type="button" id="fullScreen"><i class="fas fa-expand-arrows-alt"></i><!--Full Screen--></button>
-            <button type="button" id="manageImages"><i class="far fa-images"></i><!--Manage Images--></button>
-            <button type="button" id="save"><i class="far fa-save"></i><!--Save--></button>
+            <button type="button" id="toggleOutlines"><i class="fas fa-border-none"></i> <span class="tablet-tooltip">Toggle Outlines</span></button>
+            <button type="button" id="fullScreen"><i class="fas fa-expand-arrows-alt"></i> <span class="tablet-tooltip">Full Screen</span></button>
+            <button type="button" id="manageImages"><i class="far fa-images"></i> <span class="tablet-tooltip">Manage Images</span></button>
+            <button type="button" id="save"><i class="far fa-save"></i> <span class="tablet-tooltip">Save</span></button>
           </div>
           <div class="radio-buttons" id="styles-tabs">
             <input id="device-view-Styles" name="styles-tabs" type="radio" value="styles" checked="checked"/>
