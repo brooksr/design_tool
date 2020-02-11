@@ -7,7 +7,7 @@
    * Grid, Flexbox
    * SVG, masking
    * Lists
-   * */ 
+   * */
   const defaults = {
     color: "#000000",
     size: "",//["auto", "min-content", "max-content", "fit-content", "100%"],
@@ -57,7 +57,7 @@
       "float": "",//["none", "block-start", "block-end", "inline-start", "inline-end", "snap-block", "snap-inline", "left", "right", "top", "bottom"],
       "display": "",//["block", "none", "inline", "inline-block"],
       "alignment-baseline": "",//["baseline", "text-bottom", "alphabetic", "ideographic", "middle", "central", "mathematical", "text-top", "bottom", "center", "top"],
-      "z-index": 1,
+      "z-index": ""//1,
     }, {
       "id": "Style",
       "background-color": defaults.color,

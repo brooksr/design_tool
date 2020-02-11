@@ -1,23 +1,18 @@
 import {elements} from './elements.js';
 import {styles} from './styles.js';
+import {blocks} from './blocks.js';
 //import {template} from './email.js';
-import {template} from './email2.js';
-//import {modal} from './modal.js';
+//import {template} from './email2.js';
+import {modal} from './modal.js';
 
-let dt = (function () {
+window.dt = (function () {
   "use strict";
 
   let config = {
     node: document.getElementById("design_tool"),
     units: ["px", "%", "em", "vmax", "vmin", "vh", "vw", "none"],
-    template: localStorage.getItem("dt-01") || template,
-    blocks: [{
-      id: "heading",
-      html: `<div class="header"><h2>Heading</h2><h3>Subhead</h3></div>`
-    }, {
-      id: "text",
-      html: `<div class="text"><p>Text</p></div>`
-    }],
+    template: localStorage.getItem("dt-01") || modal,
+    blocks: blocks,
     images: [
       "https://via.placeholder.com/600x50?text=LOGO",
       "https://via.placeholder.com/50x50?text=1",
@@ -82,7 +77,7 @@ let dt = (function () {
 
         editor.elements.canvas.contentDocument.body.addEventListener("click", this.getActiveClick);
         editor.elements.canvas.contentDocument.body.addEventListener("keyup", this.getActiveKey);
-        editor.elements.canvas.contentDocument.body.querySelectorAll("*:not(style)").forEach((elm, index) => {
+        editor.elements.canvas.contentDocument.body.querySelectorAll("*:not(style):not(script)").forEach((elm, index) => {
           elm.setAttribute("data-id", String(index));
           this.setContentEditable(elm);
           //this.drag.init(elm);
@@ -193,6 +188,7 @@ let dt = (function () {
       updateStyles: () => {
         let sheets = editor.elements.canvas.contentDocument.styleSheets;
         sheets = Array.from(sheets).filter(s => s.title !== "editor");
+        editor.styles = [];
         sheets.forEach(sheet => {
           editor.styles = editor.styles.concat(Array.from(sheet.rules).map(rule => {
             return {
@@ -212,7 +208,7 @@ let dt = (function () {
         styleInputs.forEach(input => {
           var value = currentStyles[input.name];
           if (value.indexOf("rgba") === 0) value = editor.canvas.rgbToHex(value);
-          input.value = value;
+          try{input.value = value;}catch(e){debugger;}
         });
       },
       bindAttributes:  e => editor.active_element.setAttribute(e.target.name, e.target.value),
@@ -242,8 +238,6 @@ let dt = (function () {
             attributes = `step=".${"0".repeat(String(value).split(".")[1].length - 1)}1"`;
           }
           return `<input name="${i}" value="" type="number" ${attributes}/>`;
-        } else if (value.indexOf("#") === 0) {
-          return `<input name="${i}" value="" type="color"/>`;
         }
         return `<input name="${i}" value="" type="text"/>`;
         // let html = "", value = p[i], attributes = "";
@@ -282,7 +276,6 @@ let dt = (function () {
         panel.innerHTML = html;
         editor.elements.tab_panels.appendChild(panel);
         return editor.tabs[id] = {
-          //tab: tab,
           panel: panel
         };
       }
@@ -448,10 +441,10 @@ let dt = (function () {
         </div>`).join(""));
 
       this.canvas.setAsActive(editor.elements.canvas.contentDocument.querySelector("[data-id='0']"));
+
+      return this;
     }
   };
-
-  editor.create();
   console.log(editor);
-  return editor;
+  return editor.create();
 })();
