@@ -27,62 +27,6 @@ window.dt = (function () {
     tabs: {},
     elements: {},
     canvas: {
-      create: function() {
-        editor.elements.canvas = document.createElement("iframe");
-        editor.elements.canvas.id = "canvas";
-        editor.elements.canvas.classList.add("left_area");
-        config.node.appendChild(editor.elements.canvas);
-        editor.elements.canvas.contentDocument.body.innerHTML = config.template;
-        editor.elements.canvas_style = document.createElement("style");
-        editor.elements.canvas.contentDocument.head.appendChild(editor.elements.canvas_style);
-        editor.elements.canvas_style.title = "editor";
-        editor.elements.canvas_style.innerHTML = `
-        body {
-          transform: scale(1);
-          overflow: auto;
-          transform-origin: top left;
-          transition: transform 0.5s ease;
-          box-sizing: border-box;
-        }
-        .no-outline * {
-          outline: none !important;
-        }
-        * {
-          box-sizing: inherit;
-          outline: 1px dashed #ccc;
-        }
-        [contenteditable] {
-          outline: 1px dotted #333;
-        }
-        [data-id]:hover {
-          outline: 1px dashed blue;
-        }
-        [data-status="active"] {
-          outline: 1px dashed green !important;
-        }
-        :-moz-drag-over {
-          outline: 1px solid yellow;
-        }`;
-
-        editor.elements.cm = document.createElement("div");
-        editor.elements.cm.style.display = "none";
-        editor.elements.cm.classList.add("left_area", "cm_wrap");
-        config.node.appendChild(editor.elements.cm);
-        editor.cm = CodeMirror(editor.elements.cm, {
-          value: config.template,
-          lineNumbers: true,
-          theme: "darcula",
-          mode: "htmlmixed"
-        });
-
-        editor.elements.canvas.contentDocument.body.addEventListener("click", this.getActiveClick);
-        editor.elements.canvas.contentDocument.body.addEventListener("keyup", this.getActiveKey);
-        editor.elements.canvas.contentDocument.body.querySelectorAll("*:not(style):not(script)").forEach((elm, index) => {
-          elm.setAttribute("data-id", String(index));
-          this.setContentEditable(elm);
-          //this.drag.init(elm);
-        });
-      },
       setContentEditable: elm => {
         const hasTextNode = Array.from(elm.childNodes).filter(node => {
           return Array.from(node.childNodes).filter(node => {
@@ -225,7 +169,7 @@ window.dt = (function () {
             }
           }
         }
-        editor.tabs.attributes_tab.panel.innerHTML = html;
+        editor.tabs.attributes_tab.innerHTML = html;
       }
     },
     panels: {
@@ -269,16 +213,6 @@ window.dt = (function () {
         // }
         // return html;
       },
-      addTab: function (id, name, html) {
-        let panel = document.createElement("div");
-        panel.classList.add("editor_panel");
-        panel.classList.add(id);
-        panel.innerHTML = html;
-        editor.elements.tab_panels.appendChild(panel);
-        return editor.tabs[id] = {
-          panel: panel
-        };
-      }
     },
     toolbar: {
       create: function(){
@@ -385,38 +319,106 @@ window.dt = (function () {
     },
     create: function () {
       editor.toolbar.create();
-      editor.canvas.create();
 
-      this.elements.editor = document.createElement("div");
-      this.elements.editor.id = "editor";
-      config.node.appendChild(this.elements.editor);
+      editor.elements.canvas = document.createElement("iframe");
+      editor.elements.canvas.id = "canvas";
+      editor.elements.canvas.classList.add("left_area");
+      config.node.appendChild(editor.elements.canvas);
+      editor.elements.canvas.contentDocument.write(config.template);
 
-      this.elements.tab_buttons = document.createElement("div");
-      this.elements.tab_buttons.id = "tab_buttons";
-      this.elements.editor.appendChild(this.elements.tab_buttons);
+      editor.elements.canvas_style = document.createElement("style");
+      editor.elements.canvas.contentDocument.head.appendChild(editor.elements.canvas_style);
+      editor.elements.canvas_style.title = "editor";
+      editor.elements.canvas_style.innerHTML = `
+        body {
+          transform: scale(1);
+          overflow: auto;
+          transform-origin: top left;
+          transition: transform 0.5s ease;
+          box-sizing: border-box;
+        }
+        .no-outline * {
+          outline: none !important;
+        }
+        * {
+          box-sizing: inherit;
+          outline: 1px dashed #ccc;
+        }
+        [contenteditable] {
+          outline: 1px dotted #333;
+        }
+        [data-id]:hover {
+          outline: 1px dashed blue;
+        }
+        [data-status="active"] {
+          outline: 1px dashed green !important;
+        }
+        :-moz-drag-over {
+          outline: 1px solid yellow;
+        }`;
 
-      this.elements.tab_panels = document.createElement("div");
-      this.elements.tab_panels.id = "tab_panels";
-      this.elements.editor.appendChild(this.elements.tab_panels);
+      editor.elements.cm = document.createElement("div");
+      editor.elements.cm.style.display = "none";
+      editor.elements.cm.classList.add("left_area", "cm_wrap");
+      config.node.appendChild(editor.elements.cm);
+      editor.cm = CodeMirror(editor.elements.cm, {
+        value: config.template,
+        lineNumbers: true,
+        theme: "darcula",
+        mode: "htmlmixed"
+      });
 
-      this.panels.addTab("styles_tab", "Styles", styles.map(p => `
+      editor.elements.canvas.contentDocument.body.addEventListener("click", editor.canvas.getActiveClick);
+      editor.elements.canvas.contentDocument.body.addEventListener("keyup", editor.canvas.getActiveKey);
+      editor.elements.canvas.contentDocument.body.querySelectorAll("*:not(style):not(script)").forEach((elm, index) => {
+        elm.setAttribute("data-id", String(index));
+        editor.canvas.setContentEditable(elm);
+        //editor.canvas.drag.init(elm);
+      });
+
+      editor.elements.editor = document.createElement("div");
+      editor.elements.editor.id = "editor";
+      config.node.appendChild(editor.elements.editor);
+
+      editor.elements.tab_buttons = document.createElement("div");
+      editor.elements.tab_buttons.id = "tab_buttons";
+      editor.elements.editor.appendChild(editor.elements.tab_buttons);
+
+      editor.elements.tab_panels = document.createElement("div");
+      editor.elements.tab_panels.id = "tab_panels";
+      editor.elements.editor.appendChild(editor.elements.tab_panels);
+
+      let id = "styles_tab";
+      let html = styles.map(p => `
         <div class="panel">
         <h2>${p.id}</h2>
         ${Object.keys(p).map(i => (i === "id") ? "" : `<div class="input-group">
           <label>${i.replace("-", " ")}</label>
-          ${this.panels.createInput(p, i)}
+          ${editor.panels.createInput(p, i)}
           </div>`).join("")}
-        </div>`).join("")).panel.classList.add("editor_active");
+        </div>`).join("");
+      editor.tabs[id] = document.createElement("div");
+      editor.tabs[id].classList.add("editor_panel", "editor_active", id);
+      editor.tabs[id].innerHTML = html;
+      editor.elements.tab_panels.appendChild(editor.tabs[id]);
       document.querySelector(".styles_tab").onchange = editor.canvas.bindStyles;
 
-      this.panels.addTab("attributes_tab", "Attributes", "");//.tab.click();
+      id = "attributes_tab";
+      editor.tabs[id] = document.createElement("div");
+      editor.tabs[id].classList.add("editor_panel", id);
+      editor.elements.tab_panels.appendChild(editor.tabs[id]);
       document.querySelector(".attributes_tab").onchange = editor.canvas.bindAttributes;
 
-      this.panels.addTab("blocks_tab", "Blocks", config.blocks.map(b => `
+      id = "blocks_tab";
+      html = config.blocks.map(b => `
         <div class="block">
           <h5>${b.id}</h5>
           <code draggable="true">${b.html.replace(/</g, "&lt;")}</code>
-        </div>`).join(""));
+        </div>`).join("");
+      editor.tabs[id] = document.createElement("div");
+      editor.tabs[id].innerHTML = html;
+      editor.tabs[id].classList.add("editor_panel", id);
+      editor.elements.tab_panels.appendChild(editor.tabs[id]);
 
       let printTags = (e, s) => {
         let html = !!e.selfClosing ? `<${s} />` : `<${s}></${s}>`;
@@ -425,22 +427,18 @@ window.dt = (function () {
         }
         return html.replace(/</g, "&lt;");
       };
-      /*let printTags = (e, s) => {
-        let html = !!e.selfClosing ? `<${s} />` : `<${s}></${s}>`;
-        if (!!e.droppable) {
-          let sn = e.droppable.split(",");
-          sn.forEach(tn => printTags(elements[tn], tn))
-          html = `<${s}><${e.droppable}></${e.droppable}></${s}>`;
-        }
-        return html.replace(/</g, "&lt;");
-      };*/
-      this.panels.addTab("elements_tab", "Elements", Object.keys(elements).map(b => `
+      id = "elements_tab";
+      html = Object.keys(elements).map(b => `
         <div class="block">
           <!--<h5>${b}</h5>-->
           <code draggable="true">${printTags(elements[b], b)}</code>
-        </div>`).join(""));
+        </div>`).join("");
+      editor.tabs[id] = document.createElement("div");
+      editor.tabs[id].innerHTML = html;
+      editor.tabs[id].classList.add("editor_panel", id);
+      editor.elements.tab_panels.appendChild(editor.tabs[id]);
 
-      this.canvas.setAsActive(editor.elements.canvas.contentDocument.querySelector("[data-id='0']"));
+      editor.canvas.setAsActive(editor.elements.canvas.contentDocument.querySelector("[data-id='0']"));
 
       return this;
     }
