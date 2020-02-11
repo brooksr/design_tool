@@ -1,7 +1,8 @@
 import {elements} from './elements.js';
 import {styles} from './styles.js';
 //import {template} from './email.js';
-import {modal} from './modal.js';
+import {template} from './email2.js';
+//import {modal} from './modal.js';
 
 let dt = (function () {
   "use strict";
@@ -9,7 +10,7 @@ let dt = (function () {
   let config = {
     node: document.getElementById("design_tool"),
     units: ["px", "%", "em", "vmax", "vmin", "vh", "vw", "none"],
-    template: localStorage.getItem("dt-01") || modal,
+    template: localStorage.getItem("dt-01") || template,
     blocks: [{
       id: "heading",
       html: `<div class="header"><h2>Heading</h2><h3>Subhead</h3></div>`
