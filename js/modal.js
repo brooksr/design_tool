@@ -1,4 +1,4 @@
-export let modal = `
+export let modal = `<body>
 <style>
   #usi_container {
     height:100%;
@@ -40,7 +40,7 @@ export let modal = `
   .usi_active {display:inherit;}
 </style>
 <script type="text/javascript">
-debugger;
+  //debugger;
 	window.usi_js = {
     	show: function(name){
           var usi_name = document.querySelector(name);
@@ -69,4 +69,5 @@ debugger;
       </div>
     </div>
   </div>
-</div>`;
+</div>
+</body>`;

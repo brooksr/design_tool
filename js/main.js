@@ -1,8 +1,8 @@
 import {elements} from './elements.js';
 import {styles} from './styles.js';
 import {blocks} from './blocks.js';
-//import {template} from './email.js';
-//import {template} from './email2.js';
+import {email} from './email.js';
+import {email2} from './email2.js';
 import {modal} from './modal.js';
 
 window.dt = (function () {
@@ -11,7 +11,22 @@ window.dt = (function () {
   let config = {
     node: document.getElementById("design_tool"),
     units: ["px", "%", "em", "vmax", "vmin", "vh", "vw", "none"],
-    template: localStorage.getItem("dt-01") || modal,
+    template: localStorage.getItem("dt-01") ? decodeURIComponent(localStorage.getItem("dt-01")) : modal,
+    templates: [
+      {
+        html: email,
+        name: "Email 1",
+        icon: '<i class="far fa-envelope"></i>'
+      },{
+        html: email2,
+        name: "Email 2",
+        icon: '<i class="far fa-envelope"></i>'
+      },{
+        html: modal,
+        name: "Modal 1",
+        icon: '<i class="far fa-square"></i>'
+      }
+    ],
     blocks: blocks,
     images: [
       "https://via.placeholder.com/600x50?text=LOGO",
@@ -26,6 +41,24 @@ window.dt = (function () {
     styles: [],
     tabs: {},
     elements: {},
+    update: function(i){
+      editor.elements.canvas.contentDocument.body.innerHTML = "";
+      editor.elements.canvas.srcdoc = config.templates[i].html;
+      if (document.getElementById("menu_close") != null) document.getElementById("menu_close").click();
+    },
+    save: function () {
+      localStorage.setItem("dt-01", encodeURIComponent(editor.elements.canvas.contentDocument.documentElement.innerHTML));
+      alert("Saved!");
+    },
+    shortcut: {
+      save: function(event) {
+        let s = 83;
+        if (event.which == s && event.ctrlKey) {
+          event.preventDefault();
+          editor.save();
+        }
+      }
+    },
     canvas: {
       setContentEditable: elm => {
         const hasTextNode = Array.from(elm.childNodes).filter(node => {
@@ -116,6 +149,18 @@ window.dt = (function () {
         activeElm.setAttribute("data-status", "active");
         return activeElm;
       },
+      changeActive: (dir) => {
+        let currentId = Number(editor.active_element.getAttribute("data-id"));
+        let sibling;
+        if (dir == "up") {
+          if (currentId === "0") return alert("First element, can't move up.")
+          sibling = editor.elements.canvas.contentDocument.querySelector("[data-id='"+(currentId - 1)+"']");
+          editor.canvas.setAsActive(sibling);
+        } else {
+          sibling = editor.elements.canvas.contentDocument.querySelector("[data-id='"+(currentId + 1)+"']");
+          editor.canvas.setAsActive(sibling);
+        }
+      },
       rgbToHex: function(str){
         var numbers = str.match(/\d/g);
         var toHex = function (rgb) {
@@ -134,6 +179,7 @@ window.dt = (function () {
         sheets = Array.from(sheets).filter(s => s.title !== "editor");
         editor.styles = [];
         sheets.forEach(sheet => {
+          if (!!sheet.href) return;
           editor.styles = editor.styles.concat(Array.from(sheet.rules).map(rule => {
             return {
               set: rule.parentStyleSheet.insertRule,
@@ -152,13 +198,40 @@ window.dt = (function () {
         styleInputs.forEach(input => {
           var value = currentStyles[input.name];
           if (value.indexOf("rgba") === 0) value = editor.canvas.rgbToHex(value);
-          try{input.value = value;}catch(e){debugger;}
+          input.value = value;
         });
+      },
+      updateIds: () => {
+        editor.elements.canvas.contentDocument.body.querySelectorAll("*:not(style):not(script)").forEach((elm, index) => {
+          elm.setAttribute("data-id", String(index));
+          editor.canvas.setContentEditable(elm);
+          //editor.canvas.drag.init(elm);
+        });
+      },
+      moveUp: () => {
+        let currentId = Number(editor.active_element.getAttribute("data-id"));
+        if (currentId === "0") return alert("First element, can't move up.")
+        let sibling = editor.elements.canvas.contentDocument.querySelector("[data-id='"+(currentId - 1)+"']");
+        sibling.parentNode.insertBefore(editor.active_element, sibling);
+        editor.canvas.updateIds();
+      },
+      moveDown: () => {
+        //let currentId = Number(editor.active_element.getAttribute("data-id"));
+        //let sibling = editor.elements.canvas.contentDocument.querySelector("[data-id='"+(currentId + 1)+"']");
+        //return alert("Last element, can't move down.")
+        if (editor.active_element.nextElementSibling && editor.active_element.nextElementSibling.nextElementSibling) {
+          editor.active_element.parentNode.insertBefore(editor.active_element, editor.active_element.nextElementSibling.nextElementSibling);
+        } else if (editor.active_element.nextElementSibling && editor.active_element.nextElementSibling.parentNode) {
+          editor.active_element.parentNode.appendChild(editor.active_element, editor.active_element.nextElementSibling.parentNode);
+        } else if (editor.active_element.parentNode.nextElementSibling && editor.active_element.nextElementSibling.parentNode) {
+          editor.active_element.parentNode.appendChild(editor.active_element, editor.active_element.nextElementSibling.parentNode);
+        }
+        editor.canvas.updateIds();
       },
       bindAttributes:  e => editor.active_element.setAttribute(e.target.name, e.target.value),
       updateAttrs: (activeElm) => {
         let tag = editor.active_element.tagName.toLowerCase();
-        let html = "";
+        let  html = `<h2>Attributes</h2>`;
         if (!!elements[tag]) {
           for (let a in elements[tag].attributes) {
             if (elements[tag].attributes.hasOwnProperty(a)) {
@@ -219,6 +292,9 @@ window.dt = (function () {
         editor.elements.toolbar = document.createElement("div");
         editor.elements.toolbar.id = "toolbar";
         editor.elements.toolbar.innerHTML = `
+          <div class="button-group">
+            <button type="button" id="openMenu"><i class="fas fa-bars"></i> <span class="tablet-tooltip">Menu</span></button>
+          </div>
           <div class="input-group">
             <div class="switch">
               <input id="show_code" type="checkbox" class="switch-input" />
@@ -243,23 +319,76 @@ window.dt = (function () {
             <button type="button" id="zoomOut"><i class="fas fa-search-minus"></i> <span class="tablet-tooltip">Zoom Out</span></button>
           </div>
           <div class="button-group">
+            <button type="button" onclick="dt.canvas.moveUp()"><i class="fas fa-arrow-up"></i> <span class="tablet-tooltip">Order Up</span></button>
+            <button type="button" onclick="dt.canvas.moveDown()"><i class="fas fa-arrow-down"></i> <span class="tablet-tooltip">Order Down</span></button>
+            <button type="button" onclick="dt.canvas.changeActive('up')"><i class="far fa-arrow-alt-circle-up"></i> <span class="tablet-tooltip">Focus Up</span></button>
+            <button type="button" onclick="dt.canvas.changeActive()"><i class="far fa-arrow-alt-circle-down"></i> <span class="tablet-tooltip">Focus Down</span></button>
+          </div>
+          <div class="button-group">
             <button type="button" id="toggleOutlines"><i class="fas fa-border-none"></i> <span class="tablet-tooltip">Toggle Outlines</span></button>
             <button type="button" id="fullScreen"><i class="fas fa-expand-arrows-alt"></i> <span class="tablet-tooltip">Full Screen</span></button>
-            <button type="button" id="manageImages"><i class="far fa-images"></i> <span class="tablet-tooltip">Manage Images</span></button>
-            <button type="button" id="save"><i class="far fa-save"></i> <span class="tablet-tooltip">Save</span></button>
           </div>
           <div class="radio-buttons" id="styles-tabs">
-            <input id="device-view-Styles" name="styles-tabs" type="radio" value="styles" checked="checked"/>
+          <input id="device-view-Attributes" name="styles-tabs" type="radio" value="attributes" checked="checked" />
+          <label for="device-view-Attributes" >Attributes</label>
+            <input id="device-view-Styles" name="styles-tabs" type="radio" value="styles"/>
             <label for="device-view-Styles" >Styles</label>
-            <input id="device-view-Attributes" name="styles-tabs" type="radio" value="attributes" />
-            <label for="device-view-Attributes" >Attributes</label>
             <input id="device-view-Blocks" name="styles-tabs" type="radio" value="blocks" />
             <label for="device-view-Blocks" >Blocks</label>
-            <input id="device-view-Elements" name="styles-tabs" type="radio" value="elements" />
-            <label for="device-view-Elements" >Elements</label>
           </div>
         `;
         config.node.appendChild(editor.elements.toolbar);
+        document.querySelector("#openMenu").addEventListener("click", function (event) {
+          editor.elements.menu = document.createElement("div");
+          editor.elements.menu.classList.add("left_area", "cm_wrap", "modal", "menu");
+          editor.elements.menu.innerHTML = `
+            <button id="menu_close">&times;</button>
+            <button type="button" id="manageImages"><i class="far fa-images"></i> <span class="">Manage Images</span></button>
+            <button type="button" id="save"><i class="far fa-save"></i> <span class="">Save</span></button>
+            <hr />
+            <h3>New</h3>
+            <ul>
+            ${config.templates.map((i, index) => `<li onclick="dt.update(${index})">
+              ${i.icon}
+              <h4>${i.name}</h4>
+              </li>`).join("")}
+            </ul>
+            <h3>Open</h3>
+            <ul>
+            ${config.templates.map((i, index) => `<li onclick="dt.update(${index})">
+              ${i.icon}
+              <h4>${i.name}</h4>
+              </li>`).join("")}
+            </ul>
+          `;
+          config.node.appendChild(editor.elements.menu);
+          document.querySelector("#save").addEventListener("click", editor.save);
+          document.querySelector("#manageImages").addEventListener("click", function (event) {
+            editor.elements.modal = document.createElement("div");
+            editor.elements.modal.classList.add("left_area", "cm_wrap", "modal", "images");
+            editor.elements.modal.innerHTML = `
+              <button id="modal_close">&times;</button>
+              <h3>Manage Images</h3>
+              <form action="" method="post" enctype="multipart/form-data">
+                <input type="file" name="fileToUpload" id="fileToUpload">
+                <input type="submit" value="Upload Image" name="submit">
+              </form>
+              <ul>
+              ${config.images.map(i => `<li>
+                <img src="${i}" />
+                <a href="${i}" target="_blank">${i}</a><span class="image-size">99kb</span>
+                </li>`).join("")}
+              </ul>
+            `;
+            config.node.appendChild(editor.elements.modal);
+            document.getElementById("modal_close").addEventListener("click", function (event) {
+              editor.elements.modal.parentNode.removeChild(editor.elements.modal);
+            });
+          });
+          document.getElementById("menu_close").addEventListener("click", function (event) {
+            editor.elements.menu.parentNode.removeChild(editor.elements.menu);
+          });
+        });
         document.querySelector("#device-view").addEventListener("change", function (event) {
           editor.elements.canvas.style.maxWidth = event.target.value;
         });
@@ -283,31 +412,6 @@ window.dt = (function () {
           editor.elements.cm.style.display = (event.target.checked) ? "block" : "none";
           editor.cm.refresh();
         });
-        document.querySelector("#save").addEventListener("click", function (event) {
-          localStorage.setItem("dt-01", editor.elements.canvas.contentDocument.body.innerHTML);
-        });
-        document.querySelector("#manageImages").addEventListener("click", function (event) {
-          editor.elements.modal = document.createElement("div");
-          editor.elements.modal.classList.add("left_area", "cm_wrap", "images");
-          editor.elements.modal.innerHTML = `
-            <button id="modal_close">&times;</button>
-            <h3>Manage Images</h3>
-            <form action="" method="post" enctype="multipart/form-data">
-              <input type="file" name="fileToUpload" id="fileToUpload">
-              <input type="submit" value="Upload Image" name="submit">
-            </form>
-            <ul>
-            ${config.images.map(i => `<li>
-              <img src="${i}" />
-              <a href="${i}" target="_blank">${i}</a><span class="image-size">99kb</span>
-              </li>`).join("")}
-            </ul>
-          `;
-          config.node.appendChild(editor.elements.modal);
-          document.getElementById("modal_close").addEventListener("click", function (event) {
-            editor.elements.modal.parentNode.removeChild(editor.elements.modal);
-          });
-        });
         document.querySelector("#styles-tabs").addEventListener("change", function (event) {
           document.querySelector(".editor_active") && document.querySelector(".editor_active").classList.remove("editor_active");
           document.querySelector("." + event.target.value + "_tab").classList.add("editor_active");
@@ -317,15 +421,7 @@ window.dt = (function () {
         });
       },
     },
-    create: function () {
-      editor.toolbar.create();
-
-      editor.elements.canvas = document.createElement("iframe");
-      editor.elements.canvas.id = "canvas";
-      editor.elements.canvas.classList.add("left_area");
-      config.node.appendChild(editor.elements.canvas);
-      editor.elements.canvas.contentDocument.write(config.template);
-
+    onload: function(){
       editor.elements.canvas_style = document.createElement("style");
       editor.elements.canvas.contentDocument.head.appendChild(editor.elements.canvas_style);
       editor.elements.canvas_style.title = "editor";
@@ -357,6 +453,29 @@ window.dt = (function () {
           outline: 1px solid yellow;
         }`;
 
+        editor.elements.canvas.contentDocument.body.addEventListener("click", editor.canvas.getActiveClick);
+        editor.elements.canvas.contentDocument.body.addEventListener("keyup", editor.canvas.getActiveKey);
+        editor.elements.canvas.contentDocument.body.querySelectorAll("*:not(style):not(script)").forEach((elm, index) => {
+          elm.setAttribute("data-id", String(index));
+          editor.canvas.setContentEditable(elm);
+          //editor.canvas.drag.init(elm);
+        });
+  
+        document.addEventListener("keydown", editor.shortcut.save);
+        editor.elements.canvas.contentDocument.addEventListener("keydown", editor.shortcut.save);
+
+        editor.canvas.setAsActive(editor.elements.canvas.contentDocument.querySelector("[data-id='0']"));
+    },
+    create: function () {
+      editor.toolbar.create();
+
+      editor.elements.canvas = document.createElement("iframe");
+      editor.elements.canvas.id = "canvas";
+      editor.elements.canvas.classList.add("left_area");
+      editor.elements.canvas.srcdoc = config.template;
+      config.node.appendChild(editor.elements.canvas);
+      editor.elements.canvas.onload = editor.onload;
+
       editor.elements.cm = document.createElement("div");
       editor.elements.cm.style.display = "none";
       editor.elements.cm.classList.add("left_area", "cm_wrap");
@@ -366,14 +485,6 @@ window.dt = (function () {
         lineNumbers: true,
         theme: "darcula",
         mode: "htmlmixed"
-      });
-
-      editor.elements.canvas.contentDocument.body.addEventListener("click", editor.canvas.getActiveClick);
-      editor.elements.canvas.contentDocument.body.addEventListener("keyup", editor.canvas.getActiveKey);
-      editor.elements.canvas.contentDocument.body.querySelectorAll("*:not(style):not(script)").forEach((elm, index) => {
-        elm.setAttribute("data-id", String(index));
-        editor.canvas.setContentEditable(elm);
-        //editor.canvas.drag.init(elm);
       });
 
       editor.elements.editor = document.createElement("div");
@@ -398,27 +509,16 @@ window.dt = (function () {
           </div>`).join("")}
         </div>`).join("");
       editor.tabs[id] = document.createElement("div");
-      editor.tabs[id].classList.add("editor_panel", "editor_active", id);
+      editor.tabs[id].classList.add("editor_panel", id);
       editor.tabs[id].innerHTML = html;
       editor.elements.tab_panels.appendChild(editor.tabs[id]);
       document.querySelector(".styles_tab").onchange = editor.canvas.bindStyles;
 
       id = "attributes_tab";
       editor.tabs[id] = document.createElement("div");
-      editor.tabs[id].classList.add("editor_panel", id);
+      editor.tabs[id].classList.add("editor_panel", "editor_active", id);
       editor.elements.tab_panels.appendChild(editor.tabs[id]);
       document.querySelector(".attributes_tab").onchange = editor.canvas.bindAttributes;
-
-      id = "blocks_tab";
-      html = config.blocks.map(b => `
-        <div class="block">
-          <h5>${b.id}</h5>
-          <code draggable="true">${b.html.replace(/</g, "&lt;")}</code>
-        </div>`).join("");
-      editor.tabs[id] = document.createElement("div");
-      editor.tabs[id].innerHTML = html;
-      editor.tabs[id].classList.add("editor_panel", id);
-      editor.elements.tab_panels.appendChild(editor.tabs[id]);
 
       let printTags = (e, s) => {
         let html = !!e.selfClosing ? `<${s} />` : `<${s}></${s}>`;
@@ -427,8 +527,15 @@ window.dt = (function () {
         }
         return html.replace(/</g, "&lt;");
       };
-      id = "elements_tab";
-      html = Object.keys(elements).map(b => `
+      id = "blocks_tab";
+      html = "<h4>Custom Blocks</h4>"
+      html += config.blocks.map(b => `
+        <div class="block">
+          <h5>${b.id}</h5>
+          <code draggable="true">${b.html.replace(/</g, "&lt;")}</code>
+        </div>`).join("");
+      html += "<h4>Elements</h4>"
+      html += Object.keys(elements).map(b => `
         <div class="block">
           <!--<h5>${b}</h5>-->
           <code draggable="true">${printTags(elements[b], b)}</code>
@@ -438,11 +545,12 @@ window.dt = (function () {
       editor.tabs[id].classList.add("editor_panel", id);
       editor.elements.tab_panels.appendChild(editor.tabs[id]);
 
-      editor.canvas.setAsActive(editor.elements.canvas.contentDocument.querySelector("[data-id='0']"));
-
       return this;
     }
   };
-  console.log(editor);
-  return editor.create();
+  return {
+    config: config,
+    ...editor.create()
+  };
 })();
+console.log(dt);

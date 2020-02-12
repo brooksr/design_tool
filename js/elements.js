@@ -1,99 +1,99 @@
 let global = {
-  "draggable": true,
-  "attributes": {
-    "class": "",
-    "id": "",
-    "tabindex": {"values": [0, -1]},
-    "title": "",
-    "role": {
-      "values": [
-        "dialog",
-        "alertdialog"
-      ]
-    },
-    "aria-label": "",
-    "aria-modal": {"values": [true, false]}
-  }
+  "className": "",
+  "id": "",
+  "tabindex": {"values": [0, -1]},
+  "title": "",
+  "role": {
+    "values": [
+      "dialog",
+      "alertdialog"
+    ]
+  },
+  "aria-label": "",
+  "aria-modal": {"values": [true, false]}
 };
 export const elements = {
   "body": {
     "draggable": false,
-    ...global
+    "attributes": global
   },
   "blockquote": {
     "droppable": false,
-    "attributes": {"cite": ""},
-    ...global
+    "attributes": {
+      ...global,
+      "cite": ""
+    },
   },
   "div": {
-    ...global
+    "attributes": global
   },
   "h1": {
-    ...global
+    "attributes": global
   },
   "hr": {
     "selfClosing": true,
     "droppable": false,
-    ...global
+    "attributes": global
   },
   "ol": {
     "droppable": "li",
     "attributes": {
+      ...global,
       "reversed": false,
       "start": 1,
       "type": 1
     },
-    ...global
   },
   "ul": {
     "droppable": "li",
-    ...global
+    "attributes": global
   },
   "li": {
     "attributes": {
+      ...global,
       "value": ""
     },
-    ...global
   },
   "p": {
-    ...global
+    "attributes": global
   },
   "a": {
     "attributes": {
+      ...global,
       "download": "",
       "href": "",
       "ping": "",
       "target": ""
     },
-    ...global
   },
   "br": {
     "selfClosing": true,
     "droppable": false,
     "draggable": false,
-    ...global
+    "attributes": global
   },
   "em": {
     "droppable": false,
     "draggable": false,
-    ...global
+    "attributes": global
   },
   "small": {
     "droppable": false,
     "draggable": false,
-    ...global
+    "attributes": global
   },
   "span": {
-    ...global
+    "attributes": global
   },
   "strong": {
     "droppable": false,
     "draggable": false,
-    ...global
+    "attributes": global
   },
   "video": {
     "droppable": false,
     "attributes": {
+      ...global,
       "autoplay": "",
       "buffered": "",
       "controls": "",
@@ -109,12 +109,12 @@ export const elements = {
       "src": "",
       "width": ""
     },
-    ...global
   },
   "img": {
     "selfClosing": true,
     "droppable": false,
     "attributes": {
+      ...global,
       "alt": "",
       "crossorigin": "",
       "decoding": "",
@@ -124,12 +124,12 @@ export const elements = {
       "srcset": "",
       "width": ""
     },
-    ...global
   },
   "iframe": {
     "selfClosing": true,
     "droppable": false,
     "attributes": {
+      ...global,
       "allow": "",
       "height": "",
       "name": "",
@@ -139,48 +139,47 @@ export const elements = {
       "srcdoc": "",
       "width": ""
     },
-    ...global
   },
   "table": {
     "droppable": "tbody, thead, tfoot",
-    ...global
+    "attributes": global
   },
   "tbody": {
     "droppable": "tr",
     "draggable": false,
-    ...global
+    "attributes": global
   },
   "thead": {
     "droppable": "tr",
     "draggable": false,
-    ...global
+    "attributes": global
   },
   "tfoot": {
     "droppable": "tr",
     "draggable": false,
-    ...global
+    "attributes": global
   },
   "tr": {
     "droppable": "td, th",
-    ...global
+    "attributes": global
   },
   "th": {
     "attributes": {
+      ...global,
       "colspan": "",
       "headers": "",
       "rowspan": "",
       "scope": ""
     },
-    ...global
   },
   "td": {
     "attributes": {
+      ...global,
       "colspan": "",
       "headers": "",
       "rowspan": "",
       "scope": ""
     },
-    ...global
   },
   "button": {
     "attributes": {
@@ -194,18 +193,19 @@ export const elements = {
   },
   "form": {
     "attributes": {
+      ...global,
       "action": "",
       "autocomplete": "",
       "method": "",
       "novalidate": "",
       "target": ""
     },
-    ...global
   },
   "input": {
     "selfClosing": true,
     "droppable": false,
     "attributes": {
+      ...global,
       "accept": "",
       "alt": "",
       "autocomplete": "",
@@ -239,17 +239,17 @@ export const elements = {
       "value": "",
       "width": ""
     },
-    ...global
   },
   "label": {
     "attributes": {
+      ...global,
       "for": ""
     },
-    ...global
   },
   "select": {
     "droppable": "option",
     "attributes": {
+      ...global,
       "autocomplete": "",
       "autofocus": "",
       "disabled": "",
@@ -258,22 +258,22 @@ export const elements = {
       "required": "",
       "size": ""
     },
-    ...global
   },
   "option": {
     "droppable": false,
     "draggable": false,
     "attributes": {
+      ...global,
       "disabled": "",
       "label": "",
       "selected": "",
       "value": ""
     },
-    ...global
   },
   "textarea": {
     "droppable": false,
     "attributes": {
+      ...global,
       "autocomplete": "",
       "autofocus": "",
       "cols": "",
@@ -287,6 +287,5 @@ export const elements = {
       "spellcheck": "",
       "wrap": ""
     },
-    ...global
   },
 };

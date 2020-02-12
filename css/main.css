@@ -25,7 +25,7 @@ hr {
   display: block;
   height: 1px;
   border: 0;
-  border-top: 1px solid #ccc;
+  border-top: 1px solid #333;
   margin: 1em 0;
   padding: 0;
 }
@@ -100,7 +100,7 @@ button:focus {
   width: 100%;
   z-index: 1;
 }
-.images {
+.modal {
   background: rgba(0, 0, 0, 0.95);
   width: 100%;
   z-index: 1;
@@ -121,6 +121,25 @@ button:focus {
   background: #2ab34b;
   padding: 0.25em;
   border-radius: 8px;
+}
+.menu ul {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0;
+  justify-content: space-around;
+}
+.menu li {
+  display: initial;
+  flex: 0 1 23%;
+  margin: 1%;
+  padding: 2%;
+  position: relative;
+  max-height: 20em;
+  text-align:center;
+  background: #222
+}
+#menu_close {
+  float: right;
 }
 .images ul {
   display: flex;
@@ -329,7 +348,7 @@ button:focus {
 .tablet-tooltip {
   display: none;
 }
-@media only screen and (max-width: 1440px) {
+@media only screen and (max-width: 1680px) {
   button:hover .tablet-tooltip, label:hover .tablet-tooltip {
     background: rgba(42, 179, 75, 0.5);
     display: inherit;
@@ -340,7 +359,7 @@ button:focus {
     font-size: 0.75em;
   }
 }
-@media only screen and (min-width: 1440px) {
+@media only screen and (min-width: 1680px) {
   .tablet-tooltip {
     display: initial;
   }
