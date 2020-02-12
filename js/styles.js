@@ -12,7 +12,7 @@
     color: "#000000",
     size: "",//["auto", "min-content", "max-content", "fit-content", "100%"],
     overflow: "",//["visible", "hidden", "clip", "scroll", "auto"],
-  }
+}
   export let styles = [
     {
       "id": "Text",

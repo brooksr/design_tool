@@ -1,5 +1,5 @@
 let global = {
-  "className": "",
+  "class": "",
   "id": "",
   "tabindex": {"values": [0, -1]},
   "title": "",

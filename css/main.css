@@ -75,10 +75,10 @@ button:focus {
   border-top: 5px solid #fff;
   /* border-left: 5px solid #fff; */
   border-image: repeating-linear-gradient(90deg,
-  #fff 10px, #fff 11px, #000 12px, #000 20px, 
-  #fff 20px, #fff 21px, #000 22px, #000 30px, 
-  #fff 30px, #fff 31px, #000 32px, #000 40px, 
-  #fff 40px, #fff 41px, #000 42px, #000 50px, 
+  #fff 10px, #fff 11px, #000 12px, #000 20px,
+  #fff 20px, #fff 21px, #000 22px, #000 30px,
+  #fff 30px, #fff 31px, #000 32px, #000 40px,
+  #fff 40px, #fff 41px, #000 42px, #000 50px,
   #2ab34b 50px, #2ab34b 51px
     );
   /* border-image-outset: 1; */
@@ -184,6 +184,7 @@ button:focus {
   top: 0;
   width: 100%;
   justify-content: space-between;
+  user-select: none;
 }
 #toolbar > * {}
 #toolbar .input-group {}
@@ -330,7 +331,7 @@ button:focus {
 }
 
 .radio-buttons {
-  display: flex;
+  display: inline-flex;
   border-radius: 1em;
   overflow: hidden;
 }
