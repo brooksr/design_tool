@@ -71,7 +71,7 @@ button:focus {
   background-image: linear-gradient(45deg, #333 25%, transparent 25%, transparent 75%, #333 75%, #333 100%),linear-gradient(45deg, #333 25%, #555 25%, #555 75%, #333 75%, #333 100%);
   background-position: 0 0, 10px 10px;
   background-size: 20px 20px;
-  transition: 1s ease;
+  transition: all 1s ease;
   border-top: 5px solid #fff;
   /* border-left: 5px solid #fff; */
   border-image: repeating-linear-gradient(90deg,
@@ -86,8 +86,6 @@ button:focus {
   border-image-width: 4px;
   border-image-slice: 10;
   box-sizing: border-box;
-}
-.left_area {
   height: calc(100vh - 5em);
   position: absolute;
   top: 5em;
@@ -95,8 +93,16 @@ button:focus {
   right: 25%;
   margin: auto;
   width: 75%;
+  max-width:100%;
+  max-height:100%;
 }
 .cm_wrap {
+  height: calc(100vh - 5em);
+  position: absolute;
+  top: 5em;
+  left: 0;
+  right: 25%;
+  margin: auto;
   width: 100%;
   z-index: 1;
 }
@@ -186,7 +192,9 @@ button:focus {
   justify-content: space-between;
   user-select: none;
 }
-#toolbar > * {}
+#toolbar > *:not(:last-child) {
+  margin-right: 1em;
+}
 #toolbar .input-group {}
 #toolbar .input-group input, #toolbar .input-group select {
   flex: 0 0 2em;
@@ -348,6 +356,15 @@ button:focus {
 }
 .tablet-tooltip {
   display: none;
+}
+.editor_open #toolbar {
+  justify-content: start;
+}
+.editor_open .visual_control, .code_control {
+  display: none;
+}
+.editor_open .code_control {
+  display: inherit;
 }
 @media only screen and (max-width: 1680px) {
   button:hover .tablet-tooltip, label:hover .tablet-tooltip {

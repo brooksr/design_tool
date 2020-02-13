@@ -1,63 +1,11 @@
 import {elements} from './elements.js';
 import {styles} from './styles.js';
-import {blocks} from './blocks.js';
-import {email} from './email.js';
-import {email2} from './email2.js';
-import {modal} from './modal.js';
-/*
-         <i class="fas fa-desktop"></i>
-         <i class="fas fa-heading"></i>
-         <i class="fas fa-paragraph"></i>
+import {drag} from './drag.js';
+import {config} from './config.js';
+import {components} from './components.js';
+"use strict";
 
-         <i class="fas fa-remove-format"></i>
-         <i class="fas fa-quote-left"></i>
-         <i class="fas fa-quote-right"></i>
-         <i class="fas fa-vector-square"></i>
-         <i class="fas fa-link"></i>
-         <i class="fas fa-table"></i>
-         <i class="fas fa-copy"></i>
-         <i class="fas fa-copyright"></i>
-         <i class="fas fa-code"></i>
-         <i class="fas fa-fill"></i>
-         <i class="fas fa-eye-dropper"></i>
-         <i class="fas fa-eye-clone"></i>
-         <i class="fas fa-list-ol"></i>
-         <i class="fas fa-list-ul"></i>
-         <i class="fas fa-th"></i>
-         <i class="fas fa-th-large"></i>
-         <i class="fas fa-th-list"></i>
-         <i class="fas fa-trash"></i>*/
 window.editor = (function () {
-  "use strict";
-
-  let config = {
-    node: document.getElementById("design_tool"),
-    units: ["px", "%", "em", "vmax", "vmin", "vh", "vw", "none"],
-    template: localStorage.getItem("editor-01") ? decodeURIComponent(localStorage.getItem("editor-01")) : modal,
-    templates: [
-      {
-        html: email,
-        name: "Email 1",
-        icon: '<i class="far fa-envelope"></i>'
-      },{
-        html: email2,
-        name: "Email 2",
-        icon: '<i class="far fa-envelope"></i>'
-      },{
-        html: modal,
-        name: "Modal 1",
-        icon: '<i class="far fa-square"></i>'
-      }
-    ],
-    blocks: blocks,
-    images: [
-      "https://via.placeholder.com/600x50?text=LOGO",
-      "https://via.placeholder.com/50x50?text=1",
-      "https://via.placeholder.com/250x250?text2",
-      "https://via.placeholder.com/50x300?text=3",
-      "https://via.placeholder.com/50x50?text=4",
-    ]
-  };
   let editor = {
     styles: [],
     tabs: {},
@@ -68,7 +16,7 @@ window.editor = (function () {
       if (document.getElementById("menu_close") != null) document.getElementById("menu_close").click();
     },
     save: function () {
-      localStorage.setItem("editor-01", encodeURIComponent(editor.elms.canvas.contentDocument.documentElement.innerHTML));
+      localStorage.setItem("editor-01", encodeURIComponent(editor.elms.canvas.contentDocument.documentElement.outerHTML));
       alert("Saved!");
     },
     addBlock: function(self){
@@ -78,16 +26,52 @@ window.editor = (function () {
       editor.canvas.updateIds();
       //editor.canvas.setAsActive(e.target);
     },
-    shortcut: {
-      save: function(event) {
-        let s = 83;
-        if (event.which === s && event.ctrlKey) {
-          event.preventDefault();
-          editor.save();
-        }
+    shortcuts: function(event) {
+      let save = event.which === 83 && event.ctrlKey;
+      if (save) {
+        event.preventDefault();
+        editor.save();
       }
     },
+    emailify: function(){
+      var inlinable = Array.from(editor.elms.canvas.contentDocument.styleSheets).filter(s => s.title === "inlineCSS")[0];
+      var remove = editor.elms.canvas.contentDocument.querySelectorAll("[title='inlineCSS'], [title='editor']");
+      remove.forEach(function(s){
+        s.parentNode.removeChild(s);
+      });
+      var all = editor.elms.canvas.contentDocument.querySelectorAll("*");
+      all.forEach(function(m){
+        m.removeAttribute("data-id");
+        if (m.isContentEditable) m.removeAttribute("contenteditable");
+        if (m.tagName == "TABLE") {
+          m.setAttribute("cellpadding", 0);
+          m.setAttribute("cellspacing", 0);
+        }
+        if (m.tagName == "A") {
+          m.setAttribute("target", "_blank");
+        }
+      });
+      Array.from(inlinable.rules).forEach(function(rule){
+        var matches = editor.elms.canvas.contentDocument.querySelectorAll(rule.selectorText);
+        var style = rule.style.cssText.split(";");
+        matches.forEach(function(m){
+          //set attrs
+          style.forEach(function(s){
+              if (s.indexOf(": ") == -1) return;
+              // set style
+              var r = s.trim().split(": ");
+              if (r.length === 0) alert(r)
+              var prop = r[0], value = r[1];
+              m.style[prop] = value;
+              if (["border", "height", "width", "max-height", "max-width"].indexOf(prop) != -1 && (m.tagName == "TD" || m.tagName == "TABLE" || m.tagName == "IMG")) {
+                m.setAttribute(prop.replace("max-", ""), value.replace("px", "").replace("none", "0"));
+              }
+          });
+        });
+      });
+    },
     canvas: {
+      drag: drag,
       setContentEditable: elm => {
         const hasTextNode = Array.from(elm.childNodes).filter(node => {
           return Array.from(node.childNodes).filter(node => {
@@ -97,56 +81,6 @@ window.editor = (function () {
           }).length > 0;
         }).length > 0;
         if (hasTextNode) elm.contentEditable = "true";
-      },
-      drag: {
-        start: function (e) {
-          // Target (this) element is the source node.
-          editor.src = this;
-          e.dataTransfer.effectAllowed = 'move';
-          e.dataTransfer.setData('text/html', this.outerHTML);
-          this.classList.add('dragElem');
-        },
-        enter: function(){},
-        over: function (e) {
-          if (e.preventDefault) {
-            e.preventDefault(); // Necessary. Allows us to drop.
-          }
-          this.classList.add('over');
-          e.dataTransfer.dropEffect = 'move';  // See the section on the DataTransfer object.
-          return false;
-        },
-        leave: function (e) {
-          this.classList.remove('over');  // this / e.target is previous target element.
-        },
-        drop: function (e) {
-          // this/e.target is current target element.
-          if (e.stopPropagation) {
-            e.stopPropagation(); // Stops some browsers from redirecting.
-          }
-          // Don't do anything if dropping the same column we're dragging.
-          if (editor.src != this) {
-            this.parentNode.removeChild(editor.src);
-            var dropHTML = e.dataTransfer.getData('text/html');
-            this.insertAdjacentHTML('beforebegin',dropHTML);
-            var dropElem = this.previousSibling;
-            addDnDHandlers(dropElem);
-
-          }
-          this.classList.remove('over');
-          return false;
-        },
-        end: function() {
-          this.classList.remove('over');
-        },
-        init: function(elem) {
-          elem.draggable = true;
-          elem.addEventListener('dragstart', this.start, false);
-          elem.addEventListener('dragenter', this.enter, false)
-          elem.addEventListener('dragover', this.over, false);
-          elem.addEventListener('dragleave', this.leave, false);
-          elem.addEventListener('drop', this.drop, false);
-          elem.addEventListener('dragend', this.end, false);
-        },
       },
       getActiveClick: function (e) {
         e.target !== editor.elms.active ? editor.canvas.setAsActive(e.target) : editor.elms.active;
@@ -284,129 +218,24 @@ window.editor = (function () {
           return `<input name="${i}" value="" type="number" ${attributes}/>`;
         }
         return `<input name="${i}" value="" type="text"/>`;
-        // let html = "", value = p[i], attributes = "";
-        // if (Array.isArray(value)) {
-        //   html += `<select name="${i}">${value.map(o => `<option value="${o}">${o.replace("-", " ")}</option>`).join("")}</select>`;
-        // } else if (!isNaN(value)) {
-        //   if (String(value).indexOf(".") !== -1) {
-        //     attributes = `step=".${"0".repeat(String(value).split(".")[1].length - 1)}1"`;
-        //   }
-        //   html += `<input value="${value}" type="number" ${attributes}/>`;
-        // } else if (typeof value === "string") {
-        //   const unit_regex = new RegExp(config.units.join("|"), "g");
-        //   let unit = "";
-        //   let type = value.indexOf("#") === 0 ? "color" : "text";
-        //   let num = value.replace(unit_regex, "");
-        //   if (!isNaN(num)) {
-        //     unit = value.match(unit_regex) ? value.match(unit_regex)[0] : "none";
-        //     attributes += `class="has-units" `;
-        //     if (num.indexOf(".") !== -1) {
-        //       attributes += `step=".${"0".repeat(num.split(".")[1].length - 1)}1"`;
-        //     }
-        //     value = num;
-        //     type = "number";
-        //   }
-        //   html += `<input value="${value}" type="${type}" ${attributes}/>`;
-        //   if (type === "number") {
-        //     html += `<select class="units">${config.units.map(u => `<option value="${u}" ${(u === unit) ? "selected" : ""}>${u}</option>`)}</select>`;
-        //   }
-        // }
-        // return html;
       },
     },
     toolbar: {
       create: function(){
         editor.elms.toolbar = document.createElement("div");
         editor.elms.toolbar.id = "toolbar";
-        editor.elms.toolbar.innerHTML = `
-          <div class="button-group">
-            <button type="button" id="openMenu"><i class="fas fa-bars"></i> <span class="tablet-tooltip">Menu</span></button>
-          </div>
-          <div class="input-group">
-            <div class="switch">
-              <input id="show_code" type="checkbox" class="switch-input" />
-              <label for="show_code" class="switch-label">Visual</label>
-            </div>
-          </div>
-          <div class="radio-buttons" id="device-view">
-            <input id="device-view-desktop" name="device-view" type="radio" value="100%" checked="checked"/>
-            <label for="device-view-desktop" ><i class="fas fa-desktop"></i> <span class="tablet-tooltip">Desktop</span></label>
-            <input id="device-view-tablet" name="device-view" type="radio" value="720px" />
-            <label for="device-view-tablet" ><i class="fas fa-tablet-alt"></i> <span class="tablet-tooltip">Tablet</span></label>
-            <input id="device-view-mobile" name="device-view" type="radio" value="360px" />
-            <label for="device-view-mobile" ><i class="fas fa-mobile-alt"></i> <span class="tablet-tooltip">Mobile</span></label>
-          </div>
-          <!--<div class="button-group">
-            <button type="button">Undo</button>
-            <button type="button">Redo</button>
-          </div>-->
-          <div class="button-group">
-            <button type="button" id="zoomIn"><i class="fas fa-search-plus"></i> <span class="tablet-tooltip">Zoom In</span></button>
-            <button type="button" id="zoomO">100%</button>
-            <button type="button" id="zoomOut"><i class="fas fa-search-minus"></i> <span class="tablet-tooltip">Zoom Out</span></button>
-          </div>
-          <div class="button-group">
-            <button type="button" onclick="editor.canvas.moveUp()"><i class="fas fa-arrow-up"></i> <span class="tablet-tooltip">Order Up</span></button>
-            <button type="button" onclick="editor.canvas.moveDown()"><i class="fas fa-arrow-down"></i> <span class="tablet-tooltip">Order Down</span></button>
-            <button type="button" onclick="editor.canvas.changeActive('up')"><i class="far fa-arrow-alt-circle-up"></i> <span class="tablet-tooltip">Focus Up</span></button>
-            <button type="button" onclick="editor.canvas.changeActive()"><i class="far fa-arrow-alt-circle-down"></i> <span class="tablet-tooltip">Focus Down</span></button>
-          </div>
-          <div class="button-group">
-            <button type="button" id="toggleOutlines"><i class="fas fa-border-none"></i> <span class="tablet-tooltip">Toggle Outlines</span></button>
-            <button type="button" id="fullScreen"><i class="fas fa-expand-arrows-alt"></i> <span class="tablet-tooltip">Full Screen</span></button>
-          </div>
-          <div class="radio-buttons" id="styles-tabs">
-          <input id="device-view-Attributes" name="styles-tabs" type="radio" value="attributes" checked="checked" />
-          <label for="device-view-Attributes" >Attributes</label>
-            <input id="device-view-Styles" name="styles-tabs" type="radio" value="styles"/>
-            <label for="device-view-Styles" >Styles</label>
-            <input id="device-view-Blocks" name="styles-tabs" type="radio" value="blocks" />
-            <label for="device-view-Blocks" >Blocks</label>
-          </div>
-        `;
+        editor.elms.toolbar.innerHTML = components.toolbar;
         config.node.appendChild(editor.elms.toolbar);
         document.querySelector("#openMenu").addEventListener("click", function (event) {
           editor.elms.menu = document.createElement("div");
           editor.elms.menu.classList.add("left_area", "cm_wrap", "modal", "menu");
-          editor.elms.menu.innerHTML = `
-            <button id="menu_close">&times;</button>
-            <button type="button" id="manageImages"><i class="far fa-images"></i> <span class="">Manage Images</span></button>
-            <button type="button" id="save"><i class="far fa-save"></i> <span class="">Save</span></button>
-            <hr />
-            <h3>New</h3>
-            <ul>
-            ${config.templates.map((i, index) => `<li onclick="editor.update(${index})">
-              ${i.icon}
-              <h4>${i.name}</h4>
-              </li>`).join("")}
-            </ul>
-            <h3>Open</h3>
-            <ul>
-            ${config.templates.map((i, index) => `<li onclick="editor.update(${index})">
-              ${i.icon}
-              <h4>${i.name}</h4>
-              </li>`).join("")}
-            </ul>
-          `;
+          editor.elms.menu.innerHTML = components.menu(config.templates);
           config.node.appendChild(editor.elms.menu);
           document.querySelector("#save").addEventListener("click", editor.save);
           document.querySelector("#manageImages").addEventListener("click", function (event) {
             editor.elms.modal = document.createElement("div");
             editor.elms.modal.classList.add("left_area", "cm_wrap", "modal", "images");
-            editor.elms.modal.innerHTML = `
-              <button id="modal_close">&times;</button>
-              <h3>Manage Images</h3>
-              <form action="" method="post" enctype="multipart/form-data">
-                <input type="file" name="fileToUpload" id="fileToUpload">
-                <input type="submit" value="Upload Image" name="submit">
-              </form>
-              <ul>
-              ${config.images.map(i => `<li>
-                <img src="${i}" />
-                <a href="${i}" target="_blank">${i}</a><span class="image-size">99kb</span>
-                </li>`).join("")}
-              </ul>
-            `;
+            editor.elms.modal.innerHTML = components.modal(config.images);
             config.node.appendChild(editor.elms.modal);
             document.getElementById("modal_close").addEventListener("click", function (event) {
               editor.elms.modal.parentNode.removeChild(editor.elms.modal);
@@ -417,7 +246,16 @@ window.editor = (function () {
           });
         });
         document.querySelector("#device-view").addEventListener("change", function (e) {
-          editor.elms.canvas.style.maxWidth = e.target.value;
+          if (e.target.value == "mobile") {
+            editor.elms.canvas.style.maxWidth = "375px";
+            editor.elms.canvas.style.maxHeight = "667px";
+          } else if (e.target.value == "tablet") {
+            editor.elms.canvas.style.maxWidth = "768px";
+            editor.elms.canvas.style.maxHeight = "1024px";
+          } else {
+            editor.elms.canvas.style.maxWidth = "";
+            editor.elms.canvas.style.maxHeight = "";
+          }
         });
         document.querySelector("#fullScreen").addEventListener("click", function (e) {
           config.node.requestFullscreen();
@@ -435,9 +273,10 @@ window.editor = (function () {
           let newT = Number(transform) - 0.25;
           editor.elms.canvas.contentDocument.body.style.transform = `matrix(${newT}, 0, 0, ${newT}, 0, 0)`;
         });
-        document.querySelector("#show_code").addEventListener("change", function (event) {
-          editor.elms.cm.style.display = (event.target.checked) ? "block" : "none";
+        document.querySelector("#editor-view").addEventListener("change", function (event) {
+          editor.elms.cm.style.display = (event.target.value == "code") ? "block" : "none";
           editor.cm.refresh();
+          document.body.classList.toggle("editor_open");
         });
         document.querySelector("#styles-tabs").addEventListener("change", function (event) {
           document.querySelector(".editor_active") && document.querySelector(".editor_active").classList.remove("editor_active");
@@ -446,39 +285,18 @@ window.editor = (function () {
         document.querySelector("#toggleOutlines").addEventListener("click", function (event) {
           editor.elms.canvas.contentDocument.body.classList.toggle("no-outline");
         });
+        document.querySelector("#emailInline").addEventListener("click", function (event) {
+          editor.emailify()
+          var html = editor.elms.canvas.contentDocument.documentElement.outerHTML;
+          editor.cm.setValue(html)
+        });
       },
     },
     onload: function(){
       editor.elms.canvas_style = document.createElement("style");
       editor.elms.canvas.contentDocument.head.appendChild(editor.elms.canvas_style);
       editor.elms.canvas_style.title = "editor";
-      editor.elms.canvas_style.innerHTML = `
-        body {
-          transform: scale(1);
-          overflow: auto;
-          transform-origin: top left;
-          transition: transform 0.5s ease;
-          box-sizing: border-box;
-        }
-        .no-outline * {
-          outline: none !important;
-        }
-        * {
-          box-sizing: inherit;
-          outline: 1px dashed #ccc;
-        }
-        [contenteditable] {
-          outline: 1px dotted #333;
-        }
-        [data-id]:hover {
-          outline: 1px dashed blue;
-        }
-        [data-status="active"] {
-          outline: 1px dashed green !important;
-        }
-        :-moz-drag-over {
-          outline: 1px solid yellow;
-        }`;
+      editor.elms.canvas_style.innerHTML = components.editor_css;
 
         editor.elms.canvas.contentDocument.body.addEventListener("click", editor.canvas.getActiveClick);
         editor.elms.canvas.contentDocument.body.addEventListener("keyup", editor.canvas.getActiveKey);
@@ -488,8 +306,8 @@ window.editor = (function () {
           //editor.canvas.drag.init(elm);
         });
 
-        document.addEventListener("keydown", editor.shortcut.save);
-        editor.elms.canvas.contentDocument.addEventListener("keydown", editor.shortcut.save);
+        document.addEventListener("keydown", editor.shortcuts);
+        editor.elms.canvas.contentDocument.addEventListener("keydown", editor.shortcuts);
 
         editor.canvas.setAsActive(editor.elms.canvas.contentDocument.querySelector("[data-id='0']"));
     },
@@ -498,14 +316,13 @@ window.editor = (function () {
 
       editor.elms.canvas = document.createElement("iframe");
       editor.elms.canvas.id = "canvas";
-      editor.elms.canvas.classList.add("left_area");
       editor.elms.canvas.srcdoc = config.template;
       config.node.appendChild(editor.elms.canvas);
       editor.elms.canvas.onload = editor.onload;
 
       editor.elms.cm = document.createElement("div");
       editor.elms.cm.style.display = "none";
-      editor.elms.cm.classList.add("left_area", "cm_wrap");
+      editor.elms.cm.classList.add("cm_wrap");
       config.node.appendChild(editor.elms.cm);
       editor.cm = CodeMirror(editor.elms.cm, {
         value: config.template,
@@ -518,173 +335,11 @@ window.editor = (function () {
       editor.elms.editor.id = "editor";
       config.node.appendChild(editor.elms.editor);
 
-      editor.elms.tab_buttons = document.createElement("div");
-      editor.elms.tab_buttons.id = "tab_buttons";
-      editor.elms.editor.appendChild(editor.elms.tab_buttons);
-
       editor.elms.tab_panels = document.createElement("div");
       editor.elms.tab_panels.id = "tab_panels";
       editor.elms.editor.appendChild(editor.elms.tab_panels);
 
       let id = "styles_tab";
-      /*let html = `
-<div class="input-row">
-    <div class="input-col">
-        <label for="font-family">
-          <i class="fas fa-font"></i>
-          Font Family
-        </label>
-        <select id="font-family"><option>Arial</option></select>
-    </div>
-    <div class="input-col">
-        <label for="font-size">
-            <i class="fas fa-text-height"></i>
-          Font Size
-        </label>
-        <input id="font-size" type="number" value=""/>
-    </div>
-    <div class="input-col">
-        <label for="line-height">
-            <i class="fas fa-text-height"></i>
-          Line height
-        </label>
-        <input id="line-height" type="number" value=""/>
-    </div>
-    <div class="input-col">
-        <label for="letter-spacing">
-        <i class="fas fa-text-width"></i>
-          Letter Spacing
-        </label>
-        <input id="letter-spacing" type="number" value=""/>
-    </div>
-    <div class="input-col">
-        <label for="word-spacing">
-        <i class="fas fa-text-width"></i>
-          Word Spacing
-        </label>
-        <input id="word-spacing" type="number" value=""/>
-    </div>
-    <div class="input-col">
-        <label for="text-indent">
-        <i class="fas fa-text-width"></i>
-          text-indent
-        </label>
-        <input id="text-indent" type="number" value=""/>
-    </div>
-    <div class="input-col">
-        <label for="text-indent">
-        <i class="fas fa-text-width"></i>
-          text-shadow
-        </label>
-        <input id="text-indent" type="text" value=""/>
-    </div>
-    <div class="input-col">
-        <label for="text-indent">
-        <i class="fas fa-text-width"></i>
-          text-decoration
-        </label>
-        <input id="text-indent" type="text" value=""/>
-    </div>
-    <div class="input-col">
-        <label for="color">
-        <i class="fas fa-palette"></i>
-          Font Color
-        </label>
-        <input id="color" type="color" value=""/>
-    </div>
-    <div class="radio-buttons">
-        <input id="font-weight" type="checkbox" value="bold"/>
-        <label for="font-weight">
-            <i class="fas fa-bold"></i>
-            <span class="sr-only">Bold</span>
-        </label>
-
-        <input id="font-style" type="checkbox" value="italic"/>
-        <label for="font-style">
-            <i class="fas fa-italic"></i>
-            <span class="sr-only">Italic</span>
-        </label>
-
-        <!--<input id="" type="checkbox" value=""/>
-        <label for="">
-         <i class="fas fa-subscript"></i>
-            <span class="sr-only">Subscript</span>
-        </label>
-
-        <input id="" type="checkbox" value=""/>
-        <label for="">
-         <i class="fas fa-superscript"></i>
-            <span class="sr-only">Superscript</span>
-        </label> -->
-    </div>
-    <div class="radio-buttons">
-        <input name="text-decoration" id="text-decoration_underline" type="radio" value="underline"/>
-        <label for="text-decoration_underline">
-         <i class="fas fa-underline"></i>
-            <span class="sr-only">underline</span>
-        </label>
-
-        <input name="text-decoration" id="text-decoration_line-through" type="radio" value="line-through"/>
-        <label for="text-decoration_line-through">
-         <i class="fas fa-strikethrough"></i>
-            <span class="sr-only">strikethrough</span>
-        </label>
-    </div>
-    <div class="radio-buttons">
-        <input name="text-align" type="radio" id="text-align-left" value="left"/>
-        <label for="text-align-left">
-           <i class="fas fa-align-left"></i>
-            <span class="sr-only">Align left</span>
-        </label>
-
-        <input name="text-align" type="radio" id="text-align-center" value="center"/>
-        <label for="text-align-center">
-           <i class="fas fa-align-center"></i>
-            <span class="sr-only">Align center</span>
-        </label>
-
-        <input name="text-align" type="radio" id="text-align-right" value="right"/>
-        <label for="text-align-right">
-           <i class="fas fa-align-right"></i>
-            <span class="sr-only">Alight right</span>
-        </label>
-
-        <input name="text-align" type="radio" id="text-align-justify" value="justify"/>
-        <label for="text-align-justify">
-           <i class="fas fa-align-justify"></i>
-            <span class="sr-only">Justify</span>
-        </label>
-    </div>
-    <div class="input-col">
-        <label for="text-transform">
-          <i class="fas fa-font"></i>
-          text-transform
-        </label>
-        <select id="text-transform"><option>PLACEHOLDER</option></select>
-    </div>
-    <div class="input-col">
-        <label for="font-family">
-          <i class="fas fa-font"></i>
-          Word wrap
-        </label>
-        <select id="font-family"><option>PLACEHOLDER</option></select>
-    </div>
-    <div class="input-col">
-        <label for="font-family">
-          <i class="fas fa-font"></i>
-          White space
-        </label>
-        <select id="font-family"><option>PLACEHOLDER</option></select>
-    </div>
-    <div class="input-col">
-        <label for="font-family">
-          <i class="fas fa-font"></i>
-          Text overflow
-        </label>
-        <select id="font-family"><option>PLACEHOLDER</option></select>
-    </div>
-</div>
-      `;*/
       let html = styles.map(p => `
         <div class="panel">
         <h2>${p.id}</h2>
@@ -706,9 +361,9 @@ window.editor = (function () {
       document.querySelector(".attributes_tab").onchange = editor.canvas.bindAttributes;
 
       let printTags = (e, s) => {
-        let html = !!e.selfClosing ? `<${s} />` : `<${s}></${s}>`;
+        let html = !!e.selfClosing ? `<${s} />` : `<${s}>placeholder</${s}>`;
         if (!!e.droppable) {
-          html = `<${s}><${e.droppable}></${e.droppable}></${s}>`;
+          html = `<${s}><${e.droppable}>placeholder</${e.droppable}></${s}>`;
         }
         return html.replace(/</g, "&lt;");
       };
