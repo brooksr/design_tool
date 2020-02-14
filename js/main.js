@@ -3,6 +3,7 @@ import {styles} from './styles.js';
 import {drag} from './drag.js';
 import {config} from './config.js';
 import {components} from './components.js';
+import {email_components} from './email_components.js';
 "use strict";
 
 window.editor = (function () {
@@ -34,25 +35,30 @@ window.editor = (function () {
       }
     },
     emailify: function(){
-      var inlinable = Array.from(editor.elms.canvas.contentDocument.styleSheets).filter(s => s.title === "inlineCSS")[0];
-      var remove = editor.elms.canvas.contentDocument.querySelectorAll("[title='inlineCSS'], [title='editor']");
+      let doc = editor.elms.canvas.contentDocument;
+      
+      let inlinable = Array.from(doc.styleSheets).filter(s => s.title === "inlineCSS")[0];
+      let remove = doc.querySelectorAll("[title='inlineCSS'], [title='editor']");
       remove.forEach(function(s){
         s.parentNode.removeChild(s);
       });
-      var all = editor.elms.canvas.contentDocument.querySelectorAll("*");
-      all.forEach(function(m){
-        m.removeAttribute("data-id");
-        if (m.isContentEditable) m.removeAttribute("contenteditable");
-        if (m.tagName == "TABLE") {
-          m.setAttribute("cellpadding", 0);
-          m.setAttribute("cellspacing", 0);
+      let all = doc.querySelectorAll("*");
+      all.forEach(function(elm){
+        if (elm.getAttribute("data-id") !== null) elm.removeAttribute("data-id");
+        if (elm.getAttribute("data-status") !== null) elm.removeAttribute("data-status");
+        if (elm.isContentEditable) elm.removeAttribute("contenteditable");
+        if (elm.tagName == "TABLE") {
+          elm.setAttribute("border", 0);
+          elm.setAttribute("cellpadding", 0);
+          elm.setAttribute("cellspacing", 0);
+          elm.setAttribute("role", "presentation");
         }
-        if (m.tagName == "A") {
-          m.setAttribute("target", "_blank");
+        if (elm.tagName === "A") {
+          elm.setAttribute("target", "_blank");
         }
       });
       Array.from(inlinable.rules).forEach(function(rule){
-        var matches = editor.elms.canvas.contentDocument.querySelectorAll(rule.selectorText);
+        var matches = doc.querySelectorAll(rule.selectorText);
         var style = rule.style.cssText.split(";");
         matches.forEach(function(m){
           //set attrs
@@ -62,7 +68,12 @@ window.editor = (function () {
               var r = s.trim().split(": ");
               if (r.length === 0) alert(r)
               var prop = r[0], value = r[1];
-              m.style[prop] = value;
+              var importance = "";
+              if (value.indexOf(" !important") != -1) {
+                value = value.replace(" !important", "");
+                importance = "important";
+              }
+              m.style.setProperty(prop, value, importance);
               if (["border", "height", "width", "max-height", "max-width"].indexOf(prop) != -1 && (m.tagName == "TD" || m.tagName == "TABLE" || m.tagName == "IMG")) {
                 m.setAttribute(prop.replace("max-", ""), value.replace("px", "").replace("none", "0"));
               }
@@ -286,8 +297,13 @@ window.editor = (function () {
           editor.elms.canvas.contentDocument.body.classList.toggle("no-outline");
         });
         document.querySelector("#emailInline").addEventListener("click", function (event) {
+          var innerHTML = editor.elms.canvas.contentDocument.documentElement.innerHTML;
+          for (let c in email_components) {
+            innerHTML = innerHTML.replace(new RegExp(c, "g"), email_components[c]);
+          }
+          editor.elms.canvas.contentDocument.documentElement.innerHTML = innerHTML;
           editor.emailify()
-          var html = editor.elms.canvas.contentDocument.documentElement.outerHTML;
+          var html = editor.elms.canvas.contentDocument.documentElement.innerHTML.replace(/<tbody>|<\/tbody>/g, "");
           editor.cm.setValue(html)
         });
       },
