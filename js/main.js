@@ -34,9 +34,14 @@ window.editor = (function () {
         editor.save();
       }
     },
+    replaceCss: event => {
+      var ind = event.target.getAttribute("data-index");
+      editor.sheets[0].deleteRule(ind);
+      editor.sheets[0].insertRule(event.target.value, ind);
+    },
     emailify: function(){
       let doc = editor.elms.canvas.contentDocument;
-      
+
       let inlinable = Array.from(doc.styleSheets).filter(s => s.title === "inlineCSS")[0];
       let remove = doc.querySelectorAll("[title='inlineCSS'], [title='editor']");
       remove.forEach(function(s){
@@ -44,8 +49,8 @@ window.editor = (function () {
       });
       let all = doc.querySelectorAll("*");
       all.forEach(function(elm){
-        if (elm.getAttribute("data-id") !== null) elm.removeAttribute("data-id");
-        if (elm.getAttribute("data-status") !== null) elm.removeAttribute("data-status");
+        //if (elm.getAttribute("data-id") !== null) elm.removeAttribute("data-id");
+        //if (elm.getAttribute("data-status") !== null) elm.removeAttribute("data-status");
         if (elm.isContentEditable) elm.removeAttribute("contenteditable");
         if (elm.tagName == "TABLE") {
           elm.setAttribute("border", 0);
@@ -118,20 +123,15 @@ window.editor = (function () {
         console.log(activeElm);
         this.updateAttrs(activeElm);
         this.updateStyles();
-        editor.elms.canvas.contentDocument.querySelector('[data-status="active"]') && editor.elms.canvas.contentDocument.querySelector('[data-status="active"]').removeAttribute("data-status");
-        activeElm.setAttribute("data-status", "active");
+        //editor.elms.canvas.contentDocument.querySelector('[data-status="active"]') && editor.elms.canvas.contentDocument.querySelector('[data-status="active"]').removeAttribute("data-status");
+        //activeElm.setAttribute("data-status", "active");
         return activeElm;
       },
       changeActive: (dir) => {
-        let currentId = Number(editor.elms.active.getAttribute("data-id"));
-        let sibling;
-        if (dir === "up") {
-          if (currentId === "0") return alert("First element, can't move up.")
-          sibling = editor.elms.canvas.contentDocument.querySelector("[data-id='"+(currentId - 1)+"']");
-          editor.canvas.setAsActive(sibling);
-        } else {
-          sibling = editor.elms.canvas.contentDocument.querySelector("[data-id='"+(currentId + 1)+"']");
-          editor.canvas.setAsActive(sibling);
+        if (dir === "up" && editor.elms.active.previousElementSibling != null) {
+          editor.canvas.setAsActive(editor.elms.active.previousElementSibling);
+        } else if (dir === "down" && editor.elms.active.nextElementSibling != null) {
+          editor.canvas.setAsActive(editor.elms.active.nextElementSibling);
         }
       },
       rgbToHex: function(str){
@@ -143,61 +143,71 @@ window.editor = (function () {
         };
         return "#" + toHex(numbers[0]) + toHex(numbers[1]) + toHex(numbers[2]);
       },
-      bindStyles: e => {
+      /*bindStyles: e => {
         editor.elms.active.style[e.target.name] = e.target.value;
-      },
+      },*/
       updateStyles: () => {
         let sheets = editor.elms.canvas.contentDocument.styleSheets;
-        sheets = Array.from(sheets).filter(s => s.title !== "editor");
+        editor.sheets = Array.from(sheets).filter(s => s.title !== "editor");
         editor.styles = [];
-        sheets.forEach(sheet => {
+        editor.sheets.forEach(sheet => {
           if (!!sheet.href) return;
-          editor.styles = editor.styles.concat(Array.from(sheet.rules).map(rule => {
+          editor.styles = editor.styles.concat(Array.from(sheet.rules));
+        });
+        /*.map(rule => {
             return {
-              set: rule.parentStyleSheet.insertRule,
-              del: rule.parentStyleSheet.deleteRule,
+              //set: rule.parentStyleSheet.insertRule,
+              //del: rule.parentStyleSheet.deleteRule,
               selectorText: rule.selectorText,
               cssText: rule.cssText,
-              style: rule.style,
-              elements: editor.elms.canvas.contentDocument.querySelectorAll(rule.selectorText)
+              //elements: editor.elms.canvas.contentDocument.querySelectorAll(rule.selectorText)
             }
-          }));
-        });
+          })*/
+        console.log(editor.sheets);
+
+        editor.tabs.styles_tab.innerHTML = editor.styles.map(function(rule, index){
+          return `<div class="input-group">
+            <label>${rule.selectorText}</label>
+            <textarea data-index="${index}" onchange="editor.replaceCss(event)">${rule.cssText}</textarea>
+          </div>`;
+        }).join("");
 
         console.log(editor.styles);
-        var currentStyles = getComputedStyle(editor.elms.active);
+        /*var currentStyles = getComputedStyle(editor.elms.active);
         var styleInputs = document.querySelectorAll(".styles_tab input");
         styleInputs.forEach(input => {
           var value = currentStyles[input.name];
           if (value.indexOf("rgba") === 0) value = editor.canvas.rgbToHex(value);
           input.value = value;
-        });
+        });*/
       },
       updateIds: () => {
         editor.elms.canvas.contentDocument.body.querySelectorAll("*:not(style):not(script)").forEach((elm, index) => {
-          elm.setAttribute("data-id", String(index));
+          //elm.setAttribute("data-id", String(index));
           editor.canvas.setContentEditable(elm);
           //editor.canvas.drag.init(elm);
         });
       },
       moveUp: () => {
-        let currentId = Number(editor.elms.active.getAttribute("data-id"));
-        if (currentId === "0") return alert("First element, can't move up.")
-        let sibling = editor.elms.canvas.contentDocument.querySelector("[data-id='"+(currentId - 1)+"']");
-        sibling.parentNode.insertBefore(editor.elms.active, sibling);
+        let move;
+        if (editor.elms.active.previousElementSibling != null) {
+          move = editor.elms.active.previousElementSibling;
+        } else if (editor.elms.active.parentNode != null) {
+          move = editor.elms.active.parentNode;
+        }
+        if (move) move.parentNode.insertBefore(editor.elms.active, move);
         editor.canvas.updateIds();
       },
       moveDown: () => {
-        //let currentId = Number(editor.elms.active.getAttribute("data-id"));
-        //let sibling = editor.elms.canvas.contentDocument.querySelector("[data-id='"+(currentId + 1)+"']");
-        //return alert("Last element, can't move down.")
-        if (editor.elms.active.nextElementSibling && editor.elms.active.nextElementSibling.nextElementSibling) {
-          editor.elms.active.parentNode.insertBefore(editor.elms.active, editor.elms.active.nextElementSibling.nextElementSibling);
-        } else if (editor.elms.active.nextElementSibling && editor.elms.active.nextElementSibling.parentNode) {
-          editor.elms.active.parentNode.appendChild(editor.elms.active, editor.elms.active.nextElementSibling.parentNode);
-        } else if (editor.elms.active.parentNode.nextElementSibling && editor.elms.active.nextElementSibling.parentNode) {
-          editor.elms.active.parentNode.appendChild(editor.elms.active, editor.elms.active.nextElementSibling.parentNode);
+        let move;
+        if (editor.elms.active.nextElementSibling != null && editor.elms.active.nextElementSibling.nextElementSibling != null) {
+          move = editor.elms.active.nextElementSibling.nextElementSibling;
+          move.parentNode.insertBefore(editor.elms.active, move);
+        } else if (editor.elms.active.nextElementSibling != null && editor.elms.active.parentNode != null) {
+          editor.elms.active.parentNode.appendChild(editor.elms.active);
         }
+        if (move)
+
         editor.canvas.updateIds();
       },
       bindAttributes:  e => editor.elms.active.setAttribute(e.target.name, e.target.value),
@@ -317,7 +327,7 @@ window.editor = (function () {
         editor.elms.canvas.contentDocument.body.addEventListener("click", editor.canvas.getActiveClick);
         editor.elms.canvas.contentDocument.body.addEventListener("keyup", editor.canvas.getActiveKey);
         editor.elms.canvas.contentDocument.body.querySelectorAll("*:not(style):not(script)").forEach((elm, index) => {
-          elm.setAttribute("data-id", String(index));
+          //elm.setAttribute("data-id", String(index));
           editor.canvas.setContentEditable(elm);
           //editor.canvas.drag.init(elm);
         });
@@ -325,7 +335,7 @@ window.editor = (function () {
         document.addEventListener("keydown", editor.shortcuts);
         editor.elms.canvas.contentDocument.addEventListener("keydown", editor.shortcuts);
 
-        editor.canvas.setAsActive(editor.elms.canvas.contentDocument.querySelector("[data-id='0']"));
+        editor.canvas.setAsActive(editor.elms.canvas.contentDocument.querySelector("div"));
     },
     create: function () {
       editor.toolbar.create();
@@ -356,19 +366,20 @@ window.editor = (function () {
       editor.elms.editor.appendChild(editor.elms.tab_panels);
 
       let id = "styles_tab";
-      let html = styles.map(p => `
+      let html = "";
+      /*let html = styles.map(p => `
         <div class="panel">
         <h2>${p.id}</h2>
         ${Object.keys(p).map(i => (i === "id") ? "" : `<div class="input-group">
           <label>${i.replace("-", " ")}</label>
           ${editor.panels.createInput(p, i)}
           </div>`).join("")}
-        </div>`).join("");
+        </div>`).join("");*/
       editor.tabs[id] = document.createElement("div");
       editor.tabs[id].classList.add("editor_panel", id);
-      editor.tabs[id].innerHTML = html;
+      //editor.tabs[id].innerHTML = html;
       editor.elms.tab_panels.appendChild(editor.tabs[id]);
-      document.querySelector(".styles_tab").onchange = editor.canvas.bindStyles;
+      //document.querySelector(".styles_tab").onchange = editor.canvas.bindStyles;
 
       id = "attributes_tab";
       editor.tabs[id] = document.createElement("div");
