@@ -125,13 +125,12 @@ export let components = {
   <div class="button-group visual_control">
     <button type="button" id="toggleOutlines"><i class="fas fa-border-none"></i> <span class="tablet-tooltip">Toggle Outlines</span></button>
     <button type="button" id="fullScreen"><i class="fas fa-expand-arrows-alt"></i> <span class="tablet-tooltip">Full Screen</span></button>
+    <button type="button" id="speak"><i class="fas fa-voicemail"></i> <span class="tablet-tooltip">Speak</span></button>
   </div>
-  <div class="radio-buttons visual_control" id="styles-tabs">
-  <input id="device-view-Attributes" name="styles-tabs" type="radio" value="attributes" checked="checked" />
-  <label for="device-view-Attributes" >Attributes</label>
-    <input id="device-view-Styles" name="styles-tabs" type="radio" value="styles"/>
-    <label for="device-view-Styles" >Styles</label>
-    <input id="device-view-Blocks" name="styles-tabs" type="radio" value="blocks" />
+  <div class="radio-buttons visual_control" id="sidebar-tabs">
+    <input id="device-view-Edit" name="sidebar-tabs" type="radio" value="edit" checked="checked" />
+    <label for="device-view-Edit" >Edit</label>
+    <input id="device-view-Blocks" name="sidebar-tabs" type="radio" value="blocks" />
     <label for="device-view-Blocks" >Blocks</label>
   </div>
 `

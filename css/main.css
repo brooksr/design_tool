@@ -6,7 +6,7 @@ html {
   background-color:#272427;
   color: #ddd;
   font-size: 14px;
-  font-family: sans-serif;
+  font-family: Consolas,Menlo,Monaco,'Lucida Console','Liberation Mono','DejaVu Sans Mono','Bitstream Vera Sans Mono','Courier New',monospace,serif;
   box-sizing: border-box;
 }
 *, *:before, *:after {
@@ -214,6 +214,17 @@ button:focus {
   padding: 1em;
   max-width: 100%;
 }
+.block h5 {
+  margin: 0 0 1em 0;
+  color: #4db357;
+}
+.block code {
+  display: block;
+}
+.block code * {
+  outline: 1px dotted;
+  max-width: 100%;
+}
 #tab_buttons {}
 #tab_buttons button {
   background: none;
@@ -256,18 +267,32 @@ button:focus {
 }
 .input-group {
   display: flex;
+  flex-wrap: wrap;
   align-items: start;
   padding-bottom: 0.25em;
 }
 .input-group label {
-  flex: 1 0 50%;
+  line-height: 1.25;
+  padding: .25em 0.5em;
+  color: #4db357;
 }
-.input-group input, .input-group select, .input-group textarea {
-  flex: 1 0 50%;
+.input-group input, .input-group select{
+  flex: 1 0 auto;
   width: 3em;
-  background:#4c494d;
   color:#ddd;
   border: none;
+  border-bottom: 1px solid #4c494d;
+  background: transparent;
+  line-height: 1.25;
+  padding: .25em;
+}
+.input-group textarea {
+  flex: 1 0 100%;
+  width: 3em;
+  background: transparent;
+  color:#ddd;
+  border: none;
+  border-left: 1px solid #888;
   line-height: 1.25;
   padding: .25em;
 }
@@ -367,6 +392,18 @@ button:focus {
 .editor_open .code_control {
   display: inherit;
 }
+.styles_tab {
+  font-size: 0.9em;
+}
+.styles_tab h4 {
+  margin: 0;
+  padding: 0.5em 0 1em 0;
+}
+.styles_tab form {
+  border: 1px solid x#333;
+  margin-bottom: 0.5em;
+  padding: 0.5em;
+}
 @media only screen and (max-width: 1680px) {
   button:hover .tablet-tooltip, label:hover .tablet-tooltip {
     background: rgba(42, 179, 75, 0.5);
@@ -420,59 +457,4 @@ button:focus {
 }
 .clearfix:after {
   clear: both;
-}
-/* ==========================================================================
-   Print styles.
-   Inlined to avoid the additional HTTP request:
-   https://www.phpied.com/delay-loading-your-print-css/
-   ========================================================================== */
-
-@media print {
-  *,
-  *:before,
-  *:after {
-    background: transparent !important;
-    color: #000 !important;
-    box-shadow: none !important;
-    text-shadow: none !important;
-  }
-  a,
-  a:visited {
-    text-decoration: underline;
-  }
-  a[href]:after {
-    content: " (" attr(href) ")";
-  }
-  abbr[title]:after {
-    content: " (" attr(title) ")";
-  }
-  a[href^="#"]:after,
-  a[href^="javascript:"]:after {
-    content: "";
-  }
-  pre {
-    white-space: pre-wrap !important;
-  }
-  pre,
-  blockquote {
-    border: 1px solid #999;
-    page-break-inside: avoid;
-  }
-  thead {
-    display: table-header-group;
-  }
-  tr,
-  img {
-    page-break-inside: avoid;
-  }
-  p,
-  h2,
-  h3 {
-    orphans: 3;
-    widows: 3;
-  }
-  h2,
-  h3 {
-    page-break-after: avoid;
-  }
 }

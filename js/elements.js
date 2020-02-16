@@ -13,10 +13,10 @@ let global = {
   "aria-modal": {"values": [true, false]}
 };
 export const elements = {
-  "body": {
+  /*"body": {
     "draggable": false,
     "attributes": global
-  },
+  },*/
   "blockquote": {
     "droppable": false,
     "attributes": {

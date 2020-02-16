@@ -34,14 +34,19 @@ window.editor = (function () {
         editor.save();
       }
     },
-    replaceCss: event => {
-      var ind = event.target.getAttribute("data-index");
-      editor.sheets[0].deleteRule(ind);
-      editor.sheets[0].insertRule(event.target.value, ind);
+    replaceCss: (event) => {
+      var ind = event.currentTarget.getAttribute("data-index");
+      var selector = event.currentTarget.getAttribute("data-selector");
+      var sheet = editor.sheets[0];
+      let newRule = event.currentTarget.querySelector("textarea").value;
+      if (event.currentTarget.querySelectorAll("textarea").length > 1) {
+        newRule = Array.from(event.currentTarget.querySelectorAll("textarea")).map(t => t.getAttribute("data-selector") + " {" + t.value + "}").join(" ");
+      }
+      sheet.deleteRule(ind);
+      sheet.insertRule(selector + " {" + newRule + "}", ind);
     },
     emailify: function(){
       let doc = editor.elms.canvas.contentDocument;
-
       let inlinable = Array.from(doc.styleSheets).filter(s => s.title === "inlineCSS")[0];
       let remove = doc.querySelectorAll("[title='inlineCSS'], [title='editor']");
       remove.forEach(function(s){
@@ -49,8 +54,6 @@ window.editor = (function () {
       });
       let all = doc.querySelectorAll("*");
       all.forEach(function(elm){
-        //if (elm.getAttribute("data-id") !== null) elm.removeAttribute("data-id");
-        //if (elm.getAttribute("data-status") !== null) elm.removeAttribute("data-status");
         if (elm.isContentEditable) elm.removeAttribute("contenteditable");
         if (elm.tagName == "TABLE") {
           elm.setAttribute("border", 0);
@@ -96,7 +99,7 @@ window.editor = (function () {
               && !node.parentNode.isContentEditable;
           }).length > 0;
         }).length > 0;
-        if (hasTextNode) elm.contentEditable = "true";
+        if (hasTextNode) elm.contentEditable = hasTextNode;
       },
       getActiveClick: function (e) {
         e.target !== editor.elms.active ? editor.canvas.setAsActive(e.target) : editor.elms.active;
@@ -123,8 +126,6 @@ window.editor = (function () {
         console.log(activeElm);
         this.updateAttrs(activeElm);
         this.updateStyles();
-        //editor.elms.canvas.contentDocument.querySelector('[data-status="active"]') && editor.elms.canvas.contentDocument.querySelector('[data-status="active"]').removeAttribute("data-status");
-        //activeElm.setAttribute("data-status", "active");
         return activeElm;
       },
       changeActive: (dir) => {
@@ -135,7 +136,7 @@ window.editor = (function () {
         }
       },
       rgbToHex: function(str){
-        var numbers = str.match(/\d/g);
+        var numbers = str.match(/\d+/g);
         var toHex = function (rgb) {
           var hex = Number(rgb).toString(16);
           if (hex.length < 2) hex = "0" + hex;
@@ -143,9 +144,6 @@ window.editor = (function () {
         };
         return "#" + toHex(numbers[0]) + toHex(numbers[1]) + toHex(numbers[2]);
       },
-      /*bindStyles: e => {
-        editor.elms.active.style[e.target.name] = e.target.value;
-      },*/
       updateStyles: () => {
         let sheets = editor.elms.canvas.contentDocument.styleSheets;
         editor.sheets = Array.from(sheets).filter(s => s.title !== "editor");
@@ -154,36 +152,33 @@ window.editor = (function () {
           if (!!sheet.href) return;
           editor.styles = editor.styles.concat(Array.from(sheet.rules));
         });
-        /*.map(rule => {
-            return {
-              //set: rule.parentStyleSheet.insertRule,
-              //del: rule.parentStyleSheet.deleteRule,
-              selectorText: rule.selectorText,
-              cssText: rule.cssText,
-              //elements: editor.elms.canvas.contentDocument.querySelectorAll(rule.selectorText)
-            }
-          })*/
         console.log(editor.sheets);
+        let createStyleForm = function(rule, index){
+          if (rule.conditionText) {
+            return `<form data-index="${index}" data-selector="@media ${rule.conditionText}" onchange="editor.replaceCss(event)">
+              <h4>When ${rule.conditionText.substring(rule.conditionText.indexOf("(") + 1, rule.conditionText.indexOf(")"))}</h4>
+              ${Array.from(rule.cssRules).map(function(m_rule, m_index){
+                let m_text = m_rule.cssText.substring(m_rule.cssText.indexOf("{") + 1, m_rule.cssText.indexOf("}")).replace(/;/g, ";\n");
+                return `<div class="input-group">
+                  <label>${m_rule.selectorText}</label>
+                  <textarea rows="${m_text.match(/;/g).length + 1}" data-selector="${m_rule.selectorText}"  data-index="${index + "," + m_index}">${m_text}</textarea>
+                </div>`;
+            }).join("")}
+            </form>`;
+          }
+          let text = rule.cssText.substring(rule.cssText.indexOf("{") + 1, rule.cssText.indexOf("}")).replace(/;/g, ";\n");
+          return `<form data-index="${index}" data-selector="${rule.selectorText}" onchange="editor.replaceCss(event)">
+            <div class="input-group">
+              <label>${rule.selectorText}</label>
+              <textarea rows="${text.match(/;/g).length + 1}" data-index="${index}">${text}</textarea>
+            </div>
+          </form>`;
+        };
 
-        editor.tabs.styles_tab.innerHTML = editor.styles.map(function(rule, index){
-          return `<div class="input-group">
-            <label>${rule.selectorText}</label>
-            <textarea data-index="${index}" onchange="editor.replaceCss(event)">${rule.cssText}</textarea>
-          </div>`;
-        }).join("");
-
-        console.log(editor.styles);
-        /*var currentStyles = getComputedStyle(editor.elms.active);
-        var styleInputs = document.querySelectorAll(".styles_tab input");
-        styleInputs.forEach(input => {
-          var value = currentStyles[input.name];
-          if (value.indexOf("rgba") === 0) value = editor.canvas.rgbToHex(value);
-          input.value = value;
-        });*/
+        editor.tabs.styles_tab.innerHTML = editor.styles.map(createStyleForm).reverse().join("");
       },
       updateIds: () => {
         editor.elms.canvas.contentDocument.body.querySelectorAll("*:not(style):not(script)").forEach((elm, index) => {
-          //elm.setAttribute("data-id", String(index));
           editor.canvas.setContentEditable(elm);
           //editor.canvas.drag.init(elm);
         });
@@ -227,20 +222,6 @@ window.editor = (function () {
         editor.tabs.attributes_tab.innerHTML = html;
       }
     },
-    panels: {
-      createInput: (p, i) => {
-        let value = p[i], attributes = "";
-        if (Array.isArray(value)) {
-          return `<select name="${i}">${value.map(o => `<option value="${o}">${o.replace("-", " ")}</option>`).join("")}</select>`;
-        } else if (!isNaN(value) && typeof value == "number") {
-          if (String(value).indexOf(".") !== -1) {
-            attributes = `step=".${"0".repeat(String(value).split(".")[1].length - 1)}1"`;
-          }
-          return `<input name="${i}" value="" type="number" ${attributes}/>`;
-        }
-        return `<input name="${i}" value="" type="text"/>`;
-      },
-    },
     toolbar: {
       create: function(){
         editor.elms.toolbar = document.createElement("div");
@@ -277,6 +258,9 @@ window.editor = (function () {
             editor.elms.canvas.style.maxWidth = "";
             editor.elms.canvas.style.maxHeight = "";
           }
+        });//peechSynthesis.speak(new SpeechSynthesisUtterance($0.textContent))
+        document.querySelector("#speak").addEventListener("click", function (e) {
+          speechSynthesis.speak(new SpeechSynthesisUtterance(editor.elms.canvas.contentDocument.body.textContent))
         });
         document.querySelector("#fullScreen").addEventListener("click", function (e) {
           config.node.requestFullscreen();
@@ -299,7 +283,7 @@ window.editor = (function () {
           editor.cm.refresh();
           document.body.classList.toggle("editor_open");
         });
-        document.querySelector("#styles-tabs").addEventListener("change", function (event) {
+        document.querySelector("#sidebar-tabs").addEventListener("change", function (event) {
           document.querySelector(".editor_active") && document.querySelector(".editor_active").classList.remove("editor_active");
           document.querySelector("." + event.target.value + "_tab").classList.add("editor_active");
         });
@@ -312,7 +296,7 @@ window.editor = (function () {
             innerHTML = innerHTML.replace(new RegExp(c, "g"), email_components[c]);
           }
           editor.elms.canvas.contentDocument.documentElement.innerHTML = innerHTML;
-          editor.emailify()
+          editor.emailify();
           var html = editor.elms.canvas.contentDocument.documentElement.innerHTML.replace(/<tbody>|<\/tbody>/g, "");
           editor.cm.setValue(html)
         });
@@ -327,7 +311,6 @@ window.editor = (function () {
         editor.elms.canvas.contentDocument.body.addEventListener("click", editor.canvas.getActiveClick);
         editor.elms.canvas.contentDocument.body.addEventListener("keyup", editor.canvas.getActiveKey);
         editor.elms.canvas.contentDocument.body.querySelectorAll("*:not(style):not(script)").forEach((elm, index) => {
-          //elm.setAttribute("data-id", String(index));
           editor.canvas.setContentEditable(elm);
           //editor.canvas.drag.init(elm);
         });
@@ -365,25 +348,16 @@ window.editor = (function () {
       editor.elms.tab_panels.id = "tab_panels";
       editor.elms.editor.appendChild(editor.elms.tab_panels);
 
-      let id = "styles_tab";
-      let html = "";
-      /*let html = styles.map(p => `
-        <div class="panel">
-        <h2>${p.id}</h2>
-        ${Object.keys(p).map(i => (i === "id") ? "" : `<div class="input-group">
-          <label>${i.replace("-", " ")}</label>
-          ${editor.panels.createInput(p, i)}
-          </div>`).join("")}
-        </div>`).join("");*/
-      editor.tabs[id] = document.createElement("div");
-      editor.tabs[id].classList.add("editor_panel", id);
-      //editor.tabs[id].innerHTML = html;
-      editor.elms.tab_panels.appendChild(editor.tabs[id]);
-      //document.querySelector(".styles_tab").onchange = editor.canvas.bindStyles;
-
-      id = "attributes_tab";
+      let id = "edit_tab";
       editor.tabs[id] = document.createElement("div");
       editor.tabs[id].classList.add("editor_panel", "editor_active", id);
+      editor.tabs["attributes_tab"] = document.createElement("div");
+      editor.tabs["attributes_tab"].classList.add("attributes_tab");
+
+      editor.tabs["styles_tab"] = document.createElement("div");
+      editor.tabs[id].appendChild(editor.tabs["attributes_tab"]);
+      editor.tabs[id].appendChild(editor.tabs["styles_tab"]);
+
       editor.elms.tab_panels.appendChild(editor.tabs[id]);
       document.querySelector(".attributes_tab").onchange = editor.canvas.bindAttributes;
 
@@ -392,19 +366,19 @@ window.editor = (function () {
         if (!!e.droppable) {
           html = `<${s}><${e.droppable}>placeholder</${e.droppable}></${s}>`;
         }
-        return html.replace(/</g, "&lt;");
+        return html;
       };
       id = "blocks_tab";
-      html = "<h4>Custom Blocks</h4>";
+      let html = "<h4>Custom Blocks</h4>";//.replace(/</g, "&lt;")
       html += config.blocks.map(b => `
         <div class="block" onclick="editor.addBlock(this)">
           <h5>${b.id}</h5>
-          <code draggable="true">${b.html.replace(/</g, "&lt;")}</code>
+          <code id="${b.id}" draggable="true">${b.html}</code>
         </div>`).join("");
       html += "<h4>Elements</h4>";
       html += Object.keys(elements).map(b => `
         <div class="block" onclick="editor.addBlock(this)">
-          <!--<h5>${b}</h5>-->
+          <h5>${b}</h5>
           <code draggable="true">${printTags(elements[b], b)}</code>
         </div>`).join("");
       editor.tabs[id] = document.createElement("div");

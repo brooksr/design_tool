@@ -1,4 +1,4 @@
-export let modal = `<body>
+export let modal = `
 <style>
   #usi_container {
     height:100%;
@@ -25,19 +25,42 @@ export let modal = `<body>
     text-align:center;
     padding: 3em 2em;
   }
+  .usi_display button {
+    cursor: pointer;
+  }
   #usi_close {
     position: absolute;
     top: 0;
     right: 0;
+    background: none;
+    font-size: 0;
+    border: none;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    color: #888;
   }
-  .usi_h {
+  #usi_close:after {
+    content: \t"\u00D7";
+    font-size: 30px;
+  }
+  .usi_display h1 {
     font-size: 2em;
   }
-  .usi_p {
+  .usi_display p {
     padding: 1em 0;
   }
   .usi_p1, .usi_p2 {display:none;}
   .usi_active {display:inherit;}
+  @media screen and (min-width: 400px) {
+    .usi_display h1 {
+      font-size: 3em;
+    }
+    .usi_display p {
+      font-size: 2em;
+    }
+  }
 </style>
 <script type="text/javascript">
   //debugger;
@@ -54,20 +77,9 @@ export let modal = `<body>
 <div id="usi_container">
   <div class="usi_display">
     <div class="usi_content">
-      <button id="usi_close" class="usi_button" type="button" onclick="alert('Close')">&times;</button>
-      <div class="usi_p1 usi_active">
-        <h1 class="usi_h">Sit. Stay. Shop!</h1>
-        <p class="usi_p">Enter your email and receive 15% off your next order.</p>
-        <label class="usi_label" for="usi_email">Email address</label>
-        <input class="usi_input" id="usi_email" name="usi_email" type="email" autocomplete="email" placeholder="Enter your email">
-        <button class="usi_button" type="button" onclick="debugger;usi_js.show('.usi_p2')">Redeem Now</button>
-      </div>
-      <div class="usi_p2">
-        <h1 class="usi_h">Thanks!</h1>
-        <p class="usi_p">Your email will be delivered soon.</p>
-        <button class="usi_button" type="button" onclick="alert('Continue')">Continue</button>
-      </div>
+      <button id="usi_close" class="usi_button" type="button" onclick="alert('Close')">Close</button>
+
     </div>
   </div>
 </div>
-</body>`;
+`;
