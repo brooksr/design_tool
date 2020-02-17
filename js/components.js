@@ -117,10 +117,10 @@ export let components = {
     <button type="button" id="zoomOut"><i class="fas fa-search-minus"></i> <span class="tablet-tooltip">Zoom Out</span></button>
   </div>
   <div class="button-group visual_control">
-    <button type="button" onclick="editor.canvas.moveUp()"><i class="fas fa-arrow-up"></i> <span class="tablet-tooltip">Order Up</span></button>
-    <button type="button" onclick="editor.canvas.moveDown()"><i class="fas fa-arrow-down"></i> <span class="tablet-tooltip">Order Down</span></button>
-    <button type="button" onclick="editor.canvas.changeActive('up')"><i class="far fa-arrow-alt-circle-up"></i> <span class="tablet-tooltip">Focus Up</span></button>
-    <button type="button" onclick="editor.canvas.changeActive('down')"><i class="far fa-arrow-alt-circle-down"></i> <span class="tablet-tooltip">Focus Down</span></button>
+    <button type="button" onclick="editor.moveUp()"><i class="fas fa-arrow-up"></i> <span class="tablet-tooltip">Order Up</span></button>
+    <button type="button" onclick="editor.moveDown()"><i class="fas fa-arrow-down"></i> <span class="tablet-tooltip">Order Down</span></button>
+    <button type="button" onclick="editor.changeActive('up')"><i class="far fa-arrow-alt-circle-up"></i> <span class="tablet-tooltip">Focus Up</span></button>
+    <button type="button" onclick="editor.changeActive('down')"><i class="far fa-arrow-alt-circle-down"></i> <span class="tablet-tooltip">Focus Down</span></button>
   </div>
   <div class="button-group visual_control">
     <button type="button" id="toggleOutlines"><i class="fas fa-border-none"></i> <span class="tablet-tooltip">Toggle Outlines</span></button>

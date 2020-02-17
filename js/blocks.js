@@ -65,8 +65,8 @@ export const blocks = [
     <div class="usi_name">Product Name</div>
     <div class="usi_price">$99.99</div>
 </div>`
-  }, {
+  }/*, {
     id: "video",
     html: `<iframe width="560" height="315" src="https://www.youtube.com/embed/NpEaa2P7qZI" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
-  }
+  }*/
 ];

@@ -176,6 +176,7 @@ button:focus {
   max-width: 100%;
   margin: auto;
 }
+
 #design_tool {
   display: flex;
   flex-wrap: wrap;
@@ -400,9 +401,34 @@ button:focus {
   padding: 0.5em 0 1em 0;
 }
 .styles_tab form {
-  border: 1px solid x#333;
+  border: 1px dotted #fff;
   margin-bottom: 0.5em;
   padding: 0.5em;
+}
+.styles_tab [name="selector"] {
+  flex: 1 0 100%;
+  color: #4db357;
+}
+.styles_tab [name*="property"] {
+  text-align: right;
+}
+.styles_tab input {
+  flex: 1 0 50%;
+}
+.css-line {
+  display: flex;
+  width: 100%;
+}
+#hint {
+  background: #fff;
+  color: #000;
+  position: fixed;
+  top: -100vh;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 0.9em;
+  text-align:right;
 }
 @media only screen and (max-width: 1680px) {
   button:hover .tablet-tooltip, label:hover .tablet-tooltip {
