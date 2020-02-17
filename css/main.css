@@ -395,6 +395,11 @@ button:focus {
 }
 .styles_tab {
   font-size: 0.9em;
+  display: flex;
+  flex-wrap: wrap;
+}
+.styles_tab * {
+  flex: 1 0 100%;
 }
 .styles_tab h4 {
   margin: 0;
@@ -404,6 +409,16 @@ button:focus {
   border: 1px dotted #fff;
   margin-bottom: 0.5em;
   padding: 0.5em;
+  order: 1;
+}
+.styles_tab form.matches_active {
+  order: 0;
+}
+.styles_tab form:not(.matches_active) * {
+  color:#aaa;
+}
+.styles_tab input:invalid {
+  border: 1px solid red;
 }
 .styles_tab [name="selector"] {
   flex: 1 0 100%;
@@ -429,6 +444,10 @@ button:focus {
   padding: 0;
   font-size: 0.9em;
   text-align:right;
+}
+#hint li {
+  transition: height 250ms ease;
+  overflow: hidden;
 }
 @media only screen and (max-width: 1680px) {
   button:hover .tablet-tooltip, label:hover .tablet-tooltip {

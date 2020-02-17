@@ -175,8 +175,9 @@ window.editor = (function () {
         }).join("")}
           </form>`;
       }
+      let matches = editor.doc.querySelectorAll(rule.selectorText);
       let text = rule.cssText.substring(rule.cssText.indexOf("{") + 1, rule.cssText.indexOf("}")).replace(/;/g, ";\n");
-      return `<form data-index="${index}" data-selector="${rule.selectorText}" onchange="editor.replaceCss(event)">
+      return `<form class="${matches.length > 0 ? "doc_has_match" : "hidden"} ${Array.from(matches).indexOf(editor.elms.active) != -1 ? "matches_active" : ""}" data-index="${index}" data-selector="${rule.selectorText}" onchange="editor.replaceCss(event)">
           <div class="input-group">
           <input name="selector" type="text" value="${rule.selectorText}" />
           ${text.trim().split(";").filter(Boolean).map(r => {
@@ -184,7 +185,7 @@ window.editor = (function () {
             let value = r.trim().split(":")[1].trim();
             return `
             <div class="css-line">
-              <input name="property" type="text" value="${prop}" autocomplete="off"/>
+              <input name="property" type="text" value="${prop}" autocomplete="off" pattern="${editor.properties.join("|")}"/>
               <input name="value" type="text" value="${value}" autocomplete="off" />
             </div>
           `}).join("")}
@@ -328,11 +329,11 @@ window.editor = (function () {
       },
     },
     onload: function(){
-      editor.elms.canvas_style = document.createElement("style");
       editor.doc = editor.elms.canvas.contentDocument;
-      editor.doc.head.appendChild(editor.elms.canvas_style);
+      editor.elms.canvas_style = document.createElement("style");
       editor.elms.canvas_style.title = "editor";
       editor.elms.canvas_style.innerHTML = components.editor_css;
+      editor.doc.head.appendChild(editor.elms.canvas_style);
 
       editor.doc.body.addEventListener("click", editor.getActiveClick);
       editor.doc.body.addEventListener("keyup", editor.getActiveKey);
@@ -370,13 +371,17 @@ window.editor = (function () {
         }
         return html;
       };
+      
+      editor.properties = Object.keys(Object.assign(...editor.s)).filter(p => p != "id");
       editor.elms.editor = document.createElement("div");
       editor.elms.editor.id = "editor";
       editor.elms.editor.innerHTML = `<div id="tab_panels">
           <div class="editor_panel edit_tab editor_active">
             <div class="attributes_tab"></div>
             <div class="styles_tab"></div>
-            <ul id="hint"></ul>
+            <ul id="hint">${editor.properties.map(style => {
+              return `<li onclick="editor.activeInput.value = event.target.textContent;">${style}</li>`;
+            }).join("")}</ul>
           </div>
           <div class="editor_panel blocks_tab">
             <h4>Custom Blocks</h4>
@@ -400,14 +405,20 @@ window.editor = (function () {
       document.querySelector(".styles_tab").onkeyup = function(event){
         if (event.target.tagName === "INPUT" && event.target.name === "property") {
           window.editor.activeInput = event.target;
-          let properties = Object.keys(Object.assign(...editor.s));
+          window.editor.activeInput.onblur = function(){
+            setTimeout(() => {
+              hint.querySelectorAll("li").forEach(function(li){
+                li.style.height = 0;
+              });
+            }, 100);
+          }
           let hint = document.getElementById("hint");
           hint.style.top = event.target.getBoundingClientRect().bottom + "px";
           hint.style.left = event.target.getBoundingClientRect().left + "px";
           hint.style.width = event.target.getBoundingClientRect().width + "px";
-          hint.innerHTML = properties.map(style => {
-            return style.indexOf(event.target.value) !== -1 ? `<li onclick="editor.activeInput.value = event.target.textContent;">${style}</li>` : ""
-          }).join("");
+          hint.querySelectorAll("li").forEach(function(li){
+            li.style.height = li.textContent != event.target.value && li.textContent.indexOf(event.target.value) !== -1  ? "15px" : 0;
+          });
         }
       };
 
