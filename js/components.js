@@ -82,9 +82,6 @@ export let components = {
   }
   [data-status="active"] {
     outline: 1px dashed green !important;
-  }
-  :-moz-drag-over {
-    outline: 1px solid yellow;
   }`,
   toolbar: `
   <div class="button-group">

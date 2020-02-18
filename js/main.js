@@ -162,16 +162,22 @@ window.editor = (function () {
         if (Array.isArray(styles[prop])) {
           return `
           <div class="css-line">
-            <input name="property" type="text" value="${prop}" autocomplete="off" pattern="${editor.properties.join("|")}" />
-            <select name="value" value="${value}" autocomplete="off">
+            <input name="property" type="text" autocomplete="off" value="${prop}" pattern="${editor.properties.join("|")}" />
+            <select name="value" autocomplete="off" value="${value}">
               ${styles[prop].map(p => `<option value="${p}" ${p == value ? "selected" : ""}>${p}</option>`).join("")}
             </select>
           </div>`
         }
         return `
         <div class="css-line">
-          <input name="property" type="text" value="${prop}" autocomplete="off" pattern="${editor.properties.join("|")}" />
-          <input name="value" type="text" value="${value.replace(/"/g, "'")}" autocomplete="off" pattern="${styles[prop]}" />
+          <input name="property" type="text" autocomplete="off" value="${prop}" pattern="${editor.properties.join("|")}" />
+          <input 
+            name="value" type="text" autocomplete="off" 
+            value="${value.replace(/"/g, "'")}"
+            pattern="${styles[prop]}" 
+            class="${value.indexOf("rgb") === 0 ? `rgb` : "nonrgb"}"
+            ${value.indexOf("rgb") === 0 ? `style="background-color:${value};"` : ""}
+            />
         </div>`}).join("");
 
       if (rule.conditionText) {
@@ -186,7 +192,7 @@ window.editor = (function () {
               </div>`;
         }).join("")}
           </form>`;
-      } else {
+      } else if (rule.selectorText) {
         let matches = editor.doc.querySelectorAll(rule.selectorText.split(":")[0]);
         let text = rule.cssText.substring(rule.cssText.indexOf("{") + 1, rule.cssText.indexOf("}")).replace(/;/g, ";\n");
         return `<form class="${matches.length > 0 ? "doc_has_match" : "hidden"} ${Array.from(matches).indexOf(editor.elms.active) != -1 ? "matches_active" : ""}" data-index="${index}" data-selector="${rule.selectorText}" onchange="editor.replaceCss(event)">
@@ -337,8 +343,8 @@ window.editor = (function () {
       editor.doc = editor.elms.canvas.contentDocument;
       editor.elms.canvas_style = document.createElement("style");
       editor.elms.canvas_style.title = "editor";
-      editor.elms.canvas_style.innerHTML = components.editor_css;
       editor.doc.head.appendChild(editor.elms.canvas_style);
+      editor.elms.canvas_style.innerHTML = components.editor_css;
 
       editor.doc.body.addEventListener("click", editor.getActiveClick);
       editor.doc.body.addEventListener("keyup", editor.getActiveKey);
@@ -347,13 +353,15 @@ window.editor = (function () {
       document.addEventListener("keydown", editor.shortcuts);
       editor.doc.addEventListener("keydown", editor.shortcuts);
 
-      editor.setAsActive(editor.doc.querySelector("div"));
+      editor.setAsActive(editor.doc.querySelector("[class]"));
     },
     create: function () {
       editor.toolbar.create();
 
       editor.elms.canvas = document.createElement("iframe");
       editor.elms.canvas.id = "canvas";
+      editor.elms.canvas.scrolling = "yes";
+      editor.elms.canvas.className = "scroll";
       editor.elms.canvas.srcdoc = config.template;
       config.node.appendChild(editor.elms.canvas);
       editor.elms.canvas.onload = editor.onload;
@@ -380,7 +388,7 @@ window.editor = (function () {
       editor.properties = Object.keys(Object.assign(...editor.s)).filter(p => p != "id");
       editor.elms.editor = document.createElement("div");
       editor.elms.editor.id = "editor";
-      editor.elms.editor.innerHTML = `<div id="tab_panels">
+      editor.elms.editor.innerHTML = `<div id="tab_panels" class="scroll">
           <div class="editor_panel edit_tab editor_active">
             <div class="attributes_tab"></div>
             <div class="styles_tab"></div>
@@ -410,7 +418,18 @@ window.editor = (function () {
       config.node.appendChild(editor.elms.editor);
       document.querySelector(".attributes_tab").onchange = editor.bindAttributes;
       document.querySelector(".styles_tab").onkeyup = function(event){
-        if (event.target.tagName === "INPUT" && event.target.name === "property") {
+        if (event.target.tagName === "INPUT" && event.target.name === "value" && (event.which == 38 || event.which == 40)) {
+          let num = event.target.value.replace(/[^0-9]/g, "");
+          let change = 0;
+          if (event.which == 38) {
+            change = 1;
+          } else if (event.which == 40) {
+            change = -1;
+          }
+          if (event.shiftKey) change *= 10;
+          else if (event.ctrlKey) change *= 100;
+          event.target.value = event.target.value.replace(num, Number(num) + change);
+        } else if (event.target.tagName === "INPUT" && event.target.name === "property") {
           window.editor.activeInput = event.target;
           window.editor.activeInput.onblur = function(){
             setTimeout(() => {
