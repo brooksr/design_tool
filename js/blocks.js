@@ -1,17 +1,7 @@
 export const blocks = [
   {
     id: "row",
-    html: `
-<style>
-.usi_row {
-    display: flex;
-}
-.usi_col {
-    flex: 1 0 auto;
-}
-</style>
-<div class="usi_row"><div class="usi_col">Placeholder</div></div>
-`
+    html: `<div class="usi_row"><div class="usi_col">Placeholder</div></div>`
   }, {
     id: "col",
     html: `<div class="usi_col">Placeholder</div>`

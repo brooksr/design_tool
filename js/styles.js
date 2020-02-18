@@ -1,38 +1,36 @@
   /**
    * TODO
-   * Media queries
-   * Psuedo elements
    * Animation
-   * Transition and Transform
    * Grid, Flexbox
    * SVG, masking
    * Lists
    * */
+  const units =  ["px", "%", "em", "vmax", "vmin", "vh", "vw"];
   const defaults = {
-    color: "#000000",
-    size: "",//["auto", "min-content", "max-content", "fit-content", "100%"],
-    overflow: "",//["visible", "hidden", "clip", "scroll", "auto"],
+    number: "[0-9]+("+units.join("|")+")?",
+    color: "",//#000000
+    size: "auto|[0-9]+("+units.join("|")+")",//["auto", "min-content", "max-content", "fit-content", "100%"],
+    overflow: ["visible", "hidden", "clip", "scroll", "auto"],
 }
   export let styles = [
-    {
+     {
       "id": "Text",
       "font-family": "",//["Arial Regular", "Book Condensed", "Calibri Bold"],
-      "font-style": "",//["normal", "italic", "oblique"],
-      "font-weight": "",//["normal", "bold", "lighter"],
-      "font-size": "16px",
-      "line-height": "1.25",
-      "letter-spacing": "0px",
-      "word-spacing": "0px",
+      "font-style": ["normal", "italic", "oblique"],
+      "font-weight": "[0-9]+|normal|bold|lighter",//["normal", "bold", "lighter"],
+      "font-size": defaults.size,
+      "line-height": defaults.number,
+      "letter-spacing": defaults.size,
+      "word-spacing": defaults.number,
       "color": defaults.color,
       "text-transform": "",//["capitalize", "lowercase", "uppercase"],
       "text-decoration":"",//e => [["underline", "line-through", "overline"], defaults.color, ["solid", "double", "dotted", "dashed", "wavy", "initial", "inherit"]],
-      "text-align": "",//["left", "center", "right", "justify"],
-      "text-indent": "0em",
-      "text-shadow": "1px 1px #000000",
-      "word-wrap": "",//["normal", "break-word", "anywhere"],
-      "white-space": "",//["normal", "pre", "nowrap", "pre-wrap", "pre-line"],
-      //"text-wrap": "",//["wrap", "nowrap", "balance", "stable", "pretty"],
-      "text-overflow": "",//["clip", "ellipsis"],
+      "text-align": ["left", "center", "right", "justify"],
+      "text-indent": defaults.number,
+      "text-shadow": "",//"1px 1px #000000",
+      "word-wrap": ["normal", "break-word", "anywhere"],
+      "white-space": ["normal", "pre", "nowrap", "pre-wrap", "pre-line"],
+      "text-overflow": ["clip", "ellipsis"],
     }, {
       "id": "Sizing",
       "height": defaults.size,
@@ -43,14 +41,15 @@
       "max-height": defaults.size,
       "overflow-x": defaults.overflow,
       "overflow-y": defaults.overflow,
-      "resize": "",//["none", "both", "horizontal", "vertical"],
+      "flex": "",
+      "resize": ["none", "both", "horizontal", "vertical"],
     }, {
       "id": "Positioning",
-      "position": "",//["static", "relative", "absolute", "fixed", "inherit"],
-      "top": "",//["auto", "0px"],
-      "right": "",//["auto", "0px"],
-      "bottom": "",//["auto", "0px"],
-      "left": "",//["auto", "0px"],
+      "position": ["static", "relative", "absolute", "fixed", "inherit"],
+      "top": defaults.size,
+      "right": defaults.size,
+      "bottom": defaults.size,
+      "left": defaults.size,
       "margin": "",//["0px", "0px", "0px", "0px"],
       "padding": "",//["0px", "0px", "0px", "0px"],
       "clear": "",//["none", "inline-start", "inline-end", "block-start", "block-end", "left", "right", "top", "bottom"],
@@ -69,10 +68,14 @@
       "filter": "",
       "border": "0px solid",
       "outline": "0px solid",
-      "border-radius": "0px",
-      "opacity": "1.00",
+      "border-radius": defaults.size,
+      "opacity": "[0-1].[0-9][0-9]",
+      "transition": "",
       "transform": "",
-      "visibility": "",//["visible", "hidden"],
-      "cursor": "",//["auto", "default", "none", "context-menu", "help", "pointer", "progress", "wait", "cell", "crosshair", "text", "vertical-text", "alias", "copy", "move", "no-drop", "not-allowed", "e-resize", "n-resize", "ne-resize", "nw-resize", "s-resize", "se-resize", "sw-resize", "w-resize", "ew-resize", "ns-resize", "nesw-resize", "nwse-resize", "col-resize", "row-resize", "all-scroll", "zoom-in", "zoom-out", "grab", "grabbing"],
+      "visibility": ["visible", "hidden"],
+      "cursor": ["auto", "default", "none", "context-menu", "help", "pointer", "progress", "wait", "cell", "crosshair", "text", "vertical-text", "alias", "copy", "move", "no-drop", "not-allowed", "e-resize", "n-resize", "ne-resize", "nw-resize", "s-resize", "se-resize", "sw-resize", "w-resize", "ew-resize", "ns-resize", "nesw-resize", "nwse-resize", "col-resize", "row-resize", "all-scroll", "zoom-in", "zoom-out", "grab", "grabbing"],
+    }, {
+      "id": "Psuedo",
+      "content": "",
     }
   ];

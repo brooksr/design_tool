@@ -37,7 +37,10 @@ export let config = {
       icon: '<i class="fas fa-html5"></i>'
     }
   ],
-  blocks: blocks,
+  blocks: [{
+    "name": "Modal blocks",
+    "blocks": blocks
+  }],
   images: [
     "https://via.placeholder.com/600x50?text=LOGO",
     "https://via.placeholder.com/50x50?text=1",

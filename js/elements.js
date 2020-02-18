@@ -183,13 +183,13 @@ export const elements = {
   },
   "button": {
     "attributes": {
+      ...global,
       "autofocus": "",
       "disabled": "",
       "name": "",
       "type": "",
       "value": ""
     },
-    ...global
   },
   "form": {
     "attributes": {

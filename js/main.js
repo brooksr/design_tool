@@ -155,42 +155,47 @@ window.editor = (function () {
       return "#" + toHex(numbers[0]) + toHex(numbers[1]) + toHex(numbers[2]);
     },
     createStyleForm: function(rule, index){
+      let outputRule = text => text.trim().split(";").filter(Boolean).map(r => {
+        let styles = Object.assign(...editor.s);
+        let prop = r.trim().split(":")[0].trim();
+        let value = r.trim().split(":")[1].trim();
+        if (Array.isArray(styles[prop])) {
+          return `
+          <div class="css-line">
+            <input name="property" type="text" value="${prop}" autocomplete="off" pattern="${editor.properties.join("|")}" />
+            <select name="value" value="${value}" autocomplete="off">
+              ${styles[prop].map(p => `<option value="${p}" ${p == value ? "selected" : ""}>${p}</option>`).join("")}
+            </select>
+          </div>`
+        }
+        return `
+        <div class="css-line">
+          <input name="property" type="text" value="${prop}" autocomplete="off" pattern="${editor.properties.join("|")}" />
+          <input name="value" type="text" value="${value.replace(/"/g, "'")}" autocomplete="off" pattern="${styles[prop]}" />
+        </div>`}).join("");
+
       if (rule.conditionText) {
         return `<form data-index="${index}" data-selector="@media ${rule.conditionText}" onchange="editor.replaceCss(event)">
             <h4>When ${rule.conditionText.substring(rule.conditionText.indexOf("(") + 1, rule.conditionText.indexOf(")"))}</h4>
             ${Array.from(rule.cssRules).map(function(rule, index){
-          let text = rule.cssText.substring(rule.cssText.indexOf("{") + 1, rule.cssText.indexOf("}")).replace(/;/g, ";\n");
-          return `<div class="input-group">
+              let matches = editor.doc.querySelectorAll(rule.selectorText.split(":")[0]);
+              let text = rule.cssText.substring(rule.cssText.indexOf("{") + 1, rule.cssText.indexOf("}")).replace(/;/g, ";\n");
+              return `<div class="input-group ${matches.length > 0 ? "doc_has_match" : "hidden"} ${Array.from(matches).indexOf(editor.elms.active) != -1 ? "matches_active" : ""}">
                 <input name="selector" type="text" value="${rule.selectorText}" />
-                ${text.trim().split(";").filter(Boolean).map(r => {
-                  let prop = r.trim().split(":")[0].trim();
-                  let value = r.trim().split(":")[1].trim();
-                  return `
-                    <div class="css-line">
-                      <input name="property" type="text" value="${prop}" autocomplete="off" />
-                      <input name="value" type="text" value="${value}" autocomplete="off" />
-                    </div>
-                `}).join("")}
+                ${outputRule(text)}
               </div>`;
         }).join("")}
           </form>`;
-      }
-      let matches = editor.doc.querySelectorAll(rule.selectorText);
-      let text = rule.cssText.substring(rule.cssText.indexOf("{") + 1, rule.cssText.indexOf("}")).replace(/;/g, ";\n");
-      return `<form class="${matches.length > 0 ? "doc_has_match" : "hidden"} ${Array.from(matches).indexOf(editor.elms.active) != -1 ? "matches_active" : ""}" data-index="${index}" data-selector="${rule.selectorText}" onchange="editor.replaceCss(event)">
-          <div class="input-group">
-          <input name="selector" type="text" value="${rule.selectorText}" />
-          ${text.trim().split(";").filter(Boolean).map(r => {
-            let prop = r.trim().split(":")[0].trim();
-            let value = r.trim().split(":")[1].trim();
-            return `
-            <div class="css-line">
-              <input name="property" type="text" value="${prop}" autocomplete="off" pattern="${editor.properties.join("|")}"/>
-              <input name="value" type="text" value="${value}" autocomplete="off" />
+      } else {
+        let matches = editor.doc.querySelectorAll(rule.selectorText.split(":")[0]);
+        let text = rule.cssText.substring(rule.cssText.indexOf("{") + 1, rule.cssText.indexOf("}")).replace(/;/g, ";\n");
+        return `<form class="${matches.length > 0 ? "doc_has_match" : "hidden"} ${Array.from(matches).indexOf(editor.elms.active) != -1 ? "matches_active" : ""}" data-index="${index}" data-selector="${rule.selectorText}" onchange="editor.replaceCss(event)">
+            <div class="input-group">
+            <input name="selector" type="text" value="${rule.selectorText}" />
+            ${outputRule(text)}
             </div>
-          `}).join("")}
-          </div>
-        </form>`;
+          </form>`;
+      }
     },
     updateStyles: () => {
       let sheets = editor.doc.styleSheets;
@@ -384,12 +389,14 @@ window.editor = (function () {
             }).join("")}</ul>
           </div>
           <div class="editor_panel blocks_tab">
-            <h4>Custom Blocks</h4>
             ${config.blocks.map(b => `
-            <div class="block" onclick="editor.addBlock(this)">
-              <h5>${b.id}</h5>
-              <code id="${b.id}" draggable="true">${b.html}</code>
-            </div>`).join("")}
+            <h4>${b.name}</h4>
+              ${b.blocks.map(block => `
+              <div class="block" onclick="editor.addBlock(this)">
+                <h5>${block.id}</h5>
+                <code id="${block.id}" draggable="true">${block.html}</code>
+              </div>`).join("")}
+            `).join("")}
 
             <h4>Elements</h4>
             ${Object.keys(elements).map(b => `

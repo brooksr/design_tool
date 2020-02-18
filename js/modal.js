@@ -13,7 +13,7 @@ export let modal = `
   }
   .usi_display {
     font-family: sans-serif;
-    background:#fff;
+    background: hsla(0, 0%, 100%, 1);
     color:#000;
     max-width:40em;
     width:100%;
@@ -33,17 +33,16 @@ export let modal = `
     top: 0;
     right: 0;
     background: none;
-    font-size: 0;
     border: none;
     width: 30px;
     height: 30px;
     line-height: 30px;
+    font-size: 30px;
     text-align: center;
     color: #888;
   }
   #usi_close:after {
-    content: \t"\u00D7";
-    font-size: 30px;
+    content: "\\\u00D7";
   }
   .usi_display h1 {
     font-size: 2em;
@@ -53,6 +52,13 @@ export let modal = `
   }
   .usi_p1, .usi_p2 {display:none;}
   .usi_active {display:inherit;}
+
+  .usi_row {
+      display: flex;
+  }
+  .usi_col {
+      flex: 1 0 auto;
+  }
   @media screen and (min-width: 400px) {
     .usi_display h1 {
       font-size: 3em;
@@ -77,7 +83,7 @@ export let modal = `
 <div id="usi_container">
   <div class="usi_display">
     <div class="usi_content">
-      <button id="usi_close" class="usi_button" type="button" onclick="alert('Close')">Close</button>
+      <button id="usi_close" class="usi_button" type="button" onclick="alert('Close')" aria-label="Close"></button>
 
     </div>
   </div>

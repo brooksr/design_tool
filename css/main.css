@@ -406,19 +406,20 @@ button:focus {
   padding: 0.5em 0 1em 0;
 }
 .styles_tab form {
-  border: 1px dotted #fff;
+  border: 1px dashed #888;
   margin-bottom: 0.5em;
   padding: 0.5em;
   order: 1;
 }
-.styles_tab form.matches_active {
+.styles_tab .matches_active {
   order: 0;
+  background: #333333;
 }
-.styles_tab form:not(.matches_active) * {
-  color:#aaa;
+.styles_tab .matches_active * {
+  font-weight: bold;
 }
 .styles_tab input:invalid {
-  border: 1px solid red;
+  border-bottom: 1px dashed red;
 }
 .styles_tab [name="selector"] {
   flex: 1 0 100%;
@@ -427,8 +428,11 @@ button:focus {
 .styles_tab [name*="property"] {
   text-align: right;
 }
-.styles_tab input {
+.styles_tab input, .styles_tab select {
   flex: 1 0 50%;
+}
+.styles_tab option {
+  background: #333;
 }
 .css-line {
   display: flex;
@@ -448,6 +452,7 @@ button:focus {
 #hint li {
   transition: height 250ms ease;
   overflow: hidden;
+  height: 0;
 }
 @media only screen and (max-width: 1680px) {
   button:hover .tablet-tooltip, label:hover .tablet-tooltip {
