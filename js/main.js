@@ -38,16 +38,16 @@ window.editor = (function () {
     replaceCss: (event) => {
       var ind = event.currentTarget.getAttribute("data-index");
       var selectors = event.currentTarget.querySelectorAll("[name='selector']");
-      var selector = selectors[0].value;
+      var selector = event.currentTarget.getAttribute("data-selector");
       var sheet = editor.sheets[0];
-      //let newRule = event.currentTarget.querySelector("textarea").value;
       let newRule = "";
       if (selectors.length > 1) {
-        /*newRule = Array.from(event.currentTarget.querySelectorAll("textarea")).map(t => {
-          return t.getAttribute("data-selector") + " {" + t.value + "}"
-        }).join(" ");*/
-        event.currentTarget.querySelectorAll(".css-line").forEach(line => {
-          newRule += line.querySelector("[name='property']").value + ": " + line.querySelector("[name='value']").value + ";";
+        event.currentTarget.querySelectorAll(".input-group").forEach(group => {
+          newRule += group.querySelector("[name='selector']").value + " {";
+          group.querySelectorAll(".css-line").forEach(line => {
+            newRule += line.querySelector("[name='property']").value + ": " + line.querySelector("[name='value']").value + ";";
+          });
+          newRule += "}";
         });
       } else {
         event.currentTarget.querySelectorAll(".css-line").forEach(line => {
@@ -61,9 +61,7 @@ window.editor = (function () {
       let doc = editor.doc;
       let inlinable = Array.from(doc.styleSheets).filter(s => s.title === "inlineCSS")[0];
       let remove = doc.querySelectorAll("[title='inlineCSS'], [title='editor']");
-      remove.forEach(function(s){
-        s.parentNode.removeChild(s);
-      });
+      remove.forEach(s => s.parentNode.removeChild(s));
       let all = doc.querySelectorAll("*");
       all.forEach(function(elm){
         if (elm.isContentEditable) elm.removeAttribute("contenteditable");
@@ -83,18 +81,18 @@ window.editor = (function () {
         matches.forEach(function(m){
           //set attrs
           style.forEach(function(s){
-              if (s.indexOf(": ") == -1) return;
+              if (s.indexOf(": ") === -1) return;
               // set style
               var r = s.trim().split(": ");
-              if (r.length === 0) alert(r)
+              if (r.length === 0) alert(r);
               var prop = r[0], value = r[1];
               var importance = "";
-              if (value.indexOf(" !important") != -1) {
+              if (value.indexOf(" !important") !== -1) {
                 value = value.replace(" !important", "");
                 importance = "important";
               }
               m.style.setProperty(prop, value, importance);
-              if (["border", "height", "width", "max-height", "max-width"].indexOf(prop) != -1 && (m.tagName == "TD" || m.tagName == "TABLE" || m.tagName == "IMG")) {
+              if (["border", "height", "width", "max-height", "max-width"].indexOf(prop) !== -1 && (m.tagName === "TD" || m.tagName === "TABLE" || m.tagName === "IMG")) {
                 m.setAttribute(prop.replace("max-", ""), value.replace("px", "").replace("none", "0"));
               }
           });
@@ -172,10 +170,10 @@ window.editor = (function () {
         return `
         <div class="css-line">
           <input name="property" type="text" autocomplete="off" value="${prop}" pattern="${editor.properties.join("|")}" />
-          <input 
-            name="value" type="text" autocomplete="off" 
+          <input
+            name="value" type="text" autocomplete="off"
             value="${value.replace(/"/g, "'")}"
-            pattern="${styles[prop]}" 
+            pattern="${styles[prop]}"
             class="${value.indexOf("rgb") === 0 ? `rgb` : "nonrgb"}"
             ${value.indexOf("rgb") === 0 ? `style="background-color:${value};"` : ""}
             />
@@ -349,7 +347,7 @@ window.editor = (function () {
         document.querySelector("#toggleImages").addEventListener("click", function (event) {
           let imgs = editor.doc.querySelectorAll("img");
           imgs.forEach(img => {
-            if (img.src == location.href) {
+            if (img.src === location.href) {
               img.src = img.getAttribute("data-src");
               img.removeAttribute("data-src");
             } else {
@@ -357,7 +355,6 @@ window.editor = (function () {
               img.src = location.href;
             }
           });
-          editor.doc.body.classList.toggle("no-outline");
         });
         document.querySelector("#emailInline").addEventListener("click", function (event) {
           var innerHTML = editor.doc.documentElement.innerHTML;
@@ -392,8 +389,6 @@ window.editor = (function () {
 
       editor.elms.canvas = document.createElement("iframe");
       editor.elms.canvas.id = "canvas";
-      editor.elms.canvas.scrolling = "yes";
-      editor.elms.canvas.className = "scroll";
       editor.elms.canvas.srcdoc = config.template;
       config.node.appendChild(editor.elms.canvas);
       editor.elms.canvas.onload = editor.onload;
@@ -416,7 +411,7 @@ window.editor = (function () {
         }
         return html;
       };
-      
+
       editor.properties = Object.keys(Object.assign(...editor.s)).filter(p => p != "id");
       editor.elms.editor = document.createElement("div");
       editor.elms.editor.id = "editor";
@@ -437,25 +432,23 @@ window.editor = (function () {
                 <code id="${block.id}" draggable="true">${block.html}</code>
               </div>`).join("")}
             `).join("")}
-
             <h4>Elements</h4>
             ${Object.keys(elements).map(b => `
             <div class="block" onclick="editor.addBlock(this)">
               <h5>${b}</h5>
               <code draggable="true">${printTags(elements[b], b)}</code>
             </div>`).join("")}
-
           </div>
         </div>`;
       config.node.appendChild(editor.elms.editor);
       document.querySelector(".attributes_tab").onchange = editor.bindAttributes;
       document.querySelector(".styles_tab").onkeyup = function(event){
-        if (event.target.tagName === "INPUT" && event.target.name === "value" && (event.which == 38 || event.which == 40)) {
+        if (event.target.tagName === "INPUT" && event.target.name === "value" && (event.which === 38 || event.which === 40)) {
           let num = event.target.value.replace(/[^0-9]/g, "");
           let change = 0;
-          if (event.which == 38) {
+          if (event.which === 38) {
             change = 1;
-          } else if (event.which == 40) {
+          } else if (event.which === 40) {
             change = -1;
           }
           if (event.shiftKey) change *= 10;
@@ -469,13 +462,13 @@ window.editor = (function () {
                 li.style.height = 0;
               });
             }, 100);
-          }
+          };
           let hint = document.getElementById("hint");
           hint.style.top = event.target.getBoundingClientRect().bottom + "px";
           hint.style.left = event.target.getBoundingClientRect().left + "px";
           hint.style.width = event.target.getBoundingClientRect().width + "px";
           hint.querySelectorAll("li").forEach(function(li){
-            li.style.height = li.textContent != event.target.value && li.textContent.indexOf(event.target.value) !== -1  ? "15px" : 0;
+            li.style.height = li.textContent !== event.target.value && li.textContent.indexOf(event.target.value) !== -1  ? "15px" : 0;
           });
         }
       };
