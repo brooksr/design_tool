@@ -121,6 +121,8 @@ export let components = {
   </div>
   <div class="button-group visual_control">
     <button type="button" id="toggleOutlines"><i class="fas fa-border-none"></i> <span class="tablet-tooltip">Toggle Outlines</span></button>
+    <button type="button" id="toggleImages"><i class="far fa-image"></i> <span class="tablet-tooltip">Toggle Images</span></button>
+    <button type="button" id="sendTestEmail"><i class="far fa-paper-plane"></i> <span class="tablet-tooltip">EOA Test</span></button>
     <button type="button" id="fullScreen"><i class="fas fa-expand-arrows-alt"></i> <span class="tablet-tooltip">Full Screen</span></button>
     <button type="button" id="speak"><i class="fas fa-voicemail"></i> <span class="tablet-tooltip">Speak</span></button>
   </div>

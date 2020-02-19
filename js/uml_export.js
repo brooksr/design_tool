@@ -161,13 +161,13 @@ export let uml_export = `<!DOCTYPE html>
 
             <tr>
                 <td class="padded text-center">
-                  <img src="https://via.placeholder.com/200x50" width="200" height="50" alt="">
+                  <img src="https://via.placeholder.com/200x50" width="200" height="50" alt="ALT">
                 </td>
             </tr>
 
             <tr>
                 <td class="content-bg">
-                  <img src="https://via.placeholder.com/1200x600" width="600" height="" alt="" style="width: 100%; max-width: 600px; margin: auto; display: block;">
+                  <img src="https://via.placeholder.com/1200x600" width="600" height="" alt="ALT" style="width: 100%; max-width: 600px; margin: auto; display: block;">
                 </td>
             </tr>
 
@@ -228,7 +228,7 @@ export let uml_export = `<!DOCTYPE html>
                                 <table width="100%">
                                     <tr>
                                         <td class="padded text-center">
-                                          <img src="https://via.placeholder.com/270" width="270" height="" alt="" style="width: 100%; max-width: 270px;">
+                                          <img src="https://via.placeholder.com/270" width="270" height="" alt="ALT" style="width: 100%; max-width: 270px;">
                                         </td>
                                     </tr>
                                     <tr>
@@ -242,7 +242,7 @@ export let uml_export = `<!DOCTYPE html>
                                 <table width="100%">
                                     <tr>
                                         <td class="padded text-center">
-                                          <img src="https://via.placeholder.com/270" width="270" height="" alt="" style="width: 100%; max-width: 270px;">
+                                          <img src="https://via.placeholder.com/270" width="270" height="" alt="ALT" style="width: 100%; max-width: 270px;">
                                         </td>
                                     </tr>
                                     <tr>
@@ -265,7 +265,7 @@ export let uml_export = `<!DOCTYPE html>
                                 <table width="100%">
                                     <tr>
                                         <td class="padded text-center">
-                                          <img src="https://via.placeholder.com/270" width="270" height="" alt="" style="width: 100%; max-width: 270px;">
+                                          <img src="https://via.placeholder.com/270" width="270" height="" alt="ALT" style="width: 100%; max-width: 270px;">
                                         </td>
                                     </tr>
                                     <tr>
@@ -279,7 +279,7 @@ export let uml_export = `<!DOCTYPE html>
                                 <table width="100%">
                                     <tr>
                                         <td class="padded text-center">
-                                          <img src="https://via.placeholder.com/270" width="270" height="" alt="" style="width: 100%; max-width: 270px;">
+                                          <img src="https://via.placeholder.com/270" width="270" height="" alt="ALT" style="width: 100%; max-width: 270px;">
                                         </td>
                                     </tr>
                                     <tr>
@@ -293,7 +293,7 @@ export let uml_export = `<!DOCTYPE html>
                                 <table width="100%">
                                     <tr>
                                         <td class="padded text-center">
-                                          <img src="https://via.placeholder.com/270" width="270" height="" alt="" style="width: 100%; max-width: 270px;">
+                                          <img src="https://via.placeholder.com/270" width="270" height="" alt="ALT" style="width: 100%; max-width: 270px;">
                                         </td>
                                     </tr>
                                     <tr>
@@ -316,7 +316,7 @@ export let uml_export = `<!DOCTYPE html>
                                 <table width="100%">
                                     <tr>
                                         <td dir="ltr" valign="top" style="padding: 0 10px;">
-                                          <img src="https://via.placeholder.com/170" width="170" height="170" alt="" class="center-on-narrow">
+                                          <img src="https://via.placeholder.com/170" width="170" height="170" alt="ALT" class="center-on-narrow">
                                         </td>
                                     </tr>
                                 </table>
@@ -351,7 +351,7 @@ export let uml_export = `<!DOCTYPE html>
                                 <table width="100%">
                                     <tr>
                                         <td dir="ltr" valign="top" class="padded">
-                                          <img src="https://via.placeholder.com/170" width="170" height="170" alt="" class="center-on-narrow">
+                                          <img src="https://via.placeholder.com/170" width="170" height="170" alt="ALT" class="center-on-narrow">
                                         </td>
                                     </tr>
                                 </table>

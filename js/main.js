@@ -4,6 +4,7 @@ import {drag} from './drag.js';
 import {config} from './config.js';
 import {components} from './components.js';
 import {email_components} from './email_components.js';
+import {keys} from '../keys.js';
 "use strict";
 
 window.editor = (function () {
@@ -325,6 +326,37 @@ window.editor = (function () {
           document.querySelector("." + event.target.value + "_tab").classList.add("editor_active");
         });
         document.querySelector("#toggleOutlines").addEventListener("click", function (event) {
+          editor.doc.body.classList.toggle("no-outline");
+        });
+        document.querySelector("#sendTestEmail").addEventListener("click", function (event) {
+          let subject = prompt("Please enter your subject", "Design tool test. ID:" + Math.round(Math.random() * 999999));
+          if (!subject) return;
+          fetch('https://api.emailonacid.com/v5/email/tests', {
+            method: 'POST',
+            headers: { 'Authorization': 'Basic ' + keys.EOA },
+            body: JSON.stringify({
+              "subject": subject,
+              "html": editor.doc.documentElement.outerHTML
+            })
+          }).then((response) => response.json())
+            .then((data) => {
+              window.open("https://app.emailonacid.com/app/acidtest/"+data.id+"/list", "emailonacid");
+            })
+            .catch((error) => {
+              console.error('Error:', error);
+            });
+        });
+        document.querySelector("#toggleImages").addEventListener("click", function (event) {
+          let imgs = editor.doc.querySelectorAll("img");
+          imgs.forEach(img => {
+            if (img.src == location.href) {
+              img.src = img.getAttribute("data-src");
+              img.removeAttribute("data-src");
+            } else {
+              img.setAttribute("data-src", img.src);
+              img.src = location.href;
+            }
+          });
           editor.doc.body.classList.toggle("no-outline");
         });
         document.querySelector("#emailInline").addEventListener("click", function (event) {
