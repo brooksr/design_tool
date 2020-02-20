@@ -10,23 +10,6 @@ html {
   box-sizing: border-box;
 }
 
-.scroll {
-  overflow-y: auto;
-}
-.scroll::-webkit-scrollbar {
-  width: 1em;
-}
- 
-.scroll::-webkit-scrollbar-track {
-  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-}
- 
-.scroll::-webkit-scrollbar-thumb {
-  background-color: #666;
-  outline: 1px solid #000;
-	border-radius: 10px;
-}
-
 *, *:before, *:after {
   box-sizing: inherit;
 }
@@ -450,6 +433,7 @@ button:focus {
 }
 .styles_tab input, .styles_tab select {
   flex: 1 0 50%;
+  margin: 0;
 }
 .styles_tab option {
   background: #333;
@@ -474,7 +458,20 @@ button:focus {
   overflow: hidden;
   height: 0;
 }
-
+.scroll {
+  overflow-y: auto;
+}
+.scroll::-webkit-scrollbar {
+  width: 1em;
+}
+.scroll::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+.scroll::-webkit-scrollbar-thumb {
+  background-color: #666;
+  outline: 1px solid #000;
+  border-radius: 10px;
+}
 @media only screen and (max-width: 1680px) {
   button:hover .tablet-tooltip, label:hover .tablet-tooltip {
     background: rgba(42, 179, 75, 0.5);

@@ -1,5 +1,10 @@
 export let modal = `
 <style>
+  body {
+    --main-bg-color: #efefef;
+    --main-font-color: #121212;
+    --primary-color: dodgerblue;;
+  }
   #usi_container {
     height:100%;
     position: fixed;
@@ -14,20 +19,23 @@ export let modal = `
   .usi_display * {
     font-family: inherit;
     font-size: 1em;
+    margin: 0;
+    padding: 0;
   }
   .usi_display {
     font-family: sans-serif;
-    background: hsla(0, 0%, 100%, 1);
-    color:#000;
-    max-width:40em;
+    background: var(--main-bg-color);
+    color:var(--main-font-color);
+    max-width: 640px;;
     width:100%;
     position:fixed;
     left:50%;
+    top:10%;
     transform: translateX(-50%);
     padding:1em;
     font-size: 18px;
     text-align:center;
-    padding: 3em 2em;
+    padding: 2em;
   }
   .usi_display button {
     cursor: pointer;
@@ -43,13 +51,22 @@ export let modal = `
     line-height: 30px;
     font-size: 30px;
     text-align: center;
-    color: #888;
+    color: var(--main-font-color);
+  }
+  #usi_submit {
+    background: var(--primary-color);
+    border: none;
+    text-align: center;
+    color: #fff;
+    padding: 1em 2em;
+    font-weight:bold;
   }
   #usi_close:after {
     content: "\\\u00D7";
   }
   .usi_display h1 {
     font-size: 2em;
+    margin: 0;
   }
   .usi_display p {
     padding: 1em 0;
@@ -63,12 +80,21 @@ export let modal = `
   .usi_col {
       flex: 1 0 auto;
   }
+  @media screen and (max-width: 640px) {
+    .usi_display {
+      bottom:0;
+      top: auto;
+    }
+  }
   @media screen and (min-width: 400px) {
+    .usi_display {
+      top:10%;
+    }
     .usi_display h1 {
       font-size: 3em;
     }
     .usi_display p {
-      font-size: 2em;
+      font-size: 1.5em;
     }
   }
 </style>
@@ -87,8 +113,10 @@ export let modal = `
 <div id="usi_container">
   <div class="usi_display">
     <div class="usi_content">
-      <button id="usi_close" class="usi_button" type="button" onclick="alert('Close')" aria-label="Close"></button>
-
+      <button id="usi_close" class="usi_button" type="button" aria-label="Close"></button>
+      <h1 class="usi_h1">10% off your next purchase</h1>
+      <p>Lorem ipsum dolor sit amet, colorium tempe fur freestul de retu des werd few sed wash ner opunmi.</p>
+      <button id="usi_submit" class="usi_submit" type="button" aria-label="Close">Redeem Now</button>
     </div>
   </div>
 </div>
