@@ -1,51 +1,45 @@
 export const email_components = {
-  "<body.*?>": `
-  <body width="100%" class="body">
-    <center class="body">
-    <!--[if mso | IE]>
-    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #222222;"><tr><td>
-    <![endif]-->`,
-  "</body>": `
+  "<body(.*?)>": (tag, attrs) => `
+  <body width="100%" ${attrs}>
+    <center ${attrs}>
+    <!--[if mso | IE]><table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #222222;"><tr><td><![endif]-->`,
+  "</body>": (tag, attrs) => `
   <!--[if mso | IE]></td></tr></table> <![endif]-->
   </center>
 </body>`,
-  "<main.*?>": `<table align="center" class="email-container">`,
-  "</main>": `</table>`,
-  "<section.*?>": `<table align="center" class="email-container">`,
-  "</section>": `</table>`,
-  "<footer.*?>": `<table align="center" class="email-container">`,
-  "</footer>": `</table>`,
-  "<header.*?>": `<tr class="padded text-center"><td>`,
-  "</header>": `</td></tr>`,
-  "<figure.*?>": `<tr class="content-bg"><td>`,
-  "</figure>": `</td></tr>`,
-  "<article.*?>": `<tr class="content-bg"><td>`,
-  "</article>": `</td></tr>`,
-  "<text.*?>": `<tr><td class="padded text">`,
-  "</text>": `</td></tr>`,
-  "<button.*?>": `<tr>
-  <td class="button button-center">
+  "<main(.*?)>": (tag, attrs) => `<table align="center" ${attrs}>`,
+  "</main>": (tag, attrs) => `</table>`,
+  "<section(.*?)>": (tag, attrs) => `<table align="center" ${attrs}>`,
+  "</section>": (tag, attrs) => `</table>`,
+  "<footer(.*?)>": (tag, attrs) => `<table align="center" ${attrs}>`,
+  "</footer>": (tag, attrs) => `</table>`,
+  "<header(.*?)>": (tag, attrs) => `<tr ${attrs}><td>`,
+  "</header>": (tag, attrs) => `</td></tr>`,
+  "<figure(.*?)>": (tag, attrs) => `<tr ${attrs}><td>`,
+  "</figure>": (tag, attrs) => `</td></tr>`,
+  "<article(.*?)>": (tag, attrs) => `<tr ${attrs}><td>`,
+  "</article>": (tag, attrs) => `</td></tr>`,
+  "<text(.*?)>": (tag, attrs) => `<tr><td ${attrs}>`,
+  "</text>": (tag, attrs) => `</td></tr>`,
+  "<button(.*?)>": (tag, attrs) => `<tr>
+  <td ${attrs}>
       <table align="center">
           <tr>
               <td class="button-td button-td-primary">
                 <a class="button-a button-a-primary" href="https://google.com/">`,
-  "</button>": `</a>
+  "</button>": (tag, attrs) => `</a>
         </td>
       </tr>
     </table>
   </td>
 </tr>`,
-"<banner.*?>": `<tr>
+"<banner(.*?)>": (tag, attrs) => `<tr>
 <td>
-    <div align="center" class="email-container">
-        <!--[if mso]>
-        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" align="center"><tr><td>
-        <![endif]-->
+    <div align="center" ${attrs}>
+        <!--[if mso]><table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" align="center"><tr><td><![endif]-->
         <table width="100%">`,
-"</banner>": `</table>
-        <!--[if mso]>
-        </td></tr></table>
-        <![endif]-->
+"</banner>": (tag, attrs) => `</table>
+        <!--[if mso]></td></tr></table><![endif]-->
     </div>
 </td>
 </tr>`,

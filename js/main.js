@@ -57,16 +57,19 @@ window.editor = (function () {
       sheet.deleteRule(ind);
       sheet.insertRule(selector + " {" + newRule + "}", ind);
     },
-    emailify: function(){
-      let doc = editor.doc;
-      let inlinable = Array.from(doc.styleSheets).filter(s => s.title === "inlineCSS")[0];
-      let remove = doc.querySelectorAll("[title='inlineCSS'], [title='editor']");
+    cleanup: () => {
+      let remove = editor.doc.querySelectorAll("[title='inlineCSS'], [title='editor']");
+      let editable = editor.doc.querySelectorAll("[contenteditable]");
+      editable.forEach(e => e.removeAttribute("contenteditable"));
+      if (editor.elms.active) editor.elms.active.removeAttribute("data-status");
       remove.forEach(function(s){
         s.parentNode.removeChild(s);
       });
-      let all = doc.querySelectorAll("*");
+    },
+    inlineStyles: function(){
+      let inlinable = Array.from(editor.doc.styleSheets).filter(s => s.title === "inlineCSS")[0];
+      let all = editor.doc.querySelectorAll("*");
       all.forEach(function(elm){
-        if (elm.isContentEditable) elm.removeAttribute("contenteditable");
         if (elm.tagName == "TABLE") {
           elm.setAttribute("border", 0);
           elm.setAttribute("cellpadding", 0);
@@ -78,7 +81,7 @@ window.editor = (function () {
         }
       });
       Array.from(inlinable.rules).forEach(function(rule){
-        var matches = doc.querySelectorAll(rule.selectorText);
+        var matches = editor.doc.querySelectorAll(rule.selectorText);
         var style = rule.style.cssText.split(";");
         matches.forEach(function(m){
           //set attrs
@@ -93,6 +96,7 @@ window.editor = (function () {
                 value = value.replace(" !important", "");
                 importance = "important";
               }
+              // TODO replace rgb with hex
               m.style.setProperty(prop, value, importance);
               if (["border", "height", "width", "max-height", "max-width"].indexOf(prop) != -1 && (m.tagName == "TD" || m.tagName == "TABLE" || m.tagName == "IMG")) {
                 m.setAttribute(prop.replace("max-", ""), value.replace("px", "").replace("none", "0"));
@@ -133,7 +137,9 @@ window.editor = (function () {
       return activeElm;
     },
     setAsActive:  function(activeElm) {
+      if (editor.elms.active) editor.elms.active.removeAttribute("data-status");
       editor.elms.active = activeElm;
+      editor.elms.active.setAttribute("data-status", "active");
       console.log(activeElm);
       this.updateAttrs(activeElm);
       this.updateStyles();
@@ -182,7 +188,7 @@ window.editor = (function () {
         </div>`}).join("");
 
       if (rule.conditionText) {
-        return `<form data-index="${index}" data-selector="@media ${rule.conditionText}" onchange="editor.replaceCss(event)">
+        return `<form data-index="${index}" data-selector="@media ${rule.conditionText}" onchange="editor.replaceCss(event)" onfocusin="editor.updateMatches(event)" onfocusout="editor.removeMatches(event)">
             <h4>When ${rule.conditionText.substring(rule.conditionText.indexOf("(") + 1, rule.conditionText.indexOf(")"))}</h4>
             ${Array.from(rule.cssRules).map(function(rule, index){
               let matches = editor.doc.querySelectorAll(rule.selectorText.split(":")[0]);
@@ -196,13 +202,21 @@ window.editor = (function () {
       } else if (rule.selectorText) {
         let matches = editor.doc.querySelectorAll(rule.selectorText.split(":")[0]);
         let text = rule.cssText.substring(rule.cssText.indexOf("{") + 1, rule.cssText.indexOf("}")).replace(/;/g, ";\n");
-        return `<form class="${matches.length > 0 ? "doc_has_match" : "hidden"} ${Array.from(matches).indexOf(editor.elms.active) != -1 ? "matches_active" : ""}" data-index="${index}" data-selector="${rule.selectorText}" onchange="editor.replaceCss(event)">
+        return `<form class="${matches.length > 0 ? "doc_has_match" : "hidden"} ${Array.from(matches).indexOf(editor.elms.active) != -1 ? "matches_active" : ""}" data-index="${index}" data-selector="${rule.selectorText}" onchange="editor.replaceCss(event)" onfocusin="editor.updateMatches(event)" onfocusout="editor.removeMatches(event)">
             <div class="input-group">
             <input name="selector" type="text" value="${rule.selectorText}" />
             ${outputRule(text)}
             </div>
           </form>`;
       }
+    },
+    removeMatches: (event) => {
+      let selector = event.currentTarget.getAttribute("data-selector");
+      editor.doc.querySelectorAll('[data-status="match"]').forEach(m => m.removeAttribute("data-status"));
+    },
+    updateMatches: (event) => {
+      let selector = event.currentTarget.getAttribute("data-selector");
+      editor.doc.querySelectorAll(selector).forEach(m => m != editor.elms.active ? m.setAttribute("data-status", "match") : "");
     },
     updateStyles: () => {
       let sheets = editor.doc.styleSheets;
@@ -359,17 +373,29 @@ window.editor = (function () {
           });
           editor.doc.body.classList.toggle("no-outline");
         });
+        document.querySelector("#autoFormat").addEventListener("click", editor.autoformat);
         document.querySelector("#emailInline").addEventListener("click", function (event) {
-          var innerHTML = editor.doc.documentElement.innerHTML;
-          for (let c in email_components) {
-            innerHTML = innerHTML.replace(new RegExp(c, "g"), email_components[c]);
-          }
-          editor.doc.documentElement.innerHTML = innerHTML;
-          editor.emailify();
-          var html = editor.doc.documentElement.innerHTML.replace(/<tbody>|<\/tbody>/g, "");
+          var html = editor.doc.documentElement.innerHTML;
+          if (html.indexOf("<main") != -1)editor.doc.documentElement.innerHTML = editor.unpackEmail(html);
+          editor.inlineStyles();
+          editor.cleanup();
+          //remove auto added tbody. outlook no like?
+          html = editor.doc.documentElement.innerHTML.replace(/<tbody>|<\/tbody>/g, "");
           editor.cm.setValue(html)
+          editor.autoformat();
         });
       },
+    },
+    unpackEmail: (html) => {
+      for (let c in email_components) {
+        html = html.replace(new RegExp(c, "g"), email_components[c]);
+      }
+      return html
+    },
+    autoformat: () => {
+      CodeMirror.commands["selectAll"](editor.cm);
+      var range = { from: editor.cm.getCursor(true), to: editor.cm.getCursor(false) };
+      editor.cm.autoFormatRange(range.from, range.to);
     },
     onload: function(){
       editor.doc = editor.elms.canvas.contentDocument;
@@ -405,6 +431,7 @@ window.editor = (function () {
       editor.cm = CodeMirror(editor.elms.cm, {
         value: config.template,
         lineNumbers: true,
+        lineWrapping: true,
         theme: "darcula",
         mode: "htmlmixed"
       });
@@ -453,11 +480,8 @@ window.editor = (function () {
         if (event.target.tagName === "INPUT" && event.target.name === "value" && (event.which == 38 || event.which == 40)) {
           let num = event.target.value.replace(/[^0-9]/g, "");
           let change = 0;
-          if (event.which == 38) {
-            change = 1;
-          } else if (event.which == 40) {
-            change = -1;
-          }
+          if (event.which == 38) change = 1;
+          else if (event.which == 40) change = -1;
           if (event.shiftKey) change *= 10;
           else if (event.ctrlKey) change *= 100;
           event.target.value = event.target.value.replace(num, Number(num) + change);

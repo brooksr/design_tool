@@ -67,21 +67,36 @@ export let components = {
     transition: transform 0.5s ease;
     box-sizing: border-box;
   }
-  .no-outline * {
-    outline: none !important;
-  }
   * {
     box-sizing: inherit;
     outline: 1px dashed #ccc;
   }
-  [contenteditable] {
-    outline: 1px dotted #333;
+  *:hover {
+    outline: 1px dashed rgb(47,165,228);
   }
-  [data-id]:hover {
-    outline: 1px dashed blue;
+  [contenteditable] {
+    outline: 2px dotted rgb(230,162,79);
+  }
+  [data-status="match"]:before {
+    content: "Match";
+    float: left;
+    position: absolute;
+    width: 4em;
+    left: -4em;
+    background: #4db357;
+    color: #fff;
+    border-radius: 5px;
+    font-size: 0.5em;
+    padding: 0.25em;
+    overflow: visible;
+    white-space: nowrap;
+    word-break: normal;
   }
   [data-status="active"] {
-    outline: 1px dashed green !important;
+    outline: 2px dashed #4db357;
+  }
+  .no-outline * {
+    outline: none !important;
   }`,
   toolbar: `
   <div class="button-group">
@@ -89,6 +104,7 @@ export let components = {
   </div>
   <div class="radio-buttons code_control">
     <button type="button" id="emailInline">Email Inline</button>
+    <button type="button" id="autoFormat">Autoformat</button>
   </div>
   <div class="radio-buttons" id="editor-view">
     <input id="editor-view-visual" name="editor-view" type="radio" value="visual" checked="checked"/>

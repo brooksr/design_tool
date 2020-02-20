@@ -150,12 +150,14 @@ export let uml_export = `<!DOCTYPE html>
 
 <body width="100%" class="body">
     <center class="body">
-        <!--[if mso | IE]>
-        <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #222222;"><tr><td>
-        <![endif]-->
+        <!--[if mso | IE]><table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #222222;"><tr><td><![endif]-->
 
-        <div class="preheader"> (Optional) This text will appear in the inbox preview, but not the email body. It can be used to supplement the email subject line or even summarize the email's contents. Extended text preheaders (~490 characters) seems like a better UX for anyone using a screenreader or voice-command apps like Siri to dictate the contents of an email. If this text is not included, email clients will automatically populate it using the text (including image alt text) at the start of the email's body.</div>
-        <div class="preheader"> &zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;</div>
+        <div class="preheader">
+        (Optional) This text will appear in the inbox preview, but not the email body. It can be used to supplement the email subject line or even summarize the email's contents. Extended text preheaders (~490 characters) seems like a better UX for anyone using a screenreader or voice-command apps like Siri to dictate the contents of an email. If this text is not included, email clients will automatically populate it using the text (including image alt text) at the start of the email's body.
+        </div>
+        <div class="preheader">
+        &zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;
+        </div>
         
         <table align="center" class="email-container">
 
@@ -202,9 +204,7 @@ export let uml_export = `<!DOCTYPE html>
 
             <tr>
                 <td valign="middle" class="background-image dark-bg">
-                    <!--[if gte mso 9]>
-                    <v:rect xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false" style="width:600px;height:175px; background-position: center center !important;"> <v:fill type="tile" src="https://via.placeholder.com/600x230/222222/666666" color="#222222" /> <v:textbox inset="0,0,0,0">
-                    <![endif]-->
+                    <!--[if gte mso 9]><v:rect xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false" style="width:600px;height:175px; background-position: center center !important;"> <v:fill type="tile" src="https://via.placeholder.com/600x230/222222/666666" color="#222222" /> <v:textbox inset="0,0,0,0"><![endif]-->
                     <div>
                         <table width="100%">
                             <tr>
@@ -214,9 +214,7 @@ export let uml_export = `<!DOCTYPE html>
                             </tr>
                         </table>
                     </div>
-                    <!--[if gte mso 9]>
-                    </v:textbox> </v:rect>
-                    <![endif]-->
+                    <!--[if gte mso 9]></v:textbox> </v:rect> <![endif]-->
                 </td>
             </tr>
 
@@ -412,9 +410,7 @@ export let uml_export = `<!DOCTYPE html>
             <tr>
                 <td>
                     <div align="center" class="email-container">
-                        <!--[if mso]>
-                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" align="center"><tr><td>
-                        <![endif]-->
+                        <!--[if mso]><table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" align="center"><tr><td><![endif]-->
                         <table width="100%">
                             <tr>
                                 <td class="padded text">
@@ -422,17 +418,13 @@ export let uml_export = `<!DOCTYPE html>
                                 </td>
                             </tr>
                         </table>
-                        <!--[if mso]>
-                        </td></tr></table>
-                        <![endif]-->
+                        <!--[if mso]></td></tr></table><![endif]-->
                     </div>
                 </td>
             </tr>
         </table>
 
-        <!--[if mso | IE]>
-        </td></tr></table>
-        <![endif]-->
+        <!--[if mso | IE]></td></tr></table><![endif]-->
     </center>
 </body>
 

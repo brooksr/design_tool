@@ -8,7 +8,6 @@ import {uml_export} from './uml_export.js';
 
 export let config = {
   node: document.getElementById("design_tool"),
-  units: ["px", "%", "em", "vmax", "vmin", "vh", "vw", "none"],
   template: localStorage.getItem("editor-01") ? decodeURIComponent(localStorage.getItem("editor-01")) : modal,
   templates: [
     {

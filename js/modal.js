@@ -7,6 +7,10 @@ export let modal = `
     top: 0;
     left: 0;
   }
+  .usi_name {
+    font-weight:bold;
+
+  }
   .usi_display * {
     font-family: inherit;
     font-size: 1em;

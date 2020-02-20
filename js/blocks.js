@@ -7,7 +7,7 @@ export const blocks = [
     html: `<div class="usi_col">Placeholder</div>`
   }, {
     id: "button",
-    html: `<button class="usi_button" type="button">Redeem Now</button>`
+    html: `<button class="usi_button" type="button" class="usi_submit">Redeem Now</button>`
   }, {
     id: "heading",
     html: `<div class="usi_heading">
