@@ -86,7 +86,7 @@ export let components = {
     background: #4db357;
     color: #fff;
     border-radius: 5px;
-    font-size: 0.5em;
+    font-size: 0.5rem;
     padding: 0.25em;
     overflow: visible;
     white-space: nowrap;

@@ -1,9 +1,12 @@
 export let modal = `
 <style>
   body {
-    --main-bg-color: #efefef;
-    --main-font-color: #121212;
-    --primary-color: dodgerblue;;
+    --main-bg-color: hsl(0, 0%, 95%);
+    --main-font-color: hsl(0, 0%, 5%);
+    --primary-color: hsl(210, 100%, 56%);
+    --primary-color-dark: hsl(210, 100%, 46%);
+    --primary-color-text: hsl(0, 0%, 98%);
+    --overlay-color: hsla(0, 0%, 0%, 0.5);
   }
   #usi_container {
     height:100%;
@@ -25,7 +28,7 @@ export let modal = `
   .usi_display {
     font-family: sans-serif;
     background: var(--main-bg-color);
-    color:var(--main-font-color);
+    color: var(--main-font-color);
     max-width: 640px;;
     width:100%;
     position:fixed;
@@ -36,30 +39,33 @@ export let modal = `
     font-size: 18px;
     text-align:center;
     padding: 2em;
+    box-shadow: 0 0 20px 0 var(--overlay-color);
   }
   .usi_display button {
     cursor: pointer;
+  }
+  .usi_button {
+    background: var(--primary-color);
+    border: none;
+    text-align: center;
+    color: var(--primary-color-text);
+    padding: 1em 2em;
+    font-weight:bold;
+  }
+  .usi_button:hover {
+    background: var(--primary-color-dark);
   }
   #usi_close {
     position: absolute;
     top: 0;
     right: 0;
     background: none;
-    border: none;
     width: 30px;
     height: 30px;
     line-height: 30px;
     font-size: 30px;
-    text-align: center;
     color: var(--main-font-color);
-  }
-  #usi_submit {
-    background: var(--primary-color);
-    border: none;
-    text-align: center;
-    color: #fff;
-    padding: 1em 2em;
-    font-weight:bold;
+    padding: 0;
   }
   #usi_close:after {
     content: "\\\u00D7";
@@ -80,7 +86,17 @@ export let modal = `
   .usi_col {
       flex: 1 0 auto;
   }
+  .usi_shadow {
+    background-color: var(--overlay-color);
+    position: fixed;
+    width: 100%;
+    top: 0;
+    bottom: 0;
+  }
   @media screen and (max-width: 640px) {
+    .usi_shadow {
+      display: none;
+    }
     .usi_display {
       bottom:0;
       top: auto;
@@ -110,13 +126,14 @@ export let modal = `
 
     }
 </script>
+<div id="usi_shadow" class="usi_shadow"></div>
 <div id="usi_container">
   <div class="usi_display">
     <div class="usi_content">
       <button id="usi_close" class="usi_button" type="button" aria-label="Close"></button>
       <h1 class="usi_h1">10% off your next purchase</h1>
       <p>Lorem ipsum dolor sit amet, colorium tempe fur freestul de retu des werd few sed wash ner opunmi.</p>
-      <button id="usi_submit" class="usi_submit" type="button" aria-label="Close">Redeem Now</button>
+      <button id="usi_submit" class="usi_button" type="button" aria-label="Redeem Now">Redeem Now</button>
     </div>
   </div>
 </div>

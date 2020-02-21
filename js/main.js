@@ -22,11 +22,14 @@ window.editor = (function () {
       alert("Saved!");
     },
     addBlock: function(self){
-      var txt = document.createElement("textarea");
-      txt.innerHTML = self.querySelector("code").innerHTML;
-      editor.elms.active.outerHTML += txt.value;
+      let block = self.querySelector("code").innerHTML;
+      let frag = document.createRange().createContextualFragment(block);
+      // var txt = document.createElement("textarea");
+      // txt.innerHTML = self.querySelector("code").innerHTML;
+      // editor.elms.active.outerHTML += txt.value;
+      editor.elms.active.appendChild(frag);
+      //editor.setAsActive(frag);
       editor.updateIds();
-      //editor.setAsActive(e.target);
     },
     shortcuts: function(event) {
       let save = event.which === 83 && event.ctrlKey;
@@ -182,8 +185,8 @@ window.editor = (function () {
             name="value" type="text" autocomplete="off"
             value="${value.replace(/"/g, "'")}"
             pattern="${styles[prop]}"
-            class="${value.indexOf("rgb") === 0 ? `rgb` : "nonrgb"}"
-            ${value.indexOf("rgb") === 0 ? `style="background-color:${value};"` : ""}
+            class="${/^[rgb|hsl|#]/.test(value) ? `rgb` : "nonrgb"}"
+            ${/^[rgb|hsl|#]/.test(value) ? `style="background-color:${value};"` : ""}
             />
         </div>`}).join("");
 
@@ -375,7 +378,7 @@ window.editor = (function () {
         document.querySelector("#autoFormat").addEventListener("click", editor.autoformat);
         document.querySelector("#emailInline").addEventListener("click", function (event) {
           var html = editor.doc.documentElement.innerHTML;
-          if (html.indexOf("<main") != -1)editor.doc.documentElement.innerHTML = editor.unpackEmail(html);
+          if (html.indexOf("<main") != -1) editor.doc.documentElement.innerHTML = editor.unpackEmail(html);
           editor.inlineStyles();
           editor.cleanup();
           //remove auto added tbody. outlook no like?
@@ -502,9 +505,7 @@ window.editor = (function () {
       return this;
     }
   };
-  return {
-    config: config,
-    ...editor.create()
-  };
+  editor.create()
+  return editor;
 })();
 console.log(editor);

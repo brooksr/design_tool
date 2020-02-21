@@ -6,10 +6,10 @@
  * */
 const units =  ["px", "%", "em", "vmax", "vmin", "vh", "vw"];
 const defaults = {
-  number: `([0-9]+(${units.join("|")})?)`,
+  number: `([0-9|.]+(${units.join("|")})?)`,
   color: 'rgb.*',
   border: '(none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset)',
-  size: "(auto|[0-9]+("+units.join("|")+")|(min|max|min)-content)",
+  size: "(auto|[0-9|.]+("+units.join("|")+")|(min|max|min)-content)",
   overflow: ["visible", "hidden", "clip", "scroll", "auto"],
 }
 export let styles = [
