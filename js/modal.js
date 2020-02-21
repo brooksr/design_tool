@@ -29,7 +29,8 @@ export let modal = `
     font-family: sans-serif;
     background: var(--main-bg-color);
     color: var(--main-font-color);
-    max-width: 640px;;
+    max-width: 640px;
+    max-height: 100vh;
     width:100%;
     position:fixed;
     left:50%;
@@ -40,6 +41,7 @@ export let modal = `
     text-align:center;
     padding: 2em;
     box-shadow: 0 0 20px 0 var(--overlay-color);
+    overflow: auto;
   }
   .usi_display button {
     cursor: pointer;

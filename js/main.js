@@ -169,6 +169,7 @@ window.editor = (function () {
         let styles = Object.assign(...editor.s);
         let prop = r.trim().split(":")[0].trim();
         let value = r.trim().split(":")[1].trim();
+        //editor.elms.canvas.contentWindow.getComputedStyle(editor.doc.body).getPropertyValue("--overlay-color")
         if (Array.isArray(styles[prop])) {
           return `
           <div class="css-line">
@@ -269,13 +270,32 @@ window.editor = (function () {
         for (let a in elements[tag].attributes) {
           if (elements[tag].attributes.hasOwnProperty(a)) {
             html += `<div class="input-group">
-                <label>${a.replace("-", " ")}</label>
+                <label for="${a}">${a.replace("-", " ")}</label>
+                ${a == "src" ? "<button class=\"loadImages\"><i class=\"far fa-images\"></i></button>" : ""}
                 <input name="${a}" value="${activeElm.getAttribute(a) || ""}" type="text" />
               </div>`;
           }
         }
       }
       document.querySelector(".attributes_tab").innerHTML = html;
+      document.querySelector(".loadImages") && document.querySelectorAll(".loadImages").forEach(l => l.addEventListener("click", function(event){
+        editor.manageImages();
+        editor.elms.modal.querySelectorAll("img").forEach(i => i.addEventListener("click", function (e) {
+          let el = event.target.parentNode.querySelector('[name="src"]');
+          el.value = e.target.src;
+          editor.elms.modal.parentNode.removeChild(editor.elms.modal);
+          el.dispatchEvent(new Event('change'));
+        }));
+      }));
+    },
+    manageImages: function (event, target) {
+      editor.elms.modal = document.createElement("div");
+      editor.elms.modal.classList.add("left_area", "cm_wrap", "modal", "images");
+      editor.elms.modal.innerHTML = components.modal(config.images);
+      config.node.appendChild(editor.elms.modal);
+      document.getElementById("modal_close").addEventListener("click", function (event) {
+        editor.elms.modal.parentNode.removeChild(editor.elms.modal);
+      });
     },
     toolbar: {
       create: function(){
@@ -289,15 +309,7 @@ window.editor = (function () {
           editor.elms.menu.innerHTML = components.menu(config.templates);
           config.node.appendChild(editor.elms.menu);
           document.querySelector("#save").addEventListener("click", editor.save);
-          document.querySelector("#manageImages").addEventListener("click", function (event) {
-            editor.elms.modal = document.createElement("div");
-            editor.elms.modal.classList.add("left_area", "cm_wrap", "modal", "images");
-            editor.elms.modal.innerHTML = components.modal(config.images);
-            config.node.appendChild(editor.elms.modal);
-            document.getElementById("modal_close").addEventListener("click", function (event) {
-              editor.elms.modal.parentNode.removeChild(editor.elms.modal);
-            });
-          });
+          document.querySelector("#manageImages").addEventListener("click", editor.manageImages);
           document.getElementById("menu_close").addEventListener("click", function (event) {
             editor.elms.menu.parentNode.removeChild(editor.elms.menu);
           });
