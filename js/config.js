@@ -46,5 +46,13 @@ export let config = {
     "https://via.placeholder.com/250x250?text2",
     "https://via.placeholder.com/50x300?text=3",
     "https://via.placeholder.com/50x50?text=4",
-  ]
+  ],
+  styles: {
+    "main-bg-color": "hsl(0, 0%, 95%)",
+    "main-font-color": "hsl(0, 0%, 5%)",
+    "primary-color": "hsl(210, 100%, 56%)",
+    "primary-color-dark": "hsl(210, 100%, 46%)",
+    "primary-color-text": "hsl(0, 0%, 98%)",
+    "overlay-color": "hsla(0, 0%, 0%, 0.5)"
+  }
 };
