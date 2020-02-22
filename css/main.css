@@ -76,11 +76,11 @@ button:focus {
   border-top: 5px solid #fff;
   /* border-left: 5px solid #fff; */
   border-image: repeating-linear-gradient(90deg,
-  #fff 10px, #fff 11px, #000 12px, #000 20px,
-  #fff 20px, #fff 21px, #000 22px, #000 30px,
-  #fff 30px, #fff 31px, #000 32px, #000 40px,
-  #fff 40px, #fff 41px, #000 42px, #000 50px,
-  #2ab34b 50px, #2ab34b 51px
+  #fff 0.9em, #fff 1em, #000 1.2em, #000 2em,
+  #fff 2em, #fff 2.1em, #000 2.2em, #000 3em,
+  #fff 3em, #fff 3.1em, #000 3.2em, #000 4em,
+  #fff 4em, #fff 4.1em, #000 4.2em, #000 5em,
+  #2ab34b 5em, #2ab34b 5.1em
     );
   /* border-image-outset: 1; */
   border-image-repeat: repeat;
@@ -276,6 +276,12 @@ button:focus {
   line-height: 1.25;
   padding: .25em;
 }
+[type="checkbox"] {
+  height: 1.25em;
+  width: 1.25em;
+  margin: .25em 0.5em;
+  cursor: pointer;
+}
 .input-group textarea {
   flex: 1 0 100%;
   width: 3em;
@@ -407,7 +413,7 @@ button:focus {
 .styles_tab .matches_active * {
   font-weight: bold;
 }
-.styles_tab input:invalid {
+input:invalid {
   border-bottom: 1px dashed red;
 }
 .styles_tab [name="selector"] {

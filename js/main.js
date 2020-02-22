@@ -40,8 +40,8 @@ window.editor = (function () {
     replaceCss: (event) => {
       var ind = event.currentTarget.getAttribute("data-index");
       var selectors = event.currentTarget.querySelectorAll("[name='selector']");
-      var selector = event.currentTarget.getAttribute("data-selector");
-      var sheet = editor.sheets[0];
+      let selector = event.currentTarget.getAttribute("data-selector");
+      let sheet = editor.sheets[0];
       let newRule = "";
       if (selectors.length > 1) {
         event.currentTarget.querySelectorAll(".input-group").forEach(group => {
@@ -75,10 +75,10 @@ window.editor = (function () {
       let inlinable = Array.from(editor.doc.styleSheets).filter(s => s.title === "inlineCSS")[0];
       let all = editor.doc.querySelectorAll("*");
       all.forEach(function(elm){
-        if (elm.tagName == "TABLE") {
-          elm.setAttribute("border", 0);
-          elm.setAttribute("cellpadding", 0);
-          elm.setAttribute("cellspacing", 0);
+        if (elm.tagName === "TABLE") {
+          elm.setAttribute("border", "0");
+          elm.setAttribute("cellpadding", "0");
+          elm.setAttribute("cellspacing", "0");
           elm.setAttribute("role", "presentation");
         }
         if (elm.tagName === "A") {
@@ -86,17 +86,17 @@ window.editor = (function () {
         }
       });
       Array.from(inlinable.rules).forEach(function(rule){
-        var matches = editor.doc.querySelectorAll(rule.selectorText);
-        var style = rule.style.cssText.split(";");
+        let matches = editor.doc.querySelectorAll(rule.selectorText);
+        let style = rule.style.cssText.split(";");
         matches.forEach(function(m){
           //set attrs
           style.forEach(function(s){
               if (s.indexOf(": ") === -1) return;
               // set style
-              var r = s.trim().split(": ");
+              let r = s.trim().split(": ");
               if (r.length === 0) alert(r);
-              var prop = r[0], value = r[1];
-              var importance = "";
+              let prop = r[0], value = r[1];
+              let importance = "";
               if (value.indexOf(" !important") !== -1) {
                 value = value.replace(" !important", "");
                 importance = "important";
@@ -144,22 +144,14 @@ window.editor = (function () {
       if (editor.elms.active) editor.elms.active.removeAttribute("data-status");
       editor.elms.active = activeElm;
       editor.elms.active.setAttribute("data-status", "active");
-      console.log(activeElm);
       this.updateAttrs(activeElm);
       this.updateStyles();
       return activeElm;
     },
-    changeActive: (dir) => {
-      if (dir === "up" && editor.elms.active.previousElementSibling != null) {
-        editor.setAsActive(editor.elms.active.previousElementSibling);
-      } else if (dir === "down" && editor.elms.active.nextElementSibling != null) {
-        editor.setAsActive(editor.elms.active.nextElementSibling);
-      }
-    },
     rgbToHex: function(str){
-      var numbers = str.match(/\d+/g);
-      var toHex = function (rgb) {
-        var hex = Number(rgb).toString(16);
+      let numbers = str.match(/\d+/g);
+      let toHex = function (rgb) {
+        let hex = Number(rgb).toString(16);
         if (hex.length < 2) hex = "0" + hex;
         return hex;
       };
@@ -176,7 +168,7 @@ window.editor = (function () {
           <div class="css-line">
             <input name="property" type="text" autocomplete="off" value="${prop}" pattern="${editor.properties.join("|")}" />
             <select name="value" autocomplete="off" value="${value}">
-              ${styles[prop].map(p => `<option value="${p}" ${p == value ? "selected" : ""}>${p}</option>`).join("")}
+              ${styles[prop].map(p => `<option value="${p}" ${p === value ? "selected" : ""}>${p}</option>`).join("")}
             </select>
           </div>`
         }
@@ -221,7 +213,7 @@ window.editor = (function () {
     },
     updateMatches: (event) => {
       let selector = event.currentTarget.getAttribute("data-selector");
-      editor.doc.querySelectorAll(selector).forEach(m => m != editor.elms.active ? m.setAttribute("data-status", "match") : "");
+      editor.doc.querySelectorAll(selector).forEach(m => m !== editor.elms.active ? m.setAttribute("data-status", "match") : "");
     },
     updateStyles: () => {
       let sheets = editor.doc.styleSheets;
@@ -237,39 +229,47 @@ window.editor = (function () {
         ${editor.styles.map(editor.createStyleForm).reverse().join("")}
       `;
     },
+    setDrag : (elm) => {
+      elm.draggable = "true";
+      elm.addEventListener('dragstart', function dragStart(e) {
+        e.stopPropagation();
+        editor.drag = this;
+      }, false);
+      elm.addEventListener('dragend', function dragEnd(e) {
+        e.stopPropagation();
+      }, false);
+      elm.addEventListener('dragover', function dragOver(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }, false);
+      elm.addEventListener('dragenter', function dragEnter(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        this.parentNode.style.paddingTop = "1em";
+        this.classList.toggle("hover");
+      }, false);
+      elm.addEventListener('dragleave', function dragLeave(e) {
+        e.stopPropagation();
+        this.parentNode.style.paddingTop = "";
+        this.classList.toggle("hover");
+      }, false);
+      elm.addEventListener('drop', function dragDrop(e) {
+        e.stopPropagation();
+        this.parentNode.style.paddingTop = "";
+        this.classList.toggle("hover");
+        if (elements[this.tagName.toLowerCase()].droppable === false) {
+          return;
+        }
+        this.append(editor.drag);
+      }, false);
+    },
     updateIds: () => {
       editor.doc.body.querySelectorAll("*:not(style):not(script)").forEach((elm, index) => {
-        editor.setContentEditable(elm);
-        elm.draggable = "true";
-        elm.addEventListener('dragstart', dragStart, false);
-        elm.addEventListener('dragend', dragEnd, false);
-        elm.addEventListener('dragover', dragOver, false);
-        elm.addEventListener('dragenter', dragEnter, false);
-        elm.addEventListener('dragleave', dragLeave, false);
-        elm.addEventListener('drop', dragDrop, false);
-        function dragStart(e) {
-          e.stopPropagation();
-          editor.drag = this;
-        }
-        function dragEnd(e) {
-          e.stopPropagation();
-        }
-        function dragOver(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          this.style.opacity = '0.2';
-        }
-        function dragEnter(e) {
-          e.preventDefault();
-          e.stopPropagation();
-        }
-        function dragLeave(e) {
-          this.style.opacity = '';
-        }
-        function dragDrop(e) {
-          e.stopPropagation();
-          this.style.opacity = '';
-          this.append(editor.drag);
+        //editor.setContentEditable(elm);
+        elm.setAttribute("tabindex", "0");
+        elm.addEventListener("focus", e => editor.setAsActive(e.target));
+        if (elements[elm.tagName.toLowerCase()].draggable !== false) {
+          editor.setDrag(elm);
         }
       });
     },
@@ -293,17 +293,38 @@ window.editor = (function () {
       }
       editor.updateIds();
     },
-    bindAttributes:  e => editor.elms.active.setAttribute(e.target.name, e.target.value),
+    bindAttributes:  e => {
+      if (e.target.type === "checkbox" && e.target.checked) {
+        editor.elms.active.setAttribute(e.target.name, e.target.name);
+      } else if (e.target.type === "checkbox" && !e.target.checked) {
+        editor.elms.active.removeAttribute(e.target.name);
+      } else {
+        editor.elms.active.setAttribute(e.target.name, e.target.value);
+      }
+    },
     updateAttrs: (activeElm) => {
       let tag = editor.elms.active.tagName.toLowerCase();
       let html = `<h2>Attributes</h2>`;
       if (!!elements[tag]) {
         for (let a in elements[tag].attributes) {
           if (elements[tag].attributes.hasOwnProperty(a)) {
+            let rule = elements[tag].attributes[a];
             html += `<div class="input-group">
-                <label for="${a}">${a.replace("-", " ")}</label>
-                ${a == "src" ? "<button class=\"loadImages\"><i class=\"far fa-images\"></i></button>" : ""}
-                <input name="${a}" value="${activeElm.getAttribute(a) || ""}" type="text" />
+                <label for="${a}">${a}</label>
+                ${a === "src" ? "<button class=\"loadImages\"><i class=\"far fa-images\"></i></button>" : ""}
+                <input
+                  name="${a}"
+                  value="${activeElm.getAttribute(a) || ""}"
+                  ${!isNaN(rule) && typeof rule === "number" ? `
+                  type="number"
+                  `: rule === "true|false" ? `
+                  type="checkbox"
+                  ${activeElm.getAttribute(a) ? 'checked="checked"' : ""}
+                  ` : `
+                  type="text"
+                  pattern="${rule}"
+                  `}
+                />
               </div>`;
           }
         }
@@ -377,7 +398,7 @@ window.editor = (function () {
           editor.doc.body.style.transform = `matrix(${newT}, 0, 0, ${newT}, 0, 0)`;
         });
         document.querySelector("#editor-view").addEventListener("change", function (event) {
-          editor.elms.cm.style.display = (event.target.value == "code") ? "block" : "none";
+          editor.elms.cm.style.display = (event.target.value === "code") ? "block" : "none";
           editor.cm.refresh();
           document.body.classList.toggle("editor_open");
         });
@@ -420,7 +441,7 @@ window.editor = (function () {
         });
         document.querySelector("#autoFormat").addEventListener("click", editor.autoformat);
         document.querySelector("#emailInline").addEventListener("click", function (event) {
-          var html = editor.doc.documentElement.innerHTML;
+          let html = editor.doc.documentElement.innerHTML;
           if (html.indexOf("<main") != -1) editor.doc.documentElement.innerHTML = editor.unpackEmail(html);
           editor.inlineStyles();
           editor.cleanup();
@@ -439,7 +460,7 @@ window.editor = (function () {
     },
     autoformat: () => {
       CodeMirror.commands["selectAll"](editor.cm);
-      var range = { from: editor.cm.getCursor(true), to: editor.cm.getCursor(false) };
+      let range = { from: editor.cm.getCursor(true), to: editor.cm.getCursor(false) };
       editor.cm.autoFormatRange(range.from, range.to);
     },
     onload: function(){
@@ -450,11 +471,38 @@ window.editor = (function () {
       editor.elms.canvas_style.innerHTML = components.editor_css;
 
       editor.doc.body.addEventListener("click", editor.getActiveClick);
-      editor.doc.body.addEventListener("keyup", editor.getActiveKey);
+      //editor.doc.body.addEventListener("keyup", editor.getActiveKey);
       editor.updateIds();
 
       document.addEventListener("keydown", editor.shortcuts);
       editor.doc.addEventListener("keydown", editor.shortcuts);
+
+      const callback = function(mutationsList, observer) {
+        for(let mutation of mutationsList) {
+          console.log(mutation.target);
+          if (mutation.type === 'childList') {
+            if (mutation.addedNodes.length > 0) {
+              console.log('Child node added');
+              console.log(mutation.addedNodes);
+            } else if (mutation.removedNodes.length > 0) {
+              console.log('Child node removed');
+              console.log(mutation.removedNodes);
+            }
+          } else if (mutation.type === 'attributes') {
+            let value = mutation.target.getAttribute(mutation.attributeName);
+            if (value === null) {
+              console.log(`${mutation.attributeName} removed`);
+            } else {
+              console.log(`${mutation.attributeName}="${value}"`);
+            }
+          }
+        }
+      };
+      const observer = new MutationObserver(callback);
+      observer.observe(
+        editor.doc.documentElement,
+        { attributes: true, childList: true, subtree: true }
+      );
 
       editor.setAsActive(editor.doc.querySelector("[class]"));
     },
@@ -521,8 +569,8 @@ window.editor = (function () {
         if (event.target.tagName === "INPUT" && event.target.name === "value" && (event.which === 38 || event.which === 40)) {
           let num = event.target.value.replace(/[^0-9]/g, "");
           let change = 0;
-          if (event.which == 38) change = 1;
-          else if (event.which == 40) change = -1;
+          if (event.which === 38) change = 1;
+          else if (event.which === 40) change = -1;
           if (event.shiftKey) change *= 10;
           else if (event.ctrlKey) change *= 100;
           event.target.value = event.target.value.replace(num, Number(num) + change);
@@ -531,7 +579,7 @@ window.editor = (function () {
           window.editor.activeInput.onblur = function(){
             setTimeout(() => {
               hint.querySelectorAll("li").forEach(function(li){
-                li.style.height = 0;
+                li.style.height = "0";
               });
             }, 100);
           };
@@ -548,7 +596,7 @@ window.editor = (function () {
       return this;
     }
   };
-  editor.create()
+  editor.create();
   return editor;
 })();
 console.log(editor);

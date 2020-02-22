@@ -67,12 +67,23 @@ export let components = {
     transition: transform 0.5s ease;
     box-sizing: border-box;
   }
+  .hover {
+    opacity: 0.2;
+  }
+  /*.hover:before {
+    content: "###";
+    background: red;
+    padding:0.25em;
+  }*/
   * {
     box-sizing: inherit;
     outline: 1px dashed #ccc;
   }
   *:hover {
     outline: 1px dashed rgb(47,165,228);
+  }
+  *:focus {
+    outline: 2px dashed #4db357;
   }
   [draggable] {
     user-select: none;
@@ -96,7 +107,6 @@ export let components = {
     word-break: normal;
   }
   [data-status="active"] {
-    outline: 2px dashed #4db357;
   }
   .no-outline * {
     outline: none !important;
@@ -135,10 +145,6 @@ export let components = {
   <div class="button-group visual_control">
     <button type="button" onclick="editor.moveUp()"><i class="fas fa-arrow-up"></i> <span class="tablet-tooltip">Order Up</span></button>
     <button type="button" onclick="editor.moveDown()"><i class="fas fa-arrow-down"></i> <span class="tablet-tooltip">Order Down</span></button>
-    <button type="button" onclick="editor.changeActive('up')"><i class="far fa-arrow-alt-circle-up"></i> <span class="tablet-tooltip">Focus Up</span></button>
-    <button type="button" onclick="editor.changeActive('down')"><i class="far fa-arrow-alt-circle-down"></i> <span class="tablet-tooltip">Focus Down</span></button>
-  </div>
-  <div class="button-group visual_control">
     <button type="button" id="toggleOutlines"><i class="fas fa-border-none"></i> <span class="tablet-tooltip">Toggle Outlines</span></button>
     <button type="button" id="toggleImages"><i class="far fa-image"></i> <span class="tablet-tooltip">Toggle Images</span></button>
     <button type="button" id="sendTestEmail"><i class="far fa-paper-plane"></i> <span class="tablet-tooltip">EOA Test</span></button>

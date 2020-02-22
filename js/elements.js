@@ -1,16 +1,16 @@
 let global = {
-  "class": "",
-  "id": "",
-  "tabindex": {"values": [0, -1]},
-  "title": "",
+  "class": "-?[_a-zA-Z]+[_-a-zA-Z0-9]*",
+  "id": "^[a-zA-Z][\\w:.\\-_]*$",
+  "aria-label": ".*",
+  /*"tabindex": {"values": [0, -1]},
+  "aria-modal": {"values": [true, false]},
+  "title": ".*",
   "role": {
     "values": [
       "dialog",
       "alertdialog"
     ]
-  },
-  "aria-label": "",
-  "aria-modal": {"values": [true, false]}
+  },*/
 };
 export const elements = {
   "body": {
@@ -21,7 +21,7 @@ export const elements = {
     "droppable": false,
     "attributes": {
       ...global,
-      "cite": ""
+      "cite": ".*"
     },
   },
   "div": {
@@ -39,9 +39,9 @@ export const elements = {
     "droppable": "li",
     "attributes": {
       ...global,
-      "reversed": false,
-      "start": 1,
-      "type": 1
+      "reversed": "true|false",
+      "start": Number,
+      //"type": "1"
     },
   },
   "ul": {
@@ -51,7 +51,7 @@ export const elements = {
   "li": {
     "attributes": {
       ...global,
-      "value": ""
+      //"value": ".*"
     },
   },
   "p": {
@@ -60,10 +60,10 @@ export const elements = {
   "a": {
     "attributes": {
       ...global,
-      "download": "",
-      "href": "",
-      "ping": "",
-      "target": ""
+      "href": ".*",
+      "target": ".*"
+      /*"ping": ".*",
+      "download": ".*",*/
     },
   },
   "br": {
@@ -94,20 +94,20 @@ export const elements = {
     "droppable": false,
     "attributes": {
       ...global,
-      "autoplay": "",
-      "buffered": "",
-      "controls": "",
-      "crossorigin": "",
-      "currentTime": "",
-      "duration": "",
-      "height": "",
-      "loop": "",
-      "muted": "",
-      "playsinline": "",
-      "poster": "",
-      "preload": "",
-      "src": "",
-      "width": ""
+      "autoplay": ".*",
+      "buffered": ".*",
+      "controls": ".*",
+      "crossorigin": ".*",
+      "currentTime": ".*",
+      "duration": ".*",
+      "height": ".*",
+      "loop": ".*",
+      "muted": ".*",
+      "playsinline": ".*",
+      "poster": ".*",
+      "preload": ".*",
+      "src": ".*",
+      "width": ".*"
     },
   },
   "img": {
@@ -115,14 +115,14 @@ export const elements = {
     "droppable": false,
     "attributes": {
       ...global,
-      "alt": "",
-      "crossorigin": "",
-      "decoding": "",
-      "height": "",
-      "sizes": "",
-      "src": "",
-      "srcset": "",
-      "width": ""
+      "src": ".*",
+      "alt": ".*",
+      /*"crossorigin": ".*",
+      "decoding": ".*",
+      "height": ".*",
+      "sizes": ".*",
+      "srcset": ".*",
+      "width": ".*"*/
     },
   },
   "iframe": {
@@ -130,14 +130,15 @@ export const elements = {
     "droppable": false,
     "attributes": {
       ...global,
-      "allow": "",
-      "height": "",
-      "name": "",
-      "referrerpolicy": "",
-      "sandbox": "",
-      "src": "",
-      "srcdoc": "",
-      "width": ""
+      "src": ".*",
+      "title": ".*",
+      /*"allow": ".*",
+      "height": ".*",
+      "name": ".*",
+      "referrerpolicy": ".*",
+      "sandbox": ".*",
+      "srcdoc": ".*",
+      "width": ".*"*/
     },
   },
   "table": {
@@ -166,39 +167,40 @@ export const elements = {
   "th": {
     "attributes": {
       ...global,
-      "colspan": "",
-      "headers": "",
-      "rowspan": "",
-      "scope": ""
+      "colspan": ".*",
+      "headers": ".*",
+      "rowspan": ".*",
+      "scope": ".*"
     },
   },
   "td": {
     "attributes": {
       ...global,
-      "colspan": "",
-      "headers": "",
-      "rowspan": "",
-      "scope": ""
+      "colspan": ".*",
+      "headers": ".*",
+      "rowspan": ".*",
+      "scope": ".*"
     },
   },
   "button": {
+    "droppable": false,
     "attributes": {
       ...global,
-      "autofocus": "",
-      "disabled": "",
-      "name": "",
-      "type": "",
-      "value": ""
+      "name": ".*",
+      "type": ".*",
+      "value": ".*"
+      /*"autofocus": ".*",
+      "disabled": ".*",*/
     },
   },
   "form": {
     "attributes": {
       ...global,
-      "action": "",
-      "autocomplete": "",
-      "method": "",
-      "novalidate": "",
-      "target": ""
+      "action": ".*",
+      "autocomplete": ".*",
+      "method": ".*",
+      "novalidate": ".*",
+      "target": ".*"
     },
   },
   "input": {
@@ -206,57 +208,57 @@ export const elements = {
     "droppable": false,
     "attributes": {
       ...global,
-      "accept": "",
-      "alt": "",
-      "autocomplete": "",
-      "autofocus": "",
-      "capture": "",
-      "checked": "",
-      "dirname": "",
-      "disabled": "",
-      "form": "",
-      "formaction": "",
-      "formenctype": "",
-      "formmethod": "",
-      "formnovalidate": "",
-      "formtarget": "",
-      "height": "",
-      "list": "",
-      "max": "",
-      "maxlength": "",
-      "min": "",
-      "minlength": "",
-      "multiple": "",
-      "name": "",
-      "pattern": "",
-      "placeholder": "",
-      "readonly": "",
-      "required": "",
-      "size": "",
-      "src": "",
-      "step": "",
-      "type": "",
-      "value": "",
-      "width": ""
+      "name": ".*",
+      "type": ".*",
+      "value": ".*",
+      "checked": "true|false",
+      "placeholder": ".*",
+      "pattern": ".*",
+      "required": "true|false",
+      /*"autofocus": ".*",
+      "autocomplete": ".*",
+      "accept": ".*",
+      "alt": ".*",
+      "capture": ".*",
+      "dirname": ".*",
+      "disabled": ".*",
+      "form": ".*",
+      "formaction": ".*",
+      "formenctype": ".*",
+      "formmethod": ".*",
+      "formnovalidate": ".*",
+      "formtarget": ".*",
+      "height": ".*",
+      "list": ".*",
+      "max": ".*",
+      "maxlength": ".*",
+      "min": ".*",
+      "minlength": ".*",
+      "multiple": ".*",
+      "readonly": ".*",
+      "size": ".*",
+      "src": ".*",
+      "step": ".*",
+      "width": ".*"*/
     },
   },
   "label": {
     "attributes": {
       ...global,
-      "for": ""
+      "for": ".*"
     },
   },
   "select": {
     "droppable": "option",
     "attributes": {
       ...global,
-      "autocomplete": "",
-      "autofocus": "",
-      "disabled": "",
-      "multiple": "",
-      "name": "",
-      "required": "",
-      "size": ""
+      "name": ".*",
+      "required": "true|false",
+      /*"autocomplete": ".*",
+      "autofocus": ".*",
+      "disabled": ".*",
+      "multiple": ".*",
+      "size": ".*"*/
     },
   },
   "option": {
@@ -264,28 +266,28 @@ export const elements = {
     "draggable": false,
     "attributes": {
       ...global,
-      "disabled": "",
-      "label": "",
-      "selected": "",
-      "value": ""
+      "selected": ".*",
+      "value": ".*"
+      /*"disabled": ".*",
+      "label": ".*",*/
     },
   },
   "textarea": {
     "droppable": false,
     "attributes": {
       ...global,
-      "autocomplete": "",
-      "autofocus": "",
-      "cols": "",
-      "disabled": "",
-      "maxlength": "",
-      "minlength": "",
-      "name": "",
-      "readonly": "",
-      "required": "",
-      "rows": "",
-      "spellcheck": "",
-      "wrap": ""
+      "name": ".*",
+      "required": "true|false",
+      /*"autocomplete": ".*",
+      "autofocus": ".*",
+      "cols": ".*",
+      "disabled": ".*",
+      "maxlength": ".*",
+      "minlength": ".*",
+      "readonly": ".*",
+      "rows": ".*",
+      "spellcheck": ".*",
+      "wrap": ".*"*/
     },
   },
 };
