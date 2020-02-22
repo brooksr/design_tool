@@ -1,6 +1,5 @@
 import {elements} from './elements.js';
 import {styles} from './styles.js';
-import {drag} from './drag.js';
 import {config} from './config.js';
 import {components} from './components.js';
 import {email_components} from './email_components.js';
@@ -68,6 +67,9 @@ window.editor = (function () {
       remove.forEach(function(s){
         s.parentNode.removeChild(s);
       });
+      editor.doc.querySelectorAll("[draggable]").forEach(function(e){
+        e.setAttribute("draggable", "");
+      });
     },
     inlineStyles: function(){
       let inlinable = Array.from(editor.doc.styleSheets).filter(s => s.title === "inlineCSS")[0];
@@ -108,7 +110,6 @@ window.editor = (function () {
         });
       });
     },
-    drag: drag,
     setContentEditable: elm => {
       const hasTextNode = Array.from(elm.childNodes).filter(node => {
         return Array.from(node.childNodes).filter(node => {
@@ -239,7 +240,37 @@ window.editor = (function () {
     updateIds: () => {
       editor.doc.body.querySelectorAll("*:not(style):not(script)").forEach((elm, index) => {
         editor.setContentEditable(elm);
-        //editor.drag.init(elm);
+        elm.draggable = "true";
+        elm.addEventListener('dragstart', dragStart, false);
+        elm.addEventListener('dragend', dragEnd, false);
+        elm.addEventListener('dragover', dragOver, false);
+        elm.addEventListener('dragenter', dragEnter, false);
+        elm.addEventListener('dragleave', dragLeave, false);
+        elm.addEventListener('drop', dragDrop, false);
+        function dragStart(e) {
+          e.stopPropagation();
+          editor.drag = this;
+        }
+        function dragEnd(e) {
+          e.stopPropagation();
+        }
+        function dragOver(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          this.style.opacity = '0.2';
+        }
+        function dragEnter(e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+        function dragLeave(e) {
+          this.style.opacity = '';
+        }
+        function dragDrop(e) {
+          e.stopPropagation();
+          this.style.opacity = '';
+          this.append(editor.drag);
+        }
       });
     },
     moveUp: () => {
@@ -473,14 +504,14 @@ window.editor = (function () {
               ${b.blocks.map(block => `
               <div class="block" onclick="editor.addBlock(this)">
                 <h5>${block.id}</h5>
-                <code id="${block.id}" draggable="true">${block.html}</code>
+                <code id="${block.id}" draggable="true" ondragstart="editor.drag = this.firstElementChild">${block.html}</code>
               </div>`).join("")}
             `).join("")}
             <h4>Elements</h4>
             ${Object.keys(elements).map(b => `
             <div class="block" onclick="editor.addBlock(this)">
               <h5>${b}</h5>
-              <code draggable="true">${printTags(elements[b], b)}</code>
+              <code draggable="true" ondragstart="editor.drag = this.firstElementChild">${printTags(elements[b], b)}</code>
             </div>`).join("")}
           </div>
         </div>`;

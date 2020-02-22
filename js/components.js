@@ -74,6 +74,9 @@ export let components = {
   *:hover {
     outline: 1px dashed rgb(47,165,228);
   }
+  [draggable] {
+    user-select: none;
+  }
   [contenteditable] {
     outline: 2px dotted rgb(230,162,79);
   }
