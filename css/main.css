@@ -65,6 +65,12 @@ button:hover {
 button:focus {
   outline: 1px solid #2ab34b;
 }
+summary {
+  cursor: pointer;
+  padding: 1em;
+  background: #212121;
+  margin-bottom: 0.5em;
+}
 .CodeMirror {
   height: 100% !important;
 }
@@ -91,7 +97,7 @@ button:focus {
   position: absolute;
   top: 5em;
   left: 0;
-  right: 25%;
+  right: 25em;
   margin: auto;
   width: calc(100% - 25em);
   max-width:100%;
@@ -137,13 +143,13 @@ button:focus {
 }
 .menu li {
   display: initial;
-  flex: 0 1 23%;
+  flex: 0 1 14%;
   margin: 1%;
   padding: 2%;
   position: relative;
   max-height: 20em;
   text-align:center;
-  background: #222
+  background: #222;
 }
 #menu_close {
   float: right;
@@ -387,6 +393,9 @@ button:focus {
 }
 .editor_open .code_control {
   display: inherit;
+}
+.attributes_tab {
+  margin-bottom: 1em;
 }
 .styles_tab {
   font-size: 0.9em;

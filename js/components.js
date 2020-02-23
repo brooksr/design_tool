@@ -1,25 +1,26 @@
 
 /*
-         <i class="fas fa-desktop"></i>
-         <i class="fas fa-heading"></i>
-         <i class="fas fa-paragraph"></i>
-         <i class="fas fa-remove-format"></i>
-         <i class="fas fa-quote-left"></i>
-         <i class="fas fa-quote-right"></i>
-         <i class="fas fa-vector-square"></i>
-         <i class="fas fa-link"></i>
-         <i class="fas fa-table"></i>
-         <i class="fas fa-copy"></i>
-         <i class="fas fa-copyright"></i>
-         <i class="fas fa-fill"></i>
-         <i class="fas fa-eye-dropper"></i>
-         <i class="fas fa-eye-clone"></i>
-         <i class="fas fa-list-ol"></i>
-         <i class="fas fa-list-ul"></i>
-         <i class="fas fa-th"></i>
-         <i class="fas fa-th-large"></i>
-         <i class="fas fa-th-list"></i>
-         <i class="fas fa-trash"></i>*/
+<i class="fas fa-desktop"></i>
+<i class="fas fa-heading"></i>
+<i class="fas fa-paragraph"></i>
+<i class="fas fa-remove-format"></i>
+<i class="fas fa-quote-left"></i>
+<i class="fas fa-quote-right"></i>
+<i class="fas fa-vector-square"></i>
+<i class="fas fa-link"></i>
+<i class="fas fa-table"></i>
+<i class="fas fa-copy"></i>
+<i class="fas fa-copyright"></i>
+<i class="fas fa-fill"></i>
+<i class="fas fa-eye-dropper"></i>
+<i class="fas fa-eye-clone"></i>
+<i class="fas fa-list-ol"></i>
+<i class="fas fa-list-ul"></i>
+<i class="fas fa-th"></i>
+<i class="fas fa-th-large"></i>
+<i class="fas fa-th-list"></i>
+<i class="fas fa-trash"></i>*/
+
 export let components = {
   modal: (images) => `
     <button id="modal_close">&times;</button>
@@ -35,23 +36,24 @@ export let components = {
       </li>`).join("")}
     </ul>
   `,
-  menu: (templates) => `
+  menu: (config) => `
     <button id="menu_close">&times;</button>
-    <button type="button" id="manageImages"><i class="far fa-images"></i> <span class="">Manage Images</span></button>
+    <input id="assetName" type="text" placeholder="Enter asset name" value="${config.templates[3].name}">
     <button type="button" id="save"><i class="far fa-save"></i> <span class="">Save</span></button>
+    <button type="button" id="manageImages"><i class="far fa-images"></i> <span class="">Manage Images</span></button>
     <hr />
     <h3>New</h3>
     <ul>
-    ${templates.map((i, index) => `<li onclick="editor.update(${index})">
+    ${config.templates.map((i, index) => `<li onclick="editor.update(${index})">
       ${i.icon}
       <h4>${i.name}</h4>
       </li>`).join("")}
     </ul>
     <h3>Open</h3>
     <ul>
-    ${templates.map((i, index) => `<li onclick="editor.update(${index})">
-      ${i.icon}
-      <h4>${i.name}</h4>
+    ${Object.keys(localStorage).map((i, index) => `<li onclick="editor.update(${index})">
+      ${JSON.parse(localStorage[i]).icon}
+      <h4>${JSON.parse(localStorage[i]).name}</h4>
       </li>`).join("")}
     </ul>
   `,
@@ -70,11 +72,6 @@ export let components = {
   .hover {
     opacity: 0.2;
   }
-  /*.hover:before {
-    content: "###";
-    background: red;
-    padding:0.25em;
-  }*/
   * {
     box-sizing: inherit;
     outline: 1px dashed #ccc;
@@ -82,7 +79,7 @@ export let components = {
   *:hover {
     outline: 1px dashed rgb(47,165,228);
   }
-  *:focus {
+  [data-status="active"] {
     outline: 2px dashed #4db357;
   }
   [draggable] {
@@ -106,8 +103,6 @@ export let components = {
     white-space: nowrap;
     word-break: normal;
   }
-  [data-status="active"] {
-  }
   .no-outline * {
     outline: none !important;
   }`,
@@ -115,15 +110,15 @@ export let components = {
   <div class="button-group">
     <button type="button" id="openMenu"><i class="fas fa-bars"></i> <span class="tablet-tooltip">Menu</span></button>
   </div>
-  <div class="radio-buttons code_control">
-    <button type="button" id="emailInline">Email Inline</button>
-    <button type="button" id="autoFormat">Autoformat</button>
-  </div>
   <div class="radio-buttons" id="editor-view">
     <input id="editor-view-visual" name="editor-view" type="radio" value="visual" checked="checked"/>
     <label for="editor-view-visual" ><i class="fas fa-eye"></i> <span class="tablet-tooltip">Visual</span></label>
     <input id="editor-view-code" name="editor-view" type="radio" value="code" />
     <label for="editor-view-code" ><i class="fas fa-code"></i> <span class="tablet-tooltip">Code</span></label>
+  </div>
+  <div class="radio-buttons code_control">
+    <button type="button" id="emailInline">Email Inline</button>
+    <button type="button" id="autoFormat">Autoformat</button>
   </div>
   <div class="radio-buttons visual_control" id="device-view">
     <input id="device-view-desktop" name="device-view" type="radio" value="desktop" checked="checked"/>
@@ -143,19 +138,19 @@ export let components = {
     <button type="button" id="zoomOut"><i class="fas fa-search-minus"></i> <span class="tablet-tooltip">Zoom Out</span></button>
   </div>
   <div class="button-group visual_control">
-    <button type="button" onclick="editor.moveUp()"><i class="fas fa-arrow-up"></i> <span class="tablet-tooltip">Order Up</span></button>
-    <button type="button" onclick="editor.moveDown()"><i class="fas fa-arrow-down"></i> <span class="tablet-tooltip">Order Down</span></button>
+<!--    <button type="button" onclick="editor.moveUp()"><i class="fas fa-arrow-up"></i> <span class="tablet-tooltip">Order Up</span></button>-->
+<!--    <button type="button" onclick="editor.moveDown()"><i class="fas fa-arrow-down"></i> <span class="tablet-tooltip">Order Down</span></button>-->
     <button type="button" id="toggleOutlines"><i class="fas fa-border-none"></i> <span class="tablet-tooltip">Toggle Outlines</span></button>
     <button type="button" id="toggleImages"><i class="far fa-image"></i> <span class="tablet-tooltip">Toggle Images</span></button>
     <button type="button" id="sendTestEmail"><i class="far fa-paper-plane"></i> <span class="tablet-tooltip">EOA Test</span></button>
     <button type="button" id="fullScreen"><i class="fas fa-expand-arrows-alt"></i> <span class="tablet-tooltip">Full Screen</span></button>
     <button type="button" id="speak"><i class="fas fa-voicemail"></i> <span class="tablet-tooltip">Speak</span></button>
   </div>
-  <div class="radio-buttons visual_control" id="sidebar-tabs">
-    <input id="device-view-Edit" name="sidebar-tabs" type="radio" value="edit" checked="checked" />
-    <label for="device-view-Edit" >Edit</label>
-    <input id="device-view-Blocks" name="sidebar-tabs" type="radio" value="blocks" />
-    <label for="device-view-Blocks" >Blocks</label>
-  </div>
+<!--  <div class="radio-buttons visual_control" id="sidebar-tabs">-->
+<!--    <input id="device-view-Edit" name="sidebar-tabs" type="radio" value="edit" checked="checked" />-->
+<!--    <label for="device-view-Edit" >Edit</label>-->
+<!--    <input id="device-view-Blocks" name="sidebar-tabs" type="radio" value="blocks" />-->
+<!--    <label for="device-view-Blocks" >Blocks</label>-->
+<!--  </div>-->
 `
-}
+};

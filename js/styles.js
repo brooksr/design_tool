@@ -11,7 +11,7 @@ const defaults = {
   border: '(none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset)',
   size: "(auto|[0-9|.]+("+units.join("|")+")|(min|max|min)-content)",
   overflow: ["visible", "hidden", "clip", "scroll", "auto"],
-}
+};
 export let styles = [
     {
     "id": "Text",
@@ -24,7 +24,7 @@ export let styles = [
     "word-spacing": defaults.number,
     "color": defaults.color,
     "text-transform": ["capitalize", "lowercase", "uppercase"],
-    "text-decoration":"",//<'text-decoration-line'> || <'text-decoration-style'> || <'text-decoration-color'> || <'text-decoration-thickness'>
+    "text-decoration": "",//<'text-decoration-line'> || <'text-decoration-style'> || <'text-decoration-color'> || <'text-decoration-thickness'>
     "text-align": ["left", "center", "right", "justify"],
     "text-indent": defaults.number,
     "text-shadow": `${defaults.number} ${defaults.number}( ${defaults.number})? ${defaults.color}`,
@@ -96,11 +96,11 @@ export let styles = [
     "border-color": defaults.color,
     "border-radius": defaults.number,
     "outline": `none|${defaults.number} ${defaults.border} ${defaults.color}`,
-    "border-width": defaults.number,
-    "border-style": defaults.border,
-    "border-color": defaults.color,
-    "border-radius": defaults.size,
+    "outline-width": defaults.number,
+    "outline-style": defaults.border,
+    "outline-color": defaults.color,
     "opacity": "0|1|[0-1].[0-9]+",
+    "box-shadow": "",
     "transition": "",//https://developer.mozilla.org/en-US/docs/Web/CSS/transition
     "transform": "", //https://developer.mozilla.org/en-US/docs/Web/CSS/transform
     "visibility": ["visible", "hidden"],

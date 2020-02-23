@@ -8,7 +8,6 @@ import {uml_export} from './uml_export.js';
 
 export let config = {
   node: document.getElementById("design_tool"),
-  template: localStorage.getItem("editor-01") ? decodeURIComponent(localStorage.getItem("editor-01")) : modal,
   templates: [
     {
       html: email,
@@ -48,6 +47,8 @@ export let config = {
     "https://via.placeholder.com/50x50?text=4",
   ],
   styles: {
+    "display-font": "Lobster",
+    "text-font": "Roboto",
     "main-bg-color": "hsl(0, 0%, 95%)",
     "main-font-color": "hsl(0, 0%, 5%)",
     "primary-color": "hsl(210, 100%, 56%)",

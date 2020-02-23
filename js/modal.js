@@ -1,13 +1,7 @@
 export let modal = `
+<link href="https://fonts.googleapis.com/css?family=Lobster&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
 <style>
-  body {
-    --main-bg-color: hsl(0, 0%, 95%);
-    --main-font-color: hsl(0, 0%, 5%);
-    --primary-color: hsl(210, 100%, 56%);
-    --primary-color-dark: hsl(210, 100%, 46%);
-    --primary-color-text: hsl(0, 0%, 98%);
-    --overlay-color: hsla(0, 0%, 0%, 0.5);
-  }
   #usi_container {
     height:100%;
     position: fixed;
@@ -26,7 +20,7 @@ export let modal = `
     padding: 0;
   }
   .usi_display {
-    font-family: sans-serif;
+    font-family: var(--text-font);
     background: var(--main-bg-color);
     color: var(--main-font-color);
     max-width: 640px;
@@ -62,10 +56,10 @@ export let modal = `
     top: 0;
     right: 0;
     background: none;
-    width: 30px;
-    height: 30px;
-    line-height: 30px;
-    font-size: 30px;
+    width: 1em;
+    height: 1em;
+    line-height: 1;
+    font-size: 2em;
     color: var(--main-font-color);
     padding: 0;
   }
@@ -73,6 +67,7 @@ export let modal = `
     content: "\\\u00D7";
   }
   .usi_display h1 {
+    font-family: var(--display-font);
     font-size: 2em;
     margin: 0;
   }
@@ -105,9 +100,6 @@ export let modal = `
     }
   }
   @media screen and (min-width: 400px) {
-    .usi_display {
-      top:10%;
-    }
     .usi_display h1 {
       font-size: 3em;
     }
@@ -133,7 +125,7 @@ export let modal = `
   <div class="usi_display">
     <div class="usi_content">
       <button id="usi_close" class="usi_button" type="button" aria-label="Close"></button>
-      <h1 class="usi_h1">10% off your next purchase</h1>
+      <h1 class="usi_h1">Take 10% Off</h1>
       <p>Lorem ipsum dolor sit amet, colorium tempe fur freestul de retu des werd few sed wash ner opunmi.</p>
       <button id="usi_submit" class="usi_button" type="button" aria-label="Redeem Now">Redeem Now</button>
     </div>

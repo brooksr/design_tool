@@ -4,38 +4,26 @@ import {config} from './config.js';
 import {components} from './components.js';
 import {email_components} from './email_components.js';
 import {keys} from '../keys.js';
-"use strict";
-
 window.editor = (function () {
   let editor = {
     s: styles,
     styles: [],
     elms: {},
+    properties: Object.keys(Object.assign(...styles)).filter(p => p !== "id"),
     update: function(i){
       editor.doc.body.innerHTML = "";
       editor.elms.canvas.srcdoc = config.templates[i].html;
-      if (document.getElementById("menu_close") != null) document.getElementById("menu_close").click();
+      document.getElementById("menu_close") && document.getElementById("menu_close").click();
     },
     save: function () {
-      localStorage.setItem("editor-01", encodeURIComponent(editor.doc.documentElement.outerHTML));
+      let name = document.getElementById("assetName").value;
+      let value = {
+        html: editor.doc.documentElement.outerHTML,
+        name: name,
+        icon: '<i class="far fa-envelope"></i>'
+      };
+      localStorage.setItem(name, JSON.stringify(value));
       alert("Saved!");
-    },
-    addBlock: function(self){
-      let block = self.querySelector("code").innerHTML;
-      let frag = document.createRange().createContextualFragment(block);
-      // var txt = document.createElement("textarea");
-      // txt.innerHTML = self.querySelector("code").innerHTML;
-      // editor.elms.active.outerHTML += txt.value;
-      editor.elms.active.appendChild(frag);
-      //editor.setAsActive(frag);
-      editor.updateIds();
-    },
-    shortcuts: function(event) {
-      let save = event.which === 83 && event.ctrlKey;
-      if (save) {
-        event.preventDefault();
-        editor.save();
-      }
     },
     replaceCss: (event) => {
       var ind = event.currentTarget.getAttribute("data-index");
@@ -119,26 +107,6 @@ window.editor = (function () {
         }).length > 0;
       }).length > 0;
       if (hasTextNode) elm.contentEditable = hasTextNode;
-    },
-    getActiveClick: function (e) {
-      e.target !== editor.elms.active ? editor.setAsActive(e.target) : editor.elms.active;
-    },
-    getActiveKey: function () {
-      let sel = editor.elms.canvas.contentWindow.getSelection();
-      let range = sel.getRangeAt(0);
-      let node = document.createElement('span');
-      range.insertNode(node);
-      range = range.cloneRange();
-      range.selectNodeContents(node);
-      range.collapse(false);
-      sel.removeAllRanges();
-      sel.addRange(range);
-      let activeElm = node.parentNode;
-      node.parentNode.removeChild(node);
-      if (editor.elms.active !== activeElm) {
-        editor.setAsActive(activeElm)
-      }
-      return activeElm;
     },
     setAsActive:  function(activeElm) {
       if (editor.elms.active) editor.elms.active.removeAttribute("data-status");
@@ -225,8 +193,10 @@ window.editor = (function () {
       });
       console.log(editor.sheets);
       document.querySelector(".styles_tab").innerHTML = `
-        <h2>Styles</h2>
-        ${editor.styles.map(editor.createStyleForm).reverse().join("")}
+        <details>
+          <summary>Styles</summary>
+          ${editor.styles.map(editor.createStyleForm).reverse().join("")}
+        </details>
       `;
     },
     setDrag : (elm) => {
@@ -304,7 +274,8 @@ window.editor = (function () {
     },
     updateAttrs: (activeElm) => {
       let tag = editor.elms.active.tagName.toLowerCase();
-      let html = `<h2>Attributes</h2>`;
+      let html = `
+        <h3>Attributes</h3>`;
       if (!!elements[tag]) {
         for (let a in elements[tag].attributes) {
           if (elements[tag].attributes.hasOwnProperty(a)) {
@@ -349,109 +320,6 @@ window.editor = (function () {
         editor.elms.modal.parentNode.removeChild(editor.elms.modal);
       });
     },
-    toolbar: {
-      create: function(){
-        editor.elms.toolbar = document.createElement("div");
-        editor.elms.toolbar.id = "toolbar";
-        editor.elms.toolbar.innerHTML = components.toolbar;
-        config.node.appendChild(editor.elms.toolbar);
-        document.querySelector("#openMenu").addEventListener("click", function (event) {
-          editor.elms.menu = document.createElement("div");
-          editor.elms.menu.classList.add("left_area", "cm_wrap", "modal", "menu");
-          editor.elms.menu.innerHTML = components.menu(config.templates);
-          config.node.appendChild(editor.elms.menu);
-          document.querySelector("#save").addEventListener("click", editor.save);
-          document.querySelector("#manageImages").addEventListener("click", editor.manageImages);
-          document.getElementById("menu_close").addEventListener("click", function (event) {
-            editor.elms.menu.parentNode.removeChild(editor.elms.menu);
-          });
-        });
-        document.querySelector("#device-view").addEventListener("change", function (e) {
-          if (e.target.value === "mobile") {
-            editor.elms.canvas.style.maxWidth = "375px";
-            editor.elms.canvas.style.maxHeight = "667px";
-          } else if (e.target.value === "tablet") {
-            editor.elms.canvas.style.maxWidth = "768px";
-            editor.elms.canvas.style.maxHeight = "1024px";
-          } else {
-            editor.elms.canvas.style.maxWidth = "";
-            editor.elms.canvas.style.maxHeight = "";
-          }
-        });//peechSynthesis.speak(new SpeechSynthesisUtterance($0.textContent))
-        document.querySelector("#speak").addEventListener("click", function (e) {
-          speechSynthesis.speak(new SpeechSynthesisUtterance(editor.doc.body.textContent))
-        });
-        document.querySelector("#fullScreen").addEventListener("click", function (e) {
-          config.node.requestFullscreen();
-        });
-        document.querySelector("#zoomIn").addEventListener("click", function (event) {
-          let transform = getComputedStyle(editor.doc.body).transform.split("(")[1].split(",")[0];
-          let newT = Number(transform) + 0.25;
-          editor.doc.body.style.transform = `matrix(${newT}, 0, 0, ${newT}, 0, 0)`;
-        });
-        document.querySelector("#zoomO").addEventListener("click", function (event) {
-          editor.doc.body.style.transform = `matrix(1, 0, 0, 1, 0, 0)`;
-        });
-        document.querySelector("#zoomOut").addEventListener("click", function (event) {
-          let transform = getComputedStyle(editor.doc.body).transform.split("(")[1].split(",")[0];
-          let newT = Number(transform) - 0.25;
-          editor.doc.body.style.transform = `matrix(${newT}, 0, 0, ${newT}, 0, 0)`;
-        });
-        document.querySelector("#editor-view").addEventListener("change", function (event) {
-          editor.elms.cm.style.display = (event.target.value === "code") ? "block" : "none";
-          editor.cm.refresh();
-          document.body.classList.toggle("editor_open");
-        });
-        document.querySelector("#sidebar-tabs").addEventListener("change", function (event) {
-          document.querySelector(".editor_active") && document.querySelector(".editor_active").classList.remove("editor_active");
-          document.querySelector("." + event.target.value + "_tab").classList.add("editor_active");
-        });
-        document.querySelector("#toggleOutlines").addEventListener("click", function (event) {
-          editor.doc.body.classList.toggle("no-outline");
-        });
-        document.querySelector("#sendTestEmail").addEventListener("click", function (event) {
-          let subject = prompt("Please enter your subject", "Design tool test. ID:" + Math.round(Math.random() * 999999));
-          if (!subject) return;
-          fetch('https://api.emailonacid.com/v5/email/tests', {
-            method: 'POST',
-            headers: { 'Authorization': 'Basic ' + keys.EOA },
-            body: JSON.stringify({
-              "subject": subject,
-              "html": editor.doc.documentElement.outerHTML
-            })
-          }).then((response) => response.json())
-            .then((data) => {
-              window.open("https://app.emailonacid.com/app/acidtest/"+data.id+"/list", "emailonacid");
-            })
-            .catch((error) => {
-              console.error('Error:', error);
-            });
-        });
-        document.querySelector("#toggleImages").addEventListener("click", function (event) {
-          let imgs = editor.doc.querySelectorAll("img");
-          imgs.forEach(img => {
-            if (img.src === location.href) {
-              img.src = img.getAttribute("data-src");
-              img.removeAttribute("data-src");
-            } else {
-              img.setAttribute("data-src", img.src);
-              img.src = location.href;
-            }
-          });
-        });
-        document.querySelector("#autoFormat").addEventListener("click", editor.autoformat);
-        document.querySelector("#emailInline").addEventListener("click", function (event) {
-          let html = editor.doc.documentElement.innerHTML;
-          if (html.indexOf("<main") != -1) editor.doc.documentElement.innerHTML = editor.unpackEmail(html);
-          editor.inlineStyles();
-          editor.cleanup();
-          //remove auto added tbody. outlook no like?
-          html = editor.doc.documentElement.innerHTML.replace(/<tbody>|<\/tbody>/g, "");
-          editor.cm.setValue(html)
-          editor.autoformat();
-        });
-      },
-    },
     unpackEmail: (html) => {
       for (let c in email_components) {
         html = html.replace(new RegExp(c, "g"), email_components[c]);
@@ -468,16 +336,29 @@ window.editor = (function () {
       editor.elms.canvas_style = document.createElement("style");
       editor.elms.canvas_style.title = "editor";
       editor.doc.head.appendChild(editor.elms.canvas_style);
+      Object.keys(config.styles).forEach(style => {
+        editor.doc.body.style.setProperty("--" + style, config.styles[style]);
+      });
       editor.elms.canvas_style.innerHTML = components.editor_css;
 
-      editor.doc.body.addEventListener("click", editor.getActiveClick);
-      //editor.doc.body.addEventListener("keyup", editor.getActiveKey);
       editor.updateIds();
+      editor.doc.addEventListener("keydown", function(event) {
+        let save = event.which === 83 && event.ctrlKey;
+        let moveUp = event.which === 38 && event.shiftKey;
+        let moveDown = event.which === 40 && event.shiftKey;
+        if (save) {
+          event.preventDefault();
+          editor.save();
+        } else if (moveUp) {
+          event.preventDefault();
+          editor.moveUp();
+        } else if (moveDown) {
+          event.preventDefault();
+          editor.moveDown();
+        }
+      });
 
-      document.addEventListener("keydown", editor.shortcuts);
-      editor.doc.addEventListener("keydown", editor.shortcuts);
-
-      const callback = function(mutationsList, observer) {
+      const observer = new MutationObserver((mutationsList, observer) => {
         for(let mutation of mutationsList) {
           console.log(mutation.target);
           if (mutation.type === 'childList') {
@@ -497,8 +378,7 @@ window.editor = (function () {
             }
           }
         }
-      };
-      const observer = new MutationObserver(callback);
+      });
       observer.observe(
         editor.doc.documentElement,
         { attributes: true, childList: true, subtree: true }
@@ -507,11 +387,18 @@ window.editor = (function () {
       editor.setAsActive(editor.doc.querySelector("[class]"));
     },
     create: function () {
-      editor.toolbar.create();
+      editor.elms.toolbar = document.createElement("div");
+      editor.elms.toolbar.id = "toolbar";
+      editor.elms.toolbar.innerHTML = components.toolbar;
+      config.node.appendChild(editor.elms.toolbar);
+      editor.elms.menu = document.createElement("div");
+      editor.elms.menu.classList.add("hidden", "cm_wrap", "modal", "menu");
+      editor.elms.menu.innerHTML = components.menu(config);
+      config.node.appendChild(editor.elms.menu);
 
       editor.elms.canvas = document.createElement("iframe");
       editor.elms.canvas.id = "canvas";
-      editor.elms.canvas.srcdoc = config.template;
+      editor.elms.canvas.srcdoc = config.templates[2].html;
       config.node.appendChild(editor.elms.canvas);
       editor.elms.canvas.onload = editor.onload;
 
@@ -520,7 +407,7 @@ window.editor = (function () {
       editor.elms.cm.classList.add("cm_wrap");
       config.node.appendChild(editor.elms.cm);
       editor.cm = CodeMirror(editor.elms.cm, {
-        value: config.template,
+        value: editor.elms.canvas.srcdoc,
         lineNumbers: true,
         lineWrapping: true,
         theme: "darcula",
@@ -535,44 +422,52 @@ window.editor = (function () {
         return html;
       };
 
-      editor.properties = Object.keys(Object.assign(...editor.s)).filter(p => p != "id");
       editor.elms.editor = document.createElement("div");
       editor.elms.editor.id = "editor";
       editor.elms.editor.innerHTML = `<div id="tab_panels" class="scroll">
           <div class="editor_panel edit_tab editor_active">
             <div class="attributes_tab"></div>
             <div class="styles_tab"></div>
+            <div class="blocks_tab">
+              ${config.blocks.map(b => `
+              <details>
+              <summary>${b.name}</summary>
+                ${b.blocks.map(block => `
+                <div class="block">
+                  <h5>${block.id}</h5>
+                  <code id="${block.id}" draggable="true" ondragstart="editor.drag = this.firstElementChild">${block.html}</code>
+                </div>`).join("")}
+              `).join("")}
+              </details>
+              <details>
+              <summary>Elements</summary>
+              ${Object.keys(elements).map(b => `
+              <div class="block">
+                <h5>${b}</h5>
+                <code draggable="true" ondragstart="editor.drag = this.firstElementChild">${printTags(elements[b], b)}</code>
+              </div>`).join("")}
+              </details>
+            </div>
             <ul id="hint">${editor.properties.map(style => {
               return `<li onclick="editor.activeInput.value = event.target.textContent;">${style}</li>`;
             }).join("")}</ul>
           </div>
-          <div class="editor_panel blocks_tab">
-            ${config.blocks.map(b => `
-            <h4>${b.name}</h4>
-              ${b.blocks.map(block => `
-              <div class="block" onclick="editor.addBlock(this)">
-                <h5>${block.id}</h5>
-                <code id="${block.id}" draggable="true" ondragstart="editor.drag = this.firstElementChild">${block.html}</code>
-              </div>`).join("")}
-            `).join("")}
-            <h4>Elements</h4>
-            ${Object.keys(elements).map(b => `
-            <div class="block" onclick="editor.addBlock(this)">
-              <h5>${b}</h5>
-              <code draggable="true" ondragstart="editor.drag = this.firstElementChild">${printTags(elements[b], b)}</code>
-            </div>`).join("")}
-          </div>
         </div>`;
       config.node.appendChild(editor.elms.editor);
       document.querySelector(".attributes_tab").onchange = editor.bindAttributes;
-      document.querySelector(".styles_tab").onkeyup = function(event){
-        if (event.target.tagName === "INPUT" && event.target.name === "value" && (event.which === 38 || event.which === 40)) {
+      document.addEventListener("keyup", function(event) {
+        let save = event.which === 83 && event.ctrlKey;
+        let changeNum = event.target.tagName === "INPUT" && event.target.name === "value" && (event.which === 38 || event.which === 40);
+        if (save) {
+          event.preventDefault();
+          editor.save();
+        } else if (changeNum) {
           let num = event.target.value.replace(/[^0-9]/g, "");
           let change = 0;
           if (event.which === 38) change = 1;
           else if (event.which === 40) change = -1;
           if (event.shiftKey) change *= 10;
-          else if (event.ctrlKey) change *= 100;
+          else if (event.ctrlKey || event.altKey) change *= 100;
           event.target.value = event.target.value.replace(num, Number(num) + change);
         } else if (event.target.tagName === "INPUT" && event.target.name === "property") {
           window.editor.activeInput = event.target;
@@ -591,7 +486,102 @@ window.editor = (function () {
             li.style.height = li.textContent !== event.target.value && li.textContent.indexOf(event.target.value) !== -1  ? "15px" : 0;
           });
         }
-      };
+      });
+
+
+      document.querySelector("#save").addEventListener("click", editor.save);
+      document.querySelector("#manageImages").addEventListener("click", editor.manageImages);
+      document.getElementById("menu_close").addEventListener("click", function (event) {
+        editor.elms.menu.classList.toggle("hidden");
+      });
+      document.querySelector("#openMenu").addEventListener("click", function (event) {
+        editor.elms.menu.classList.toggle("hidden");
+      });
+      document.querySelector("#device-view").addEventListener("change", function (e) {
+        if (e.target.value === "mobile") {
+          editor.elms.canvas.style.maxWidth = "375px";
+          editor.elms.canvas.style.maxHeight = "667px";
+        } else if (e.target.value === "tablet") {
+          editor.elms.canvas.style.maxWidth = "768px";
+          editor.elms.canvas.style.maxHeight = "1024px";
+        } else {
+          editor.elms.canvas.style.maxWidth = "";
+          editor.elms.canvas.style.maxHeight = "";
+        }
+      });
+      document.querySelector("#speak").addEventListener("click", function (e) {
+        // TODO: read alt text, heading numbers, etc.
+        speechSynthesis.speak(new SpeechSynthesisUtterance(editor.doc.body.textContent))
+      });
+      document.querySelector("#fullScreen").addEventListener("click", function (e) {
+        config.node.requestFullscreen();
+      });
+      document.querySelector("#zoomIn").addEventListener("click", function (event) {
+        let transform = getComputedStyle(editor.doc.body).transform.split("(")[1].split(",")[0];
+        let newT = Number(transform) + 0.25;
+        editor.doc.body.style.transform = `matrix(${newT}, 0, 0, ${newT}, 0, 0)`;
+      });
+      document.querySelector("#zoomO").addEventListener("click", function (event) {
+        editor.doc.body.style.transform = `matrix(1, 0, 0, 1, 0, 0)`;
+      });
+      document.querySelector("#zoomOut").addEventListener("click", function (event) {
+        let transform = getComputedStyle(editor.doc.body).transform.split("(")[1].split(",")[0];
+        let newT = Number(transform) - 0.25;
+        editor.doc.body.style.transform = `matrix(${newT}, 0, 0, ${newT}, 0, 0)`;
+      });
+      document.querySelector("#editor-view").addEventListener("change", function (event) {
+        editor.elms.cm.style.display = (event.target.value === "code") ? "block" : "none";
+        editor.cm.refresh();
+        document.body.classList.toggle("editor_open");
+      });
+      /*document.querySelector("#sidebar-tabs").addEventListener("change", function (event) {
+        document.querySelector(".editor_active") && document.querySelector(".editor_active").classList.remove("editor_active");
+        document.querySelector("." + event.target.value + "_tab").classList.add("editor_active");
+      });*/
+      document.querySelector("#toggleOutlines").addEventListener("click", function (event) {
+        editor.doc.body.classList.toggle("no-outline");
+      });
+      document.querySelector("#sendTestEmail").addEventListener("click", function (event) {
+        let subject = prompt("Please enter your subject", "Design tool test. ID:" + Math.round(Math.random() * 999999));
+        if (!subject) return;
+        fetch('https://api.emailonacid.com/v5/email/tests', {
+          method: 'POST',
+          headers: { 'Authorization': 'Basic ' + keys.EOA },
+          body: JSON.stringify({
+            "subject": subject,
+            "html": editor.doc.documentElement.outerHTML
+          })
+        }).then((response) => response.json())
+          .then((data) => {
+            window.open("https://app.emailonacid.com/app/acidtest/"+data.id+"/list", "emailonacid");
+          })
+          .catch((error) => {
+            console.error('Error:', error);
+          });
+      });
+      document.querySelector("#toggleImages").addEventListener("click", function (event) {
+        let imgs = editor.doc.querySelectorAll("img");
+        imgs.forEach(img => {
+          if (img.src === location.href) {
+            img.src = img.getAttribute("data-src");
+            img.removeAttribute("data-src");
+          } else {
+            img.setAttribute("data-src", img.src);
+            img.src = location.href;
+          }
+        });
+      });
+      document.querySelector("#autoFormat").addEventListener("click", editor.autoformat);
+      document.querySelector("#emailInline").addEventListener("click", function (event) {
+        let html = editor.doc.documentElement.innerHTML;
+        if (html.indexOf("<main") != -1) editor.doc.documentElement.innerHTML = editor.unpackEmail(html);
+        editor.inlineStyles();
+        editor.cleanup();
+        //remove auto added tbody. outlook no like?
+        html = editor.doc.documentElement.innerHTML.replace(/<tbody>|<\/tbody>/g, "");
+        editor.cm.setValue(html)
+        editor.autoformat();
+      });
 
       return this;
     }
