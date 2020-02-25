@@ -448,9 +448,9 @@ window.editor = (function () {
                   <h5>${block.id}</h5>
                   <code id="${block.id}" draggable="true" ondragstart="editor.drag = document.createRange().createContextualFragment(this.innerHTML)">${block.html}</code>
                 </div>`, "")}
-              `)}
               </details>
-              <details>
+              `).join("")}
+
               <summary>Elements</summary>
               ${Object.keys(elements).reduce((acc, b) => acc + `
               <div class="block">
