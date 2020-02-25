@@ -431,21 +431,21 @@ window.editor = (function () {
             <div class="blocks_tab">
               ${config.blocks.map(b => `
               <details>
-              <summary>${b.name}</summary>
+                <summary>${b.name}</summary>
                 ${b.blocks.map(block => `
                 <div class="block">
                   <h5>${block.id}</h5>
                   <code id="${block.id}" draggable="true" ondragstart="editor.drag = this.firstElementChild">${block.html}</code>
                 </div>`).join("")}
-              `).join("")}
               </details>
+              `).join("")}
               <details>
-              <summary>Elements</summary>
-              ${Object.keys(elements).map(b => `
-              <div class="block">
-                <h5>${b}</h5>
-                <code draggable="true" ondragstart="editor.drag = this.firstElementChild">${printTags(elements[b], b)}</code>
-              </div>`).join("")}
+                <summary>Elements</summary>
+                ${Object.keys(elements).map(b => `
+                <div class="block">
+                  <h5>${b}</h5>
+                  <code draggable="true" ondragstart="editor.drag = this.firstElementChild">${printTags(elements[b], b)}</code>
+                </div>`).join("")}
               </details>
             </div>
             <ul id="hint">${editor.properties.map(style => {

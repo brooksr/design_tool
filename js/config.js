@@ -1,4 +1,5 @@
 import {blocks} from './blocks.js';
+import {emailBlocks} from './emailBlocks.js';
 import {email} from './email.js';
 import {email2} from './email2.js';
 import {modal} from './modal.js';
@@ -38,6 +39,9 @@ export let config = {
   blocks: [{
     "name": "Modal blocks",
     "blocks": blocks
+  },{
+    "name": "Email blocks",
+    "blocks": emailBlocks
   }],
   images: [
     "https://via.placeholder.com/600x50?text=LOGO",
