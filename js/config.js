@@ -47,12 +47,12 @@ export let config = {
     "https://via.placeholder.com/50x50?text=4",
   ],
   styles: {
-    "display-font": "Lobster",
+    "display-font": "Roboto",
     "text-font": "Roboto",
-    "main-bg-color": "hsl(0, 0%, 95%)",
+    "main-bg-color": "hsl(0, 0%, 100%)",
     "main-font-color": "hsl(0, 0%, 5%)",
-    "primary-color": "hsl(210, 100%, 56%)",
-    "primary-color-dark": "hsl(210, 100%, 46%)",
+    "primary-color": "hsl(231, 78%, 35%)",
+    "primary-color-dark": "hsl(231, 78%, 25%)",
     "primary-color-text": "hsl(0, 0%, 98%)",
     "overlay-color": "hsla(0, 0%, 0%, 0.5)"
   }

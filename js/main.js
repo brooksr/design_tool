@@ -227,18 +227,17 @@ window.editor = (function () {
         e.stopPropagation();
         this.parentNode.style.paddingTop = "";
         this.classList.toggle("hover");
-        if (elements[this.tagName.toLowerCase()].droppable === false) {
-          return;
-        }
+        if (elements[this.tagName.toLowerCase()].droppable === false) return;
         this.append(editor.drag);
+        editor.updateIds();
       }, false);
     },
     updateIds: () => {
       editor.doc.body.querySelectorAll("*:not(style):not(script)").forEach((elm, index) => {
-        //editor.setContentEditable(elm);
+        editor.setContentEditable(elm);
         elm.setAttribute("tabindex", "0");
         elm.addEventListener("focus", e => editor.setAsActive(e.target));
-        if (elements[elm.tagName.toLowerCase()].draggable !== false) {
+        if (elements[elm.tagName.toLowerCase()] && elements[elm.tagName.toLowerCase()].draggable !== false) {
           editor.setDrag(elm);
         }
       });
@@ -274,8 +273,7 @@ window.editor = (function () {
     },
     updateAttrs: (activeElm) => {
       let tag = editor.elms.active.tagName.toLowerCase();
-      let html = `
-        <h3>Attributes</h3>`;
+      let html = `<h3>Attributes</h3>`;
       if (!!elements[tag]) {
         for (let a in elements[tag].attributes) {
           if (elements[tag].attributes.hasOwnProperty(a)) {
@@ -343,9 +341,10 @@ window.editor = (function () {
 
       editor.updateIds();
       editor.doc.addEventListener("keydown", function(event) {
-        let save = event.which === 83 && event.ctrlKey;
+        let save = event.which === 83 && event.ctrlKey;//S
         let moveUp = event.which === 38 && event.shiftKey;
         let moveDown = event.which === 40 && event.shiftKey;
+        let link = event.which === 76 && event.ctrlKey;//L
         if (save) {
           event.preventDefault();
           editor.save();
@@ -355,6 +354,17 @@ window.editor = (function () {
         } else if (moveDown) {
           event.preventDefault();
           editor.moveDown();
+        } else if (link) {
+          event.preventDefault();
+          let sel = editor.doc.getSelection();
+          if (sel.rangeCount) {
+            let range = sel.getRangeAt(0).cloneRange();
+            let a = document.createElement("a");
+            a.href = "#";
+            range.surroundContents(a);
+            sel.removeAllRanges();
+            sel.addRange(range);
+          }
         }
       });
 
@@ -391,6 +401,7 @@ window.editor = (function () {
       editor.elms.toolbar.id = "toolbar";
       editor.elms.toolbar.innerHTML = components.toolbar;
       config.node.appendChild(editor.elms.toolbar);
+
       editor.elms.menu = document.createElement("div");
       editor.elms.menu.classList.add("hidden", "cm_wrap", "modal", "menu");
       editor.elms.menu.innerHTML = components.menu(config);
@@ -432,25 +443,25 @@ window.editor = (function () {
               ${config.blocks.map(b => `
               <details>
               <summary>${b.name}</summary>
-                ${b.blocks.map(block => `
+                ${b.blocks.reduce((acc, block) =>  acc + `
                 <div class="block">
                   <h5>${block.id}</h5>
-                  <code id="${block.id}" draggable="true" ondragstart="editor.drag = this.firstElementChild">${block.html}</code>
-                </div>`).join("")}
-              `).join("")}
+                  <code id="${block.id}" draggable="true" ondragstart="editor.drag = document.createRange().createContextualFragment(this.innerHTML)">${block.html}</code>
+                </div>`, "")}
+              `)}
               </details>
               <details>
               <summary>Elements</summary>
-              ${Object.keys(elements).map(b => `
+              ${Object.keys(elements).reduce((acc, b) => acc + `
               <div class="block">
                 <h5>${b}</h5>
-                <code draggable="true" ondragstart="editor.drag = this.firstElementChild">${printTags(elements[b], b)}</code>
-              </div>`).join("")}
+                <code draggable="true" ondragstart="editor.drag = document.createRange().createContextualFragment(this.innerHTML)">${printTags(elements[b], b)}</code>
+              </div>`, "")}
               </details>
             </div>
-            <ul id="hint">${editor.properties.map(style => {
+            <ul id="hint">${editor.properties.reduce((acc, style) => {
               return `<li onclick="editor.activeInput.value = event.target.textContent;">${style}</li>`;
-            }).join("")}</ul>
+            }, "")}</ul>
           </div>
         </div>`;
       config.node.appendChild(editor.elms.editor);
@@ -534,10 +545,6 @@ window.editor = (function () {
         editor.cm.refresh();
         document.body.classList.toggle("editor_open");
       });
-      /*document.querySelector("#sidebar-tabs").addEventListener("change", function (event) {
-        document.querySelector(".editor_active") && document.querySelector(".editor_active").classList.remove("editor_active");
-        document.querySelector("." + event.target.value + "_tab").classList.add("editor_active");
-      });*/
       document.querySelector("#toggleOutlines").addEventListener("click", function (event) {
         editor.doc.body.classList.toggle("no-outline");
       });
