@@ -6,6 +6,7 @@ import {email_components} from './email_components.js';
 import {keys} from '../keys.js';
 window.editor = (function () {
   let editor = {
+    node: document.getElementById("design_tool"),
     s: styles,
     styles: [],
     elms: {},
@@ -26,8 +27,8 @@ window.editor = (function () {
       alert("Saved!");
     },
     replaceCss: (event) => {
-      var ind = event.currentTarget.getAttribute("data-index");
-      var selectors = event.currentTarget.querySelectorAll("[name='selector']");
+      let ind = event.currentTarget.getAttribute("data-index");
+      let selectors = event.currentTarget.querySelectorAll("[name='selector']");
       let selector = event.currentTarget.getAttribute("data-selector");
       let sheet = editor.sheets[0];
       let newRule = "";
@@ -99,12 +100,17 @@ window.editor = (function () {
       });
     },
     setContentEditable: elm => {
-      const hasTextNode = Array.from(elm.childNodes).filter(node => {
+      /*const hasTextNode = Array.from(elm.childNodes).filter(node => {
         return Array.from(node.childNodes).filter(node => {
           return node.nodeName === "#text"
             && node.textContent.replace(/\s/g, "") !== ""
             && !node.parentNode.isContentEditable;
         }).length > 0;
+      }).length > 0;*/
+      const hasTextNode = Array.from(elm.childNodes).filter(node => {
+        return node.nodeName === "#text"
+          && node.textContent.replace(/\s/g, "") !== ""
+          && !node.parentNode.isContentEditable;
       }).length > 0;
       if (hasTextNode) elm.contentEditable = hasTextNode;
     },
@@ -280,7 +286,7 @@ window.editor = (function () {
             let rule = elements[tag].attributes[a];
             html += `<div class="input-group">
                 <label for="${a}">${a}</label>
-                ${a === "src" ? "<button class=\"loadImages\"><i class=\"far fa-images\"></i></button>" : ""}
+                ${a === "src" ? "<button class=\"loadImages\"><i class=\"far fa-images\"/></button>" : ""}
                 <input
                   name="${a}"
                   value="${activeElm.getAttribute(a) || ""}"
@@ -313,7 +319,7 @@ window.editor = (function () {
       editor.elms.modal = document.createElement("div");
       editor.elms.modal.classList.add("left_area", "cm_wrap", "modal", "images");
       editor.elms.modal.innerHTML = components.modal(config.images);
-      config.node.appendChild(editor.elms.modal);
+      editor.node.appendChild(editor.elms.modal);
       document.getElementById("modal_close").addEventListener("click", function (event) {
         editor.elms.modal.parentNode.removeChild(editor.elms.modal);
       });
@@ -400,23 +406,23 @@ window.editor = (function () {
       editor.elms.toolbar = document.createElement("div");
       editor.elms.toolbar.id = "toolbar";
       editor.elms.toolbar.innerHTML = components.toolbar;
-      config.node.appendChild(editor.elms.toolbar);
+      editor.node.appendChild(editor.elms.toolbar);
 
       editor.elms.menu = document.createElement("div");
       editor.elms.menu.classList.add("hidden", "cm_wrap", "modal", "menu");
       editor.elms.menu.innerHTML = components.menu(config);
-      config.node.appendChild(editor.elms.menu);
+      editor.node.appendChild(editor.elms.menu);
 
       editor.elms.canvas = document.createElement("iframe");
       editor.elms.canvas.id = "canvas";
       editor.elms.canvas.srcdoc = config.templates[2].html;
-      config.node.appendChild(editor.elms.canvas);
+      editor.node.appendChild(editor.elms.canvas);
       editor.elms.canvas.onload = editor.onload;
 
       editor.elms.cm = document.createElement("div");
       editor.elms.cm.style.display = "none";
       editor.elms.cm.classList.add("cm_wrap");
-      config.node.appendChild(editor.elms.cm);
+      editor.node.appendChild(editor.elms.cm);
       editor.cm = CodeMirror(editor.elms.cm, {
         value: editor.elms.canvas.srcdoc,
         lineNumbers: true,
@@ -442,7 +448,7 @@ window.editor = (function () {
             <div class="blocks_tab">
               ${config.blocks.map(b => `
               <details>
-              <summary>${b.name}</summary>
+                <summary>${b.name}</summary>
                 ${b.blocks.reduce((acc, block) =>  acc + `
                 <div class="block">
                   <h5>${block.id}</h5>
@@ -451,12 +457,12 @@ window.editor = (function () {
               </details>
               `).join("")}
               <details>
-              <summary>Elements</summary>
-              ${Object.keys(elements).reduce((acc, b) => acc + `
-              <div class="block">
-                <h5>${b}</h5>
-                <code draggable="true" ondragstart="editor.drag = document.createRange().createContextualFragment(this.innerHTML)">${printTags(elements[b], b)}</code>
-              </div>`, "")}
+                <summary>Elements</summary>
+                ${Object.keys(elements).reduce((acc, b) => acc + `
+                <div class="block">
+                  <h5>${b}</h5>
+                  <code draggable="true" ondragstart="editor.drag = document.createRange().createContextualFragment(this.innerHTML)">${printTags(elements[b], b)}</code>
+                </div>`, "")}
               </details>
             </div>
             <ul id="hint">${editor.properties.reduce((acc, style) => {
@@ -464,7 +470,7 @@ window.editor = (function () {
             }, "")}</ul>
           </div>
         </div>`;
-      config.node.appendChild(editor.elms.editor);
+      editor.node.appendChild(editor.elms.editor);
       document.querySelector(".attributes_tab").onchange = editor.bindAttributes;
       document.addEventListener("keyup", function(event) {
         let save = event.which === 83 && event.ctrlKey;
@@ -499,7 +505,6 @@ window.editor = (function () {
         }
       });
 
-
       document.querySelector("#save").addEventListener("click", editor.save);
       document.querySelector("#manageImages").addEventListener("click", editor.manageImages);
       document.getElementById("menu_close").addEventListener("click", function (event) {
@@ -525,7 +530,7 @@ window.editor = (function () {
         speechSynthesis.speak(new SpeechSynthesisUtterance(editor.doc.body.textContent))
       });
       document.querySelector("#fullScreen").addEventListener("click", function (e) {
-        config.node.requestFullscreen();
+        editor.node.requestFullscreen();
       });
       document.querySelector("#zoomIn").addEventListener("click", function (event) {
         let transform = getComputedStyle(editor.doc.body).transform.split("(")[1].split(",")[0];
@@ -581,12 +586,12 @@ window.editor = (function () {
       document.querySelector("#autoFormat").addEventListener("click", editor.autoformat);
       document.querySelector("#emailInline").addEventListener("click", function (event) {
         let html = editor.doc.documentElement.innerHTML;
-        if (html.indexOf("<main") != -1) editor.doc.documentElement.innerHTML = editor.unpackEmail(html);
+        if (html.indexOf("<main") !== -1) editor.doc.documentElement.innerHTML = editor.unpackEmail(html);
         editor.inlineStyles();
         editor.cleanup();
         //remove auto added tbody. outlook no like?
         html = editor.doc.documentElement.innerHTML.replace(/<tbody>|<\/tbody>/g, "");
-        editor.cm.setValue(html)
+        editor.cm.setValue(html);
         editor.autoformat();
       });
 

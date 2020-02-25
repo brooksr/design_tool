@@ -8,7 +8,42 @@ import {uml} from './uml.js';
 import {uml_export} from './uml_export.js';
 
 export let config = {
-  node: document.getElementById("design_tool"),
+  campaigns: [
+    {
+      name: "Inboxed Incentive | Save Your Cart",
+      desc: "Example description here.",
+      modal: [
+        {
+          name: "Lead Capture",
+          html: modal
+        },{
+          name: "Coupon reminder",
+          html: bar
+        }
+      ],
+      email: [
+        {
+          name: "Email 1",
+          html: uml_export
+        },{
+          name: "Email 2",
+          html: email
+        },{
+          name: "Email 3",
+          html: email2
+        }
+      ]
+    },{
+      name: "Precise Promotion | Free Shipping",
+      desc: "Example description here.",
+      modal: [
+        {
+          name: "FS",
+          html: modal
+        }
+      ]
+    }
+  ],
   templates: [
     {
       html: email,
@@ -54,7 +89,7 @@ export let config = {
     "display-font": "Roboto",
     "text-font": "Roboto",
     "main-bg-color": "hsl(0, 0%, 100%)",
-    "main-font-color": "hsl(0, 0%, 5%)",
+    "main-font-color": "hsl(0, 0%, 20%)",
     "primary-color": "hsl(231, 78%, 35%)",
     "primary-color-dark": "hsl(231, 78%, 25%)",
     "primary-color-text": "hsl(0, 0%, 98%)",

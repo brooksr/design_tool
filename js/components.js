@@ -42,20 +42,38 @@ export let components = {
     <button type="button" id="save"><i class="far fa-save"></i> <span class="">Save</span></button>
     <button type="button" id="manageImages"><i class="far fa-images"></i> <span class="">Manage Images</span></button>
     <hr />
-    <h3>New</h3>
-    <ul>
-    ${config.templates.map((i, index) => `<li onclick="editor.update(${index})">
-      ${i.icon}
-      <h4>${i.name}</h4>
-      </li>`).join("")}
-    </ul>
+    <div class="newItem">
+      <h3>New</h3>
+      <ul>
+      ${config.templates.map((i, index) => `<li onclick="editor.update(${index})">
+        ${i.icon}
+        <h4>${i.name}</h4>
+        </li>`).join("")}
+      </ul>
+    </div>
+    <div class="openItem">
     <h3>Open</h3>
-    <ul>
-    ${Object.keys(localStorage).map((i, index) => `<li onclick="editor.update(${index})">
-      ${JSON.parse(localStorage[i]).icon}
-      <h4>${JSON.parse(localStorage[i]).name}</h4>
+    ${config.campaigns.map((campaign) => `
+    <div class="campaignWrapper">
+      <h3>${campaign.name}</h3>
+      <p>${campaign.desc}</p>
+      <div>
+      ${campaign.modal ? campaign.modal.map((i, index) => `
+        <button onclick="editor.update(${index})">${i.name}</button>`).join("") : ""}
+      ${campaign.email ? campaign.email.map((i, index) => `
+        <button onclick="editor.update(${index})">${i.name}</button>`).join(""): ""}
+      </div>
+    </div>
+     `).join("")}
+    </div>
+
+    <!--<ul>
+    ${Object.keys(localStorage).map((i, index) => `
+      <li onclick="editor.update(${index})">
+        ${JSON.parse(localStorage[i]).icon}
+        <h4>${JSON.parse(localStorage[i]).name}</h4>
       </li>`).join("")}
-    </ul>
+    </ul>-->
   `,
   editor_css: `
   body, html {
@@ -84,9 +102,6 @@ export let components = {
   }
   [draggable] {
     user-select: none;
-  }
-  [contenteditable] {
-    outline: 2px dotted rgb(230,162,79);
   }
   [data-status="match"]:before {
     content: "Match";
@@ -131,6 +146,8 @@ export let components = {
   <!--<div class="button-group">
     <button type="button">Undo</button>
     <button type="button">Redo</button>
+    <button type="button" onclick="editor.moveUp()"><i class="fas fa-arrow-up"></i> <span class="tablet-tooltip">Order Up</span></button>
+    <button type="button" onclick="editor.moveDown()"><i class="fas fa-arrow-down"></i> <span class="tablet-tooltip">Order Down</span></button>
   </div>-->
   <div class="button-group visual_control">
     <button type="button" id="zoomIn"><i class="fas fa-search-plus"></i> <span class="tablet-tooltip">Zoom In</span></button>
@@ -138,19 +155,11 @@ export let components = {
     <button type="button" id="zoomOut"><i class="fas fa-search-minus"></i> <span class="tablet-tooltip">Zoom Out</span></button>
   </div>
   <div class="button-group visual_control">
-<!--    <button type="button" onclick="editor.moveUp()"><i class="fas fa-arrow-up"></i> <span class="tablet-tooltip">Order Up</span></button>-->
-<!--    <button type="button" onclick="editor.moveDown()"><i class="fas fa-arrow-down"></i> <span class="tablet-tooltip">Order Down</span></button>-->
     <button type="button" id="toggleOutlines"><i class="fas fa-border-none"></i> <span class="tablet-tooltip">Toggle Outlines</span></button>
     <button type="button" id="toggleImages"><i class="far fa-image"></i> <span class="tablet-tooltip">Toggle Images</span></button>
     <button type="button" id="sendTestEmail"><i class="far fa-paper-plane"></i> <span class="tablet-tooltip">EOA Test</span></button>
     <button type="button" id="fullScreen"><i class="fas fa-expand-arrows-alt"></i> <span class="tablet-tooltip">Full Screen</span></button>
     <button type="button" id="speak"><i class="fas fa-voicemail"></i> <span class="tablet-tooltip">Speak</span></button>
   </div>
-<!--  <div class="radio-buttons visual_control" id="sidebar-tabs">-->
-<!--    <input id="device-view-Edit" name="sidebar-tabs" type="radio" value="edit" checked="checked" />-->
-<!--    <label for="device-view-Edit" >Edit</label>-->
-<!--    <input id="device-view-Blocks" name="sidebar-tabs" type="radio" value="blocks" />-->
-<!--    <label for="device-view-Blocks" >Blocks</label>-->
-<!--  </div>-->
 `
 };

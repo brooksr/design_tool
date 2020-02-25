@@ -200,7 +200,7 @@ summary {
   font-size: 0.9em;
 }
 #toolbar > *:not(:last-child) {
-  margin-right: 1em;
+  margin-right: 4em;
 }
 #toolbar .input-group input, #toolbar .input-group select {
   flex: 0 0 2em;
@@ -459,6 +459,11 @@ input:invalid {
   overflow: hidden;
   height: 0;
 }
+.campaignWrapper {
+  border: 1px solid #666;
+  padding: 1em;
+  margin-bottom: 1em;
+}
 .scroll {
   overflow-y: auto;
 }
@@ -474,7 +479,7 @@ input:invalid {
   border-radius: 10px;
 }
 /* not really just tablet anymore */
-@media only screen and (max-width: 1300px) {
+@media only screen and (max-width: 1500px) {
   button:hover .tablet-tooltip, label:hover .tablet-tooltip {
     background: rgba(42, 179, 75, 0.5);
     display: inherit;
@@ -485,7 +490,7 @@ input:invalid {
     font-size: 0.75em;
   }
 }
-@media only screen and (min-width: 1300px) {
+@media only screen and (min-width: 1500px) {
   .tablet-tooltip {
     display: initial;
   }
