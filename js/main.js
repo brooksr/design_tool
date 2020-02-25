@@ -450,7 +450,7 @@ window.editor = (function () {
                 </div>`, "")}
               </details>
               `).join("")}
-
+              <details>
               <summary>Elements</summary>
               ${Object.keys(elements).reduce((acc, b) => acc + `
               <div class="block">
