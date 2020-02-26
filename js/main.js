@@ -2,7 +2,7 @@ import {elements} from './elements.js';
 import {styles} from './styles.js';
 import {config} from './config.js';
 import {components} from './components.js';
-import {email_components} from './email_components.js';
+import {emailComponents} from './email-components.js';
 import {keys} from '../keys.js';
 window.editor = (function () {
   let editor = {
@@ -314,8 +314,8 @@ window.editor = (function () {
       editor.elms.modal.classList.toggle("hidden");
     },
     unpackEmail: (html) => {
-      for (let c in email_components) {
-        html = html.replace(new RegExp(c, "g"), email_components[c]);
+      for (let c in emailComponents) {
+        html = html.replace(new RegExp(c, "g"), emailComponents[c]);
       }
       return html
     },

@@ -1,4 +1,4 @@
-export const email_components = {
+export const emailComponents = {
   "<body(.*?)>": (tag, attrs) => `
   <body width="100%" ${attrs}>
     <center ${attrs}>

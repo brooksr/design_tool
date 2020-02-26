@@ -1,17 +1,30 @@
 import {blocks} from './blocks.js';
-import {emailBlocks} from './emailBlocks.js';
-import {email} from './email.js';
-import {email2} from './email2.js';
-import {modal} from './modal.js';
-import {bar} from './bar.js';
-import {uml} from './uml.js';
-import {uml_export} from './uml_export.js';
+import {emailBlocks} from './email-blocks.js';
+import {email} from './templates/email.js';
+import {email2} from './templates/email2.js';
+import {modal} from './templates/modal.js';
+import {bar} from './templates/bar.js';
+import {uml} from './templates/uml.js';
+import {uml_export} from './templates/uml_export.js';
 
 export let config = {
   campaigns: [
     {
       name: "Inboxed Incentive | Save Your Cart",
-      desc: "Summary of campaign. Info about site IDs, coupon types/expiration/application. Tracking, sale window, links. Launch method, launch settings. Lift tests and split tests. Engagement rules. Design requests and languages. Extra features (cart rebuilder, boost bar). Email send times. Links for assets, copy, reference. QA & dev notes. Testing instructions.",
+      desc: `Summary of campaign. 
+      coupon types/expiration/application. 
+      Launch method, launch settings. 
+      Lift tests and split tests. 
+      Extra features (cart rebuilder, boost bar). 
+      Languages and locales
+      Engagement rules. `,
+      alt: `
+      Info about site IDs
+      Tracking, sale window, links.
+      Design requests. 
+      Links for assets, copy, reference. 
+      QA & dev notes. 
+      Testing instructions. `,
       opp: "https://upsellit.lightning.force.com/lightning/r/Opportunity/0060g000010TmmNAAS/view",
       modal: [
         {
@@ -25,12 +38,15 @@ export let config = {
       email: [
         {
           name: "Email 1",
+          time: 3600,
           html: uml_export
         },{
           name: "Email 2",
+          time: 86400 - 3600,
           html: email
         },{
           name: "Email 3",
+          time: 86400 * 2,
           html: email2
         }
       ]
