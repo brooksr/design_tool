@@ -217,6 +217,10 @@ window.editor = (function () {
       elm.addEventListener('dragenter', function dragEnter(e) {
         e.preventDefault();
         e.stopPropagation();
+        let name = "";
+        if (this.id) name += "#" + this.id;
+        if (this.className) name += "." + this.className;
+        document.getElementById("canvasNotice").textContent = name;
         this.parentNode.style.paddingTop = "1em";
         this.classList.toggle("hover");
       }, false);
@@ -229,6 +233,7 @@ window.editor = (function () {
         e.stopPropagation();
         this.parentNode.style.paddingTop = "";
         this.classList.toggle("hover");
+        document.getElementById("canvasNotice").textContent = "";
         if (elements[this.tagName.toLowerCase()].droppable === false) return;
         this.append(editor.drag);
         editor.updateIds();
@@ -408,7 +413,7 @@ window.editor = (function () {
     create: function () {
       editor.elms.toolbar = document.createElement("div");
       editor.elms.toolbar.id = "toolbar";
-      editor.elms.toolbar.innerHTML = components.toolbar;
+      editor.elms.toolbar.innerHTML = components.toolbar(config);
       editor.node.appendChild(editor.elms.toolbar);
 
       editor.elms.menu = document.createElement("div");
@@ -452,7 +457,12 @@ window.editor = (function () {
 
       editor.elms.editor = document.createElement("div");
       editor.elms.editor.id = "editor";
-      editor.elms.editor.innerHTML = `<div id="tab_panels" class="scroll">
+      editor.elms.editor.innerHTML = `
+      <div id="canvasNotice"></div>
+      <ul id="hint">${editor.properties.reduce((acc, style) => {
+        return `<li onclick="editor.activeInput.value = event.target.textContent;">${style}</li>`;
+      }, "")}</ul>
+      <div id="tab_panels" class="scroll">
           <div class="editor_panel edit_tab editor_active">
             <div class="attributes_tab"></div>
             <div class="styles_tab">
@@ -483,9 +493,6 @@ window.editor = (function () {
                 </div>`, "")}
               </details>
             </div>
-            <ul id="hint">${editor.properties.reduce((acc, style) => {
-              return `<li onclick="editor.activeInput.value = event.target.textContent;">${style}</li>`;
-            }, "")}</ul>
           </div>
         </div>`;
       editor.node.appendChild(editor.elms.editor);

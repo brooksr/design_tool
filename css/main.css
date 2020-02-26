@@ -158,7 +158,12 @@ summary {
   background: #222;
 }
 #menu_close {
-  float: right;
+  border-radius: 50px;
+  font-size: 2em;
+  padding: 0;
+  line-height: 1;
+  height: 1em;
+  width: 1em;
 }
 .images ul {
   display: flex;
@@ -211,13 +216,12 @@ summary {
 #toolbar .input-group input, #toolbar .input-group select {
   flex: 0 0 2em;
 }
-.quick_tool  {
-  background: red;
-  float: right;
-  width: 50px;
-  height: 20px;
-  position: relative;
-  top: -20px;
+#toolbar input {
+  background: none;
+  border: none;
+  border-bottom: 1px solid #888;
+  color: #fff;
+  padding: 0.5em;
 }
 .block {
   border: 1px solid #423d42;
@@ -467,8 +471,17 @@ input:invalid {
   overflow: hidden;
   height: 0;
 }
+#canvasNotice {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  background: #888;
+  color: #000;
+  line-height: 1.5;
+  padding: 0 0.5em;
+}
 .campaignWrapper {
-  border: 1px solid #666;
+  border: 1px solid #888;
   padding: 1em;
   margin-bottom: 1em;
 }
@@ -486,8 +499,17 @@ input:invalid {
   outline: 1px solid #000;
   border-radius: 10px;
 }
+button:hover .tablet-tooltip, label:hover .tablet-tooltip {
+  background: rgba(42, 179, 75, 0.5);
+  display: inherit;
+  position: absolute;
+  top: 0;
+  padding: 0.25em;
+  border-radius: 5px;
+  font-size: 0.75em;
+}
 /* not really just tablet anymore */
-@media only screen and (max-width: 1500px) {
+/* @media only screen and (max-width: 1500px) {
   button:hover .tablet-tooltip, label:hover .tablet-tooltip {
     background: rgba(42, 179, 75, 0.5);
     display: inherit;
@@ -502,12 +524,12 @@ input:invalid {
   .tablet-tooltip {
     display: initial;
   }
-}
+} */
 /* HELPER CLASSES */
 .hidden {
   opacity: 0;
   z-index: -1;
-  transition: opacity 250ms ease;
+  transition: all 250ms ease;
   /* display: none !important; */
 }
 .sr-only {

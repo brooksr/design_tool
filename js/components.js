@@ -38,10 +38,6 @@ export let components = {
   `,
   menu: (config) => `
     <button id="menu_close">&times;</button>
-    <input id="assetName" type="text" placeholder="Enter asset name" value="${config.templates[3].name}">
-    <button type="button" id="save"><i class="far fa-save"></i> <span class="">Save</span></button>
-    <button type="button" id="manageImages"><i class="far fa-images"></i> <span class="">Manage Images</span></button>
-    <hr />
     <div class="newItem">
       <h3>New</h3>
       <ul>
@@ -92,39 +88,13 @@ export let components = {
   }
   * {
     box-sizing: inherit;
-    outline: 1px dashed #ccc;
+    outline: 1px dashed rgba(100, 100, 100, 0.5);
   }
   *:hover {
-    outline: 1px dashed rgb(47,165,228);
-    position:relative;
-  }
-  *:hover:before {
-    content: "."attr(class);
-    position: absolute;
-    left: 0;
-    top:0;
-    float: left;
-    background: #4db357;
-    color: #fff;
-    border-radius: 5px;
-    font-size: 0.5rem;
-    padding: 0.25em;
-    overflow: visible;
-    white-space: nowrap;
-    word-break: normal;
-    z-index: 10;
-  }
-  [class]:hover:before {
-    content: "."attr(class);
-  }
-  [name]:hover:before {
-    content: "[name='"attr(name)"']";
-  }
-  [id]:hover:before {
-    content: "#"attr(id);
+    outline: 1px dashed rgba(47,165,228, 0.5);
   }
   [data-status="active"] {
-    outline: 2px dashed #4db357;
+    outline: 1px dashed #4db357;
   }
   [draggable] {
     user-select: none;
@@ -147,9 +117,13 @@ export let components = {
   .no-outline * {
     outline: none !important;
   }`,
-  toolbar: `
+  toolbar: config => `
   <div class="button-group">
     <button type="button" id="openMenu"><i class="fas fa-bars"></i> <span class="tablet-tooltip">Menu</span></button>
+  </div>
+  <div class="">
+    <input id="assetName" type="text" placeholder="Enter asset name" value="${config.templates[3].name}">
+    <button type="button" id="save"><i class="far fa-save"></i> <span class="tablet-tooltip">Save</span></button>
   </div>
   <div class="radio-buttons" id="editor-view">
     <input id="editor-view-visual" name="editor-view" type="radio" value="visual" checked="checked"/>
@@ -183,6 +157,7 @@ export let components = {
   <div class="button-group visual_control">
     <button type="button" id="toggleOutlines"><i class="fas fa-border-none"></i> <span class="tablet-tooltip">Toggle Outlines</span></button>
     <button type="button" id="toggleImages"><i class="far fa-image"></i> <span class="tablet-tooltip">Toggle Images</span></button>
+    <button type="button" id="manageImages"><i class="far fa-images"></i> <span class="tablet-tooltip">Manage Images</span></button>
     <button type="button" id="sendTestEmail"><i class="far fa-paper-plane"></i> <span class="tablet-tooltip">EOA Test</span></button>
     <button type="button" id="fullScreen"><i class="fas fa-expand-arrows-alt"></i> <span class="tablet-tooltip">Full Screen</span></button>
     <button type="button" id="speak"><i class="fas fa-voicemail"></i> <span class="tablet-tooltip">Speak</span></button>

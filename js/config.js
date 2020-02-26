@@ -13,16 +13,13 @@ export let config = {
     {
       name: "Inboxed Incentive | Save Your Cart",
       desc: "Summary of campaign. Testing instructions.",
-      admin: {
-        site_id: "23456",
-        tracking: "https://www.example.com?url=",
-        sale_window: 86400 * 30,
-        opp: "https://upsellit.lightning.force.com/lightning/r/Opportunity/0060g000010TmmNAAS/view",
-        notes: {
-          design: "This is an area for design notes and feedback. Add links to client references and assets.",
-          dev: "Notes for the development team. Comments on specific functionality.",
-          qa: "Notes for QA. Links to QA docs.",
-        },
+      rules: {
+        lift_test: 0.90,
+        languages: ["en"],
+        locales: ["us"],
+        pages: ["home"],
+        stages: ["active_cart"],
+        visitors: ["new"],
       },
       features: {
         other: ["cart_rebuilder", "coupon_reminder"],
@@ -32,20 +29,21 @@ export let config = {
           apply: "Only from email"
         }
       },
-      rules: {
-        launch_method: "abandonment",
-        launch_settings: 6,
-        lift_test: 0.90,
-        languages: ["en"],
-        locales: ["us"],
-        pages: ["home"],
-        stages: ["active_cart"],
-        visitors: ["new"],
+      admin: {
+        site_id: "23456",
+        tracking: "https://www.example.com?url=",
+        sale_window: 86400 * 30,
+        opp: "https://upsellit.lightning.force.com/lightning/r/Opportunity/0060g000010TmmNAAS/view",
+        design_notes: "This is an area for design notes and feedback. Add links to client references and assets.",
+        dev_notes: "Notes for the development team. Comments on specific functionality.",
+        qa_notes: "Notes for QA. Links to QA docs.",
       },
       modal: [{
         name: "Lead Capture",
         html: modal,
         split: "",
+        launch_method: "abandonment",
+        launch_settings: 6,
         link: "https://www.destination.com/cart",
       },{
         name: "Coupon reminder",
@@ -67,13 +65,17 @@ export let config = {
         html: email2,
         link: "https://www.destination.com/cart",
       }]
-    },{
+    },
+    {
       name: "Precise Promotion | Free Shipping",
       desc: "Example description here.",
       opp: "https://upsellit.lightning.force.com/lightning/r/Opportunity/0060g000010TmmNAAS/view",
       modal: [{
         name: "FS",
         html: modal,
+        split: "",
+        launch_method: "abandonment",
+        launch_settings: 6,
         link: "https://www.destination.com/cart",
       }]
     }
@@ -104,11 +106,11 @@ export let config = {
     icon: '<i class="fab fa-html5"></i>'
   }],
   blocks: [{
-    "name": "Modal modalBlocks",
-    "blocks": modalBlocks
+    name: "Modal blocks",
+    blocks: modalBlocks
   },{
-    "name": "Email modalBlocks",
-    "blocks": emailBlocks
+    name: "Email blocks",
+    blocks: emailBlocks
   }],
   images: [
     "https://via.placeholder.com/600x50?text=LOGO",
@@ -119,13 +121,16 @@ export let config = {
   ],
   fonts: [{
     name: "SamsungSansRegular",
-    path: "/fonts/SamsungSansRegular-webfont"
+    path: "./fonts/SamsungSansRegular-webfont"
+  },{
+    name: "SamsungSansSharp",
+    path: "./fonts/SamsungSharpSans-Medium"
   }],
   styles: {
-    "display-font": "SamsungSansRegular",
+    "display-font": "SamsungSansSharp",
     "text-font": "SamsungSansRegular",
-    "main-bg-color": "hsl(0, 0%, 100%)",
-    "main-font-color": "hsl(0, 0%, 20%)",
+    "main-bg-color": "hsl(0, 0, 0)",
+    "main-font-color": "hsl(0, 0%, 98%)",
     "primary-color": "hsl(231, 78%, 35%)",
     "primary-color-dark": "hsl(231, 78%, 30%)",
     "primary-color-text": "hsl(0, 0%, 98%)",
