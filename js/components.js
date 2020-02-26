@@ -45,7 +45,7 @@ export let components = {
     <div class="newItem">
       <h3>New</h3>
       <ul>
-      ${config.templates.map((i, index) => `<li onclick="editor.update(${index})">
+      ${config.templates.map((i, index) => `<li onclick="editor.update(editor.config.templates[${index}])">
         ${i.icon}
         <h4>${i.name}</h4>
         </li>`).join("")}
@@ -53,15 +53,15 @@ export let components = {
     </div>
     <div class="openItem">
     <h3>Open</h3>
-    ${config.campaigns.map((campaign) => `
+    ${config.campaigns.map((campaign, ind) => `
     <div class="campaignWrapper">
-      <h3>${campaign.name}</h3>
+      <h3><a href="${campaign.opp}" target="_blank">${campaign.name}</a></h3>
       <p>${campaign.desc}</p>
       <div>
       ${campaign.modal ? campaign.modal.map((i, index) => `
-        <button onclick="editor.update(${index})">${i.name}</button>`).join("") : ""}
+        <button onclick="editor.update(editor.config.campaigns[${ind}].modal[${index}])">${i.name}</button>`).join("") : ""}
       ${campaign.email ? campaign.email.map((i, index) => `
-        <button onclick="editor.update(${index})">${i.name}</button>`).join(""): ""}
+        <button onclick="editor.update(editor.config.campaigns[${ind}].email[${index}])">${i.name}</button>`).join(""): ""}
       </div>
     </div>
      `).join("")}
@@ -96,6 +96,32 @@ export let components = {
   }
   *:hover {
     outline: 1px dashed rgb(47,165,228);
+    position:relative;
+  }
+  *:hover:before {
+    content: "."attr(class);
+    position: absolute;
+    left: 0;
+    top:0;
+    float: left;
+    background: #4db357;
+    color: #fff;
+    border-radius: 5px;
+    font-size: 0.5rem;
+    padding: 0.25em;
+    overflow: visible;
+    white-space: nowrap;
+    word-break: normal;
+    z-index: 10;
+  }
+  [class]:hover:before {
+    content: "."attr(class);
+  }
+  [name]:hover:before {
+    content: "[name='"attr(name)"']";
+  }
+  [id]:hover:before {
+    content: "#"attr(id);
   }
   [data-status="active"] {
     outline: 2px dashed #4db357;

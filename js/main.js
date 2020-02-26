@@ -7,13 +7,14 @@ import {keys} from '../keys.js';
 window.editor = (function () {
   let editor = {
     node: document.getElementById("design_tool"),
+    config: config,
     s: styles,
     styles: [],
     elms: {},
     properties: Object.keys(Object.assign(...styles)).filter(p => p !== "id"),
-    update: function(i){
+    update: function(obj){
       editor.doc.body.innerHTML = "";
-      editor.elms.canvas.srcdoc = config.templates[i].html;
+      editor.elms.canvas.srcdoc = obj.html;
       document.getElementById("menu_close") && document.getElementById("menu_close").click();
     },
     save: function () {
@@ -198,12 +199,7 @@ window.editor = (function () {
         editor.styles = editor.styles.concat(Array.from(sheet.rules));
       });
       console.log(editor.sheets);
-      document.querySelector(".styles_tab").innerHTML = `
-        <details>
-          <summary>Styles</summary>
-          ${editor.styles.map(editor.createStyleForm).reverse().join("")}
-        </details>
-      `;
+      document.querySelector("#styleList").innerHTML = editor.styles.map(editor.createStyleForm).reverse().join("");
     },
     setDrag : (elm) => {
       elm.draggable = "true";
@@ -277,52 +273,45 @@ window.editor = (function () {
         editor.elms.active.setAttribute(e.target.name, e.target.value);
       }
     },
+    changeImage: function(event){
+      editor.manageImages();
+      editor.elms.modal.querySelectorAll("img").forEach(i => i.addEventListener("click", function (e) {
+        let el = event.target.parentNode.querySelector('[name="src"]');
+        el.value = e.target.src;
+        editor.elms.modal.parentNode.removeChild(editor.elms.modal);
+        el.dispatchEvent(new Event('change', {bubbles: true}));
+      }));
+    },
     updateAttrs: (activeElm) => {
       let tag = editor.elms.active.tagName.toLowerCase();
       let html = `<h3>Attributes</h3>`;
-      if (!!elements[tag]) {
-        for (let a in elements[tag].attributes) {
-          if (elements[tag].attributes.hasOwnProperty(a)) {
-            let rule = elements[tag].attributes[a];
-            html += `<div class="input-group">
-                <label for="${a}">${a}</label>
-                ${a === "src" ? "<button class=\"loadImages\"><i class=\"far fa-images\"/></button>" : ""}
-                <input
-                  name="${a}"
-                  value="${activeElm.getAttribute(a) || ""}"
-                  ${!isNaN(rule) && typeof rule === "number" ? `
-                  type="number"
-                  `: rule === "true|false" ? `
-                  type="checkbox"
-                  ${activeElm.getAttribute(a) ? 'checked="checked"' : ""}
-                  ` : `
-                  type="text"
-                  pattern="${rule}"
-                  `}
-                />
-              </div>`;
-          }
+      let attributes = !!elements[tag] ? elements[tag].attributes : elements["body"].attributes;
+      for (let a in attributes) {
+        if (attributes.hasOwnProperty(a)) {
+          let rule = attributes[a];
+          html += `<div class="input-group">
+              <label for="${a}">${a}</label>
+              ${a === "src" ? "<button onclick=\"editor.changeImage(event)\" class=\"loadImages button-sm\"><i class=\"far fa-images\"/></i></button>" : ""}
+              <input
+                name="${a}"
+                value="${activeElm.getAttribute(a) || ""}"
+                ${!isNaN(rule) && typeof rule === "number" ? `
+                type="number"
+                `: rule === "true|false" ? `
+                type="checkbox"
+                ${activeElm.getAttribute(a) ? 'checked="checked"' : ""}
+                ` : `
+                type="text"
+                pattern="${rule}"
+                `}
+              />
+            </div>`;
         }
       }
       document.querySelector(".attributes_tab").innerHTML = html;
-      document.querySelector(".loadImages") && document.querySelectorAll(".loadImages").forEach(l => l.addEventListener("click", function(event){
-        editor.manageImages();
-        editor.elms.modal.querySelectorAll("img").forEach(i => i.addEventListener("click", function (e) {
-          let el = event.target.parentNode.querySelector('[name="src"]');
-          el.value = e.target.src;
-          editor.elms.modal.parentNode.removeChild(editor.elms.modal);
-          el.dispatchEvent(new Event('change'));
-        }));
-      }));
     },
     manageImages: function (event, target) {
-      editor.elms.modal = document.createElement("div");
-      editor.elms.modal.classList.add("left_area", "cm_wrap", "modal", "images");
-      editor.elms.modal.innerHTML = components.modal(config.images);
-      editor.node.appendChild(editor.elms.modal);
-      document.getElementById("modal_close").addEventListener("click", function (event) {
-        editor.elms.modal.parentNode.removeChild(editor.elms.modal);
-      });
+      editor.elms.modal.classList.toggle("hidden");
     },
     unpackEmail: (html) => {
       for (let c in email_components) {
@@ -343,7 +332,21 @@ window.editor = (function () {
       Object.keys(config.styles).forEach(style => {
         editor.doc.body.style.setProperty("--" + style, config.styles[style]);
       });
-      editor.elms.canvas_style.innerHTML = components.editor_css;
+      let fontFace = config.fonts.reduce((acc, style) => acc += `
+        @font-face {
+          font-family: "${style.name}";
+          src: url("${style.path}.eot"); /* IE9 Compat Modes */
+          src: url("${style.path}.eot?#iefix") format("embedded-opentype"), /* IE6-IE8 */
+            url("${style.path}.otf") format("opentype"), /* Open Type Font */
+            url("${style.path}.svg") format("svg"), /* Legacy iOS */
+            url("${style.path}.ttf") format("truetype"), /* Safari, Android, iOS */
+            url("${style.path}.woff") format("woff"), /* Modern Browsers */
+            url("${style.path}.woff2") format("woff2"); /* Modern Browsers */
+          font-weight: normal;
+          font-style: normal;
+          font-display: swap;
+        }`, "");
+      editor.elms.canvas_style.innerHTML = fontFace + components.editor_css;
 
       editor.updateIds();
       editor.doc.addEventListener("keydown", function(event) {
@@ -413,6 +416,14 @@ window.editor = (function () {
       editor.elms.menu.innerHTML = components.menu(config);
       editor.node.appendChild(editor.elms.menu);
 
+      editor.elms.modal = document.createElement("div");
+      editor.elms.modal.classList.add("hidden", "cm_wrap", "modal", "images");
+      editor.elms.modal.innerHTML = components.modal(config.images);
+      editor.node.appendChild(editor.elms.modal);
+      document.getElementById("modal_close").addEventListener("click", function (event) {
+        editor.elms.modal.classList.toggle("hidden");
+      });
+
       editor.elms.canvas = document.createElement("iframe");
       editor.elms.canvas.id = "canvas";
       editor.elms.canvas.srcdoc = config.templates[2].html;
@@ -444,7 +455,14 @@ window.editor = (function () {
       editor.elms.editor.innerHTML = `<div id="tab_panels" class="scroll">
           <div class="editor_panel edit_tab editor_active">
             <div class="attributes_tab"></div>
-            <div class="styles_tab"></div>
+            <div class="styles_tab">
+              <details>
+                <summary>Styles</summary>
+                <div id="styleList" class="flex">
+                ${editor.styles.map(editor.createStyleForm).reverse().join("")}
+                </div>
+              </details>
+            </div>
             <div class="blocks_tab">
               ${config.blocks.map(b => `
               <details>

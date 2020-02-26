@@ -1,7 +1,4 @@
-/*! HTML5 Boilerplate v7.3.0 | MIT License | https://html5boilerplate.com/ */
-/* ==========================================================================
-   Base styles: opinionated defaults
-   ========================================================================== */
+/* DEFAULTS */
 html {
   background-color:#272427;
   color: #ddd;
@@ -9,15 +6,13 @@ html {
   font-family: 'Roboto Mono', serif;
   box-sizing: border-box;
 }
-
 *, *:before, *:after {
-  box-sizing: inherit;
+  box-sizing: border-box;
 }
 ::-moz-selection {
   background: #2ab34b;
   text-shadow: none;
 }
-
 ::selection {
   background: #2ab34b;
   text-shadow: none;
@@ -46,9 +41,10 @@ fieldset {
 textarea {
   resize: vertical;
 }
-/* ==========================================================================
-   Author's custom styles
-   ========================================================================== */
+/* CUSTOM STYLES */
+a {
+  color: #2ab34b;
+}
 .button-group {
   display: flex;
 }
@@ -64,6 +60,14 @@ button:hover {
 }
 button:focus {
   outline: 1px solid #2ab34b;
+}
+button > * {
+  pointer-events: none;
+}
+.button-sm {
+  border-radius: 5px;
+  padding: 0.5em;
+  font-size: 0.75em;
 }
 summary {
   cursor: pointer;
@@ -121,6 +125,8 @@ summary {
   top: 0;
   min-height: 100vh;
   position: absolute;
+  opacity: 1;
+  transition: opacity 250ms ease;
 }
 #modal_close {
   float: right;
@@ -397,13 +403,16 @@ summary {
 .attributes_tab {
   margin-bottom: 1em;
 }
-.styles_tab {
-  font-size: 0.9em;
+.flex {
   display: flex;
   flex-wrap: wrap;
 }
-.styles_tab * {
+.styles_tab {
+  font-size: 0.9em;
+}
+.flex > * {
   flex: 1 0 100%;
+  order: 0;
 }
 .styles_tab h4 {
   margin: 0;
@@ -413,10 +422,9 @@ summary {
   border: 1px dashed #888;
   margin-bottom: 0.5em;
   padding: 0.5em;
-  order: 1;
 }
 .styles_tab .matches_active {
-  order: 0;
+  order: -1;
   background: #333333;
 }
 .styles_tab .matches_active * {
@@ -495,11 +503,12 @@ input:invalid {
     display: initial;
   }
 }
-/* ==========================================================================
-   Helper classes
-   ========================================================================== */
+/* HELPER CLASSES */
 .hidden {
-  display: none !important;
+  opacity: 0;
+  z-index: -1;
+  transition: opacity 250ms ease;
+  /* display: none !important; */
 }
 .sr-only {
   border: 0;
