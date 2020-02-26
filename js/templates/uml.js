@@ -188,8 +188,8 @@ export let uml = `<!DOCTYPE html>
                 <li>Another list item here.</li>
                 <li>Everyone gets a list item, list items for everyone!</li>
             </ul>
+            <button class="button-a button-a-primary">Centered Primary Button</button>
           </text>
-          <button class="button-a button-a-primary">Centered Primary Button</button>
       </section>
     </article>
 
