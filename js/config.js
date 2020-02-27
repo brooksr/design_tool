@@ -20,6 +20,7 @@ export let config = {
         pages: ["home"],
         stages: ["active_cart"],
         visitors: ["new"],
+        notes: "",
       },
       features: {
         other: ["cart_rebuilder", "coupon_reminder"],
@@ -27,7 +28,8 @@ export let config = {
           source: "SAVE10",
           expiration: "2020-12-31",
           apply: "Only from email"
-        }
+        },
+        notes: "",
       },
       admin: {
         site_id: "23456",
@@ -45,25 +47,30 @@ export let config = {
         launch_method: "abandonment",
         launch_settings: 6,
         link: "https://www.destination.com/cart",
+        notes: "",
       },{
         name: "Coupon reminder",
-        html: bar
+        html: bar,
+        notes: "",
       }],
       email: [{
         name: "Email 1",
         time: 3600,
         html: uml_export,
         link: "https://www.destination.com/cart",
+        notes: "",
       },{
         name: "Email 2",
         time: 86400 - 3600,
         html: email,
         link: "https://www.destination.com/cart",
+        notes: "",
       },{
         name: "Email 3",
         time: 86400 * 2,
         html: email2,
         link: "https://www.destination.com/cart",
+        notes: "",
       }]
     },
     {
@@ -77,6 +84,7 @@ export let config = {
         launch_method: "abandonment",
         launch_settings: 6,
         link: "https://www.destination.com/cart",
+        notes: "",
       }]
     }
   ],

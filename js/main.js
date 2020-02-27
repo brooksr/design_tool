@@ -329,6 +329,23 @@ window.editor = (function () {
       let range = { from: editor.cm.getCursor(true), to: editor.cm.getCursor(false) };
       editor.cm.autoFormatRange(range.from, range.to);
     },
+    changeView: function (e) {
+      if (e.target.value === "mobile") {
+        editor.elms.canvas.style.maxWidth = "375px";
+        editor.elms.canvas.style.maxHeight = "667px";
+      } else if (e.target.value === "tablet") {
+        editor.elms.canvas.style.maxWidth = "768px";
+        editor.elms.canvas.style.maxHeight = "1024px";
+      } else {
+        editor.elms.canvas.style.maxWidth = "";
+        editor.elms.canvas.style.maxHeight = "";
+      }
+    },
+    toggleCode: function (event) {
+      editor.elms.cm.style.display = (event.target.value === "code") ? "block" : "none";
+      editor.cm.refresh();
+      document.body.classList.toggle("editor_open");
+    },
     onload: function(){
       editor.doc = editor.elms.canvas.contentDocument;
       editor.elms.canvas_style = document.createElement("style");
@@ -414,7 +431,24 @@ window.editor = (function () {
       editor.elms.toolbar = document.createElement("div");
       editor.elms.toolbar.id = "toolbar";
       editor.elms.toolbar.innerHTML = components.toolbar(config);
+      editor.elms.toolbar.onchange = function(){
+        let settings = {};
+        editor.elms.toolbar.querySelectorAll("input:checked").forEach(i => settings[i.name] = i.id);
+        localStorage.setItem("toolbar", JSON.stringify(settings));
+      }
       editor.node.appendChild(editor.elms.toolbar);
+      if (localStorage.getItem("toolbar")) {
+        setTimeout(function(){
+          let settings = JSON.parse(localStorage.getItem("toolbar"));
+          Object.keys(settings).forEach(i => {
+            let option = document.getElementById(settings[i]);
+            if (!option.checked) {
+              option.checked = "checked";
+              option.dispatchEvent(new Event('change', {bubbles: true}));
+            }
+          });
+        }, 0);
+      }
 
       editor.elms.menu = document.createElement("div");
       editor.elms.menu.classList.add("invisible", "cm_wrap", "modal", "menu");
@@ -532,23 +566,11 @@ window.editor = (function () {
 
       document.querySelector("#save").addEventListener("click", editor.save);
       document.querySelector("#manageImages").addEventListener("click", editor.manageImages);
-      document.getElementById("menu_close").addEventListener("click", function (event) {
+      document.getElementById("menuClose").addEventListener("click", function (event) {
         editor.elms.menu.classList.toggle("invisible");
       });
       document.querySelector("#openMenu").addEventListener("click", function (event) {
         editor.elms.menu.classList.toggle("invisible");
-      });
-      document.querySelector("#device-view").addEventListener("change", function (e) {
-        if (e.target.value === "mobile") {
-          editor.elms.canvas.style.maxWidth = "375px";
-          editor.elms.canvas.style.maxHeight = "667px";
-        } else if (e.target.value === "tablet") {
-          editor.elms.canvas.style.maxWidth = "768px";
-          editor.elms.canvas.style.maxHeight = "1024px";
-        } else {
-          editor.elms.canvas.style.maxWidth = "";
-          editor.elms.canvas.style.maxHeight = "";
-        }
       });
       document.querySelector("#speak").addEventListener("click", function (e) {
         // TODO: read alt text, heading numbers, etc.
@@ -569,11 +591,6 @@ window.editor = (function () {
         let transform = getComputedStyle(editor.doc.body).transform.split("(")[1].split(",")[0];
         let newT = Number(transform) - 0.25;
         editor.doc.body.style.transform = `matrix(${newT}, 0, 0, ${newT}, 0, 0)`;
-      });
-      document.querySelector("#editor-view").addEventListener("change", function (event) {
-        editor.elms.cm.style.display = (event.target.value === "code") ? "block" : "none";
-        editor.cm.refresh();
-        document.body.classList.toggle("editor_open");
       });
       document.querySelector("#toggleOutlines").addEventListener("click", function (event) {
         editor.doc.body.classList.toggle("no-outline");

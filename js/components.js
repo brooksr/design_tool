@@ -23,21 +23,22 @@
 
 export let components = {
   modal: (images) => `
-    <button id="modalClose">&times;</button>
+    <button id="modalClose" class="button-small">&times;</button>
     <h3>Manage Images</h3>
     <form action="" method="post" enctype="multipart/form-data">
       <input type="file" name="fileToUpload" id="fileToUpload">
       <input type="submit" value="Upload Image" name="submit">
     </form>
     <ul>
-    ${images.map(i => `<li>
-      <img src="${i}" />
-      <a href="${i}" target="_blank">${i}</a><span class="image-size">99kb</span>
+    ${images.map(i => `
+      <li>
+        <img src="${i}" />
+        <a href="${i}" target="_blank">${i}</a><span class="image-size">99kb</span>
       </li>`).join("")}
     </ul>
   `,
   menu: (config) => `
-    <button id="menu_close">&times;</button>
+    <button id="menuClose" class="button-small">&times;</button>
     <div class="newItem">
       <h3>New</h3>
       <ul>
@@ -125,7 +126,7 @@ export let components = {
     <input id="assetName" type="text" placeholder="Enter asset name" value="${config.templates[3].name}">
     <button type="button" id="save"><i class="far fa-save"></i> <span class="tablet-tooltip">Save</span></button>
   </div>
-  <div class="radio-buttons" id="editor-view">
+  <div class="radio-buttons" id="editor-view" onchange="editor.toggleCode(event)">
     <input id="editor-view-visual" name="editor-view" type="radio" value="visual" checked="checked"/>
     <label for="editor-view-visual" ><i class="fas fa-eye"></i> <span class="tablet-tooltip">Visual</span></label>
     <input id="editor-view-code" name="editor-view" type="radio" value="code" />
@@ -135,7 +136,7 @@ export let components = {
     <button type="button" id="emailInline">Email Inline</button>
     <button type="button" id="autoFormat">Autoformat</button>
   </div>
-  <div class="radio-buttons visual_control" id="device-view">
+  <div class="radio-buttons visual_control" id="device-view" onchange="editor.changeView(event)">
     <input id="device-view-desktop" name="device-view" type="radio" value="desktop" checked="checked"/>
     <label for="device-view-desktop" ><i class="fas fa-desktop"></i> <span class="tablet-tooltip">Desktop</span></label>
     <input id="device-view-tablet" name="device-view" type="radio" value="tablet" />
