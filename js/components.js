@@ -23,7 +23,7 @@
 
 export let components = {
   modal: (images) => `
-    <button id="modal_close">&times;</button>
+    <button id="modalClose">&times;</button>
     <h3>Manage Images</h3>
     <form action="" method="post" enctype="multipart/form-data">
       <input type="file" name="fileToUpload" id="fileToUpload">

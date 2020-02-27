@@ -425,7 +425,7 @@ window.editor = (function () {
       editor.elms.modal.classList.add("invisible", "cm_wrap", "modal", "images");
       editor.elms.modal.innerHTML = components.modal(config.images);
       editor.node.appendChild(editor.elms.modal);
-      document.getElementById("modal_close").addEventListener("click", function (event) {
+      document.getElementById("modalClose").addEventListener("click", function (event) {
         editor.elms.modal.classList.toggle("invisible");
       });
 
