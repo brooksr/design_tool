@@ -170,11 +170,13 @@ export let modal = `
     .usi_col_mbl10 { width: 83.33333333333333%; }
     .usi_col_mbl11 { width: 91.66666666666666%; }
     .usi_col_mbl12 { width: 100%; }
+    
     .usi_display {
       /*font-size: 2.5vw;*/
       margin:0;
       top: auto;
       height: auto;
+      bottom: 0;
     }
   }
 </style>

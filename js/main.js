@@ -316,7 +316,7 @@ window.editor = (function () {
       document.querySelector(".attributes_tab").innerHTML = html;
     },
     manageImages: function (event, target) {
-      editor.elms.modal.classList.toggle("hidden");
+      editor.elms.modal.classList.toggle("invisible");
     },
     unpackEmail: (html) => {
       for (let c in emailComponents) {
@@ -417,16 +417,16 @@ window.editor = (function () {
       editor.node.appendChild(editor.elms.toolbar);
 
       editor.elms.menu = document.createElement("div");
-      editor.elms.menu.classList.add("hidden", "cm_wrap", "modal", "menu");
+      editor.elms.menu.classList.add("invisible", "cm_wrap", "modal", "menu");
       editor.elms.menu.innerHTML = components.menu(config);
       editor.node.appendChild(editor.elms.menu);
 
       editor.elms.modal = document.createElement("div");
-      editor.elms.modal.classList.add("hidden", "cm_wrap", "modal", "images");
+      editor.elms.modal.classList.add("invisible", "cm_wrap", "modal", "images");
       editor.elms.modal.innerHTML = components.modal(config.images);
       editor.node.appendChild(editor.elms.modal);
       document.getElementById("modal_close").addEventListener("click", function (event) {
-        editor.elms.modal.classList.toggle("hidden");
+        editor.elms.modal.classList.toggle("invisible");
       });
 
       editor.elms.canvas = document.createElement("iframe");
@@ -533,10 +533,10 @@ window.editor = (function () {
       document.querySelector("#save").addEventListener("click", editor.save);
       document.querySelector("#manageImages").addEventListener("click", editor.manageImages);
       document.getElementById("menu_close").addEventListener("click", function (event) {
-        editor.elms.menu.classList.toggle("hidden");
+        editor.elms.menu.classList.toggle("invisible");
       });
       document.querySelector("#openMenu").addEventListener("click", function (event) {
-        editor.elms.menu.classList.toggle("hidden");
+        editor.elms.menu.classList.toggle("invisible");
       });
       document.querySelector("#device-view").addEventListener("change", function (e) {
         if (e.target.value === "mobile") {

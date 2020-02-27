@@ -527,10 +527,7 @@ button:hover .tablet-tooltip, label:hover .tablet-tooltip {
 } */
 /* HELPER CLASSES */
 .hidden {
-  opacity: 0;
-  z-index: -1;
-  transition: all 250ms ease;
-  /* display: none !important; */
+  display: none !important;
 }
 .sr-only {
   border: 0;
@@ -554,7 +551,10 @@ button:hover .tablet-tooltip, label:hover .tablet-tooltip {
   width: auto;
 }
 .invisible {
-  visibility: hidden;
+  /* visibility: hidden; */
+  opacity: 0;
+  z-index: -1;
+  transition: all 250ms ease;
 }
 .clearfix:before,
 .clearfix:after {
