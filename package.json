@@ -10,7 +10,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^5.12.1"
   },
   "devDependencies": {
     "lite-server": "^2.5.4"
