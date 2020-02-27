@@ -1,12 +1,12 @@
-import {modalBlocks} from './modal-blocks.js';
-import {emailBlocks} from './email-blocks.js';
+import modalBlocks from './modal-blocks.js';
+import emailBlocks from './email-blocks.js';
 
-import {email} from './templates/email.js';
-import {email2} from './templates/email2.js';
-import {modal} from './templates/modal.js';
-import {bar} from './templates/bar.js';
-import {uml} from './templates/uml.js';
-import {uml_export} from './templates/uml_export.js';
+import email from './templates/email.js';
+import email2 from './templates/email2.js';
+import modal from './templates/modal.js';
+import bar from './templates/bar.js';
+import uml from './templates/uml.js';
+import uml_export from './templates/uml_export.js';
 
 export let config = {
   campaigns: [

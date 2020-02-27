@@ -12,7 +12,8 @@ let global = {
     ]
   },*/
 };
-export const elements = {
+
+const elements = {
   "body": {
     "draggable": false,
     "attributes": global
@@ -291,3 +292,4 @@ export const elements = {
     },
   },
 };
+export default elements;

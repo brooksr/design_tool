@@ -28,7 +28,28 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.51.0/mode/htmlmixed/htmlmixed.min.js"
     integrity="sha256-9Dta/idKg17o/o0a3PEsL6JjkYvijj9UMh3Z86HhUcg=" crossorigin="anonymous"></script>
   <script src="js/autoformat.js" type="module"></script>
-  <script src="js/main.js" type="module"></script>
+  <script src="https://unpkg.com/babel-standalone@7.0.0-alpha.20/babel.min.js"></script>
+  <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+
+  <script src="./keys.js" data-plugins="transform-es2015-modules-umd" type="text/babel"></script>
+  <script src="js/styles.js" data-plugins="transform-es2015-modules-umd" type="text/babel"></script>
+  <script src="js/config.js" data-plugins="transform-es2015-modules-umd" type="text/babel"></script>
+  <script src="js/components.js" data-plugins="transform-es2015-modules-umd" type="text/babel"></script>
+  <script src="js/email-components.js" data-plugins="transform-es2015-modules-umd" type="text/babel"></script>
+  <script src="js/elements.js" data-plugins="transform-es2015-modules-umd,transform-object-rest-spread" type="text/babel"></script>
+  <script src="js/editor.js" data-plugins="transform-es2015-modules-umd" type="text/babel"></script>
+  <script src="js/modal-blocks.js" data-plugins="transform-es2015-modules-umd" type="text/babel"></script>
+  <script src="js/email-blocks.js" data-plugins="transform-es2015-modules-umd" type="text/babel"></script>
+<!--transform-object-rest-spread-->
+  <script src="js/templates/email.js" data-plugins="transform-es2015-modules-umd" type="text/babel"></script>
+  <script src="js/templates/email2.js" data-plugins="transform-es2015-modules-umd" type="text/babel"></script>
+  <script src="js/templates/modal.js" data-plugins="transform-es2015-modules-umd" type="text/babel"></script>
+  <script src="js/templates/bar.js" data-plugins="transform-es2015-modules-umd" type="text/babel"></script>
+  <script src="js/templates/uml.js" data-plugins="transform-es2015-modules-umd" type="text/babel"></script>
+  <script src="js/templates/uml_export.js" data-plugins="transform-es2015-modules-umd" type="text/babel"></script>
+
+  <script src="js/main.js" data-plugins="transform-es2015-modules-umd" type="text/babel"></script>
 
 </body>
 
