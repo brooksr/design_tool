@@ -1,12 +1,12 @@
-import modalBlocks from './modal-blocks.js';
-import emailBlocks from './email-blocks.js';
+import * as modalBlocks from './modal-blocks.js';
+import {emailBlocks} from './email-blocks.js';
 
-import email from './templates/email.js';
-import email2 from './templates/email2.js';
-import modal from './templates/modal.js';
-import bar from './templates/bar.js';
-import uml from './templates/uml.js';
-import uml_export from './templates/uml_export.js';
+import {email} from './templates/email.js';
+import {email2} from './templates/email2.js';
+import {modal} from './templates/modal.js';
+import {bar} from './templates/bar.js';
+import {uml} from './templates/uml.js';
+import {uml_export} from './templates/uml_export.js';
 
 export let config = {
   campaigns: [
@@ -89,6 +89,10 @@ export let config = {
     }
   ],
   templates: [{
+    html: modal,
+    name: "Modal 1",
+    icon: '<i class="fas fa-ad"></i>'
+  },{
     html: email,
     name: "Email 1",
     icon: '<i class="far fa-envelope"></i>'
@@ -96,10 +100,6 @@ export let config = {
     html: email2,
     name: "Email 2",
     icon: '<i class="far fa-envelope"></i>'
-  },{
-    html: modal,
-    name: "Modal 1",
-    icon: '<i class="fas fa-ad"></i>'
   },{
     html: bar,
     name: "bar 1",

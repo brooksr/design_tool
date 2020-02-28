@@ -7,7 +7,6 @@ import {keys} from '../keys.js';
 export let editor = (function () {
     let editor = {
         node: document.getElementById("design_tool"),
-        config: config,
         s: styles,
         styles: [],
         elms: {},
@@ -234,9 +233,9 @@ export let editor = (function () {
                 this.parentNode.style.paddingTop = "";
                 this.classList.toggle("hover");
                 document.getElementById("canvasNotice").textContent = "";
-                if (elements[this.tagName.toLowerCase()].droppable === false) return;
+                if (elements.elements[this.tagName.toLowerCase()] == null || elements.elements[this.tagName.toLowerCase()].droppable === false) return;
                 this.append(editor.drag);
-                editor.updateIds();
+                //editor.updateIds();
             }, false);
         },
         updateIds: () => {

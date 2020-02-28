@@ -1,4 +1,4 @@
-export const modalBlocks = [
+export const modalBlocks  = [
   {
     id: "row",
     html: `<div class="usi_row"><div class="usi_col">Placeholder</div></div>`
