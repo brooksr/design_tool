@@ -11,6 +11,7 @@ import {modal} from './templates/modal.js';
 import {bar} from './templates/bar.js';
 import {uml} from './templates/uml.js';
 import {uml_export} from './templates/uml_export.js';
+import {keys} from "../keys";
 
 let config = {
     campaigns: [
@@ -248,7 +249,7 @@ let setDrag = (elm) => {
         this.append(editor.drag);
         //editor.updateIds();
     }, false);
-}
+};
 let editor = {};
 function Menu(props) {
     return (
@@ -283,12 +284,42 @@ function Menu(props) {
     )
 }
 function Toolbar(props) {
+    let requestFullscreen = function(){
+        document.body.requestFullscreen();
+    };
+    let readScreen = function () {
+        // TODO: read alt text, heading numbers, etc.
+        let canvas = document.getElementById("canvas").contentDocument;
+        speechSynthesis.speak(new SpeechSynthesisUtterance(canvas.body.textContent))
+    };
+    let testEmail = function () {
+        let subject = prompt("Please enter your subject", "Design tool test. ID:" + Math.round(Math.random() * 999999));
+        if (!subject) return;
+        fetch('https://api.emailonacid.com/v5/email/tests', {
+            method: 'POST',
+            headers: { 'Authorization': 'Basic ' + keys.EOA },
+            body: JSON.stringify({
+                "subject": subject,
+                "html": editor.doc.documentElement.outerHTML
+            })
+        }).then((response) => response.json())
+        .then((data) => {
+            window.open("https://app.emailonacid.com/app/acidtest/"+data.id+"/list", "emailonacid");
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+    }
     return (
         <div id="toolbar">
             <div className="button-group">
                 <button type="button" id="openMenu" onClick={props.toggleMenu}>
                     <i className="fas fa-bars"></i>
                     <span className="tablet-tooltip">Menu</span>
+                </button>
+                <button type="button" id="manageImages">
+                    <i className="far fa-images"></i>
+                    <span className="tablet-tooltip">Manage Images</span>
                 </button>
             </div>
             <div className="save-group">
@@ -343,27 +374,23 @@ function Toolbar(props) {
                 </button>
             </div>
             <div className="button-group visual_control">
-                <button type="button" id="toggleOutlines">
+                <button type="button" id="toggleOutlines" onClick={props.toggleOutlines}>
                     <i className="fas fa-border-none"></i>
                     <span className="tablet-tooltip">Toggle Outlines</span>
                 </button>
-                <button type="button" id="toggleImages">
+                <button type="button" id="toggleImages" onClick={props.toggleImages}>
                     <i className="far fa-image"></i>
                     <span className="tablet-tooltip">Toggle Images</span>
                 </button>
-                <button type="button" id="manageImages">
-                    <i className="far fa-images"></i>
-                    <span className="tablet-tooltip">Manage Images</span>
-                </button>
-                <button type="button" id="sendTestEmail">
+                <button type="button" id="sendTestEmail" onClick={testEmail}>
                     <i className="far fa-paper-plane"></i>
                     <span className="tablet-tooltip">EOA Test</span>
                 </button>
-                <button type="button" id="fullScreen">
+                <button type="button" id="fullScreen" onClick={requestFullscreen}>
                     <i className="fas fa-expand-arrows-alt"></i>
                     <span className="tablet-tooltip">Full Screen</span>
                 </button>
-                <button type="button" id="speak">
+                <button type="button" id="speak" onClick={readScreen}>
                     <i className="fas fa-voicemail"></i>
                     <span className="tablet-tooltip">Speak</span>
                 </button>
@@ -394,11 +421,15 @@ function Canvas(props) {
                 setDrag(elm);
             }
         });
-    }
+    };
+    let classes = "canvasWrapper scroll canvas_" + props.device;
+    if (props.outlines) classes += " show-outlines"; //how to target inside iframe?
 
     return (
-        <div className={"canvasWrapper scroll canvas_" + props.device}>
-            <iframe id="canvas" srcDoc={props.html} onLoad={handleLoad} style={{transform: `scale(${props.zoom})`}}></iframe>
+        <div className={classes}>
+            <iframe id="canvas" srcDoc={props.html} onLoad={handleLoad} style={{transform: `scale(${props.zoom})`}}>
+                <h1>Testing</h1>
+            </iframe>
         </div>
     );
 }
@@ -496,11 +527,15 @@ function Editor() {
 class App extends React.Component {
     constructor(props) {
         super(props);
+        this.toggleImages = this.toggleImages.bind(this);
         this.toggleMenu = this.toggleMenu.bind(this);
         this.changeZoom = this.changeZoom.bind(this);
         this.changeDevice = this.changeDevice.bind(this);
         this.toggleView = this.toggleView.bind(this);
+        this.toggleOutlines = this.toggleOutlines.bind(this);
         this.state = {
+            show_images: true,
+            outlines: true,
             menuOpen: false,
             zoom: 1,
             view: "visual",
@@ -514,18 +549,22 @@ class App extends React.Component {
                 <Toolbar 
                     view={this.state.view}
                     device={this.state.device}
-                    toggleMenu={this.toggleMenu} 
-                    changeZoom={this.changeZoom} 
+                    toggleImages={this.toggleImages}
+                    toggleMenu={this.toggleMenu}
+                    changeZoom={this.changeZoom}
                     changeDevice={this.changeDevice} 
-                    toggleView={this.toggleView} 
+                    toggleView={this.toggleView}
+                    toggleOutlines={this.toggleOutlines}
                 />
                 <Menu 
                     open={this.state.menuOpen}
                     toggleMenu={this.toggleMenu}
                 />
                 <Canvas
-                    device={this.state.device} 
-                    zoom={this.state.zoom} 
+                    show_images={this.state.show_images}
+                    outlines={this.state.outlines}
+                    device={this.state.device}
+                    zoom={this.state.zoom}
                     html={config.templates[0].html} 
                 />
                 <div id="canvasNotice"></div>
@@ -534,8 +573,23 @@ class App extends React.Component {
             </div>
         )
     }
+    toggleImages(event) {
+        alert("unfinished");
+        this.setState((state, props) => {
+            return {
+                show_images: !this.state.show_images,
+            }
+        });
+    }
+    toggleOutlines(event) {
+        alert("unfinished");
+        this.setState((state, props) => {
+            return {
+                outlines: !this.state.outlines,
+            }
+        });
+    }
     toggleMenu(event) {
-        let menu = document.querySelector(".menu");
         this.setState((state, props) => {
             return {
                 menuOpen: !this.state.menuOpen,

@@ -354,7 +354,10 @@ summary {
   background: #888;
 }
 .tablet-tooltip {
-  display: none;
+  position: absolute;
+  top: -100vh;
+  opacity: 0;
+  transition: opacity 1s ease;
 }
 .editor_open #toolbar {
   justify-content: start;
@@ -461,6 +464,7 @@ input:invalid {
   border-radius: 10px;
 }
 button:hover .tablet-tooltip, label:hover .tablet-tooltip {
+  opacity: 1;
   background: rgba(42, 179, 75, 0.5);
   display: inherit;
   position: absolute;
